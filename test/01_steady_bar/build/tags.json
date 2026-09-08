@@ -1,0 +1,18 @@
+{
+  "bar": {
+    "dimension": 3,
+    "tag": 1
+  },
+  "cold_end": {
+    "dimension": 2,
+    "tag": 3
+  },
+  "heatflow_section": {
+    "dimension": 2,
+    "tag": 4
+  },
+  "hot_end": {
+    "dimension": 2,
+    "tag": 2
+  }
+}
