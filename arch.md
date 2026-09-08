@@ -37,6 +37,7 @@ run/test 裡的 main.py   ≈ LAMMPS infile
 adr-thermal/
 ├─ arch.md
 ├─ steps.md
+├─ dump-format.md
 │
 ├─ lib/
 │  ├─ case.py
@@ -44,7 +45,10 @@ adr-thermal/
 │  ├─ model.py
 │  ├─ solve.py
 │  ├─ analyze.py
-│  └─ materials/
+│  └─ dump.py
+│
+├─ postprocess/
+│  └─ plot_dump.py
 │
 ├─ runs/
 │  └─ baseline/
@@ -86,28 +90,16 @@ physics/
 
 ```text
 main.py
-  │
-  ├─ geometry.py
-  │      ↓
-  │   lib/mesh.py
-  │      ↓
-  │    build/
-  │
-  ├─ case.yaml
-  │      ↓
-  │   lib/case.py
-  │
-  ├─ lib/model.py
-  │      ↓
-  │   weak form
-  │
-  ├─ lib/solve.py
-  │      ↓
-  │   FEM solution
-  │
-  └─ lib/analyze.py
-         ↓
-      output/
+  → geometry.py / lib/mesh.py
+  → lib/case.py
+  → lib/model.py
+  → lib/solve.py
+  → lib/analyze.py
+  → lib/dump.py
+  → output/dump/
+
+output/dump/
+  → postprocess/plot_dump.py
 ```
 
 `main.py` 只負責串接流程，不負責重新實作 FEM。
@@ -153,7 +145,25 @@ tags.json
 build.json
 ```
 
-只在 geometry 或 mesh 設定改變時重建。
+只在 geometry 或 mesh 設定改變時重建。`build.json` 保存對應的 `MESH_ID`，供 dump 與後處理核對：cache reuse 沿用同一 ID，mesh rebuild 產生新 ID。
+
+責任分工：
+
+```text
+build/mesh.msh
+  = mesh topology
+  = vertices / coordinates
+  = element type / cell connectivity
+  = physical / region tags
+
+output/dump/<timestep>.dump
+  = 該 mesh 上的物理場 snapshot
+  = cell_ID / region_ID
+  = sampling x y z
+  = T / qx / qy / qz / qmag
+```
+
+dump 不重複保存 topology。dump 中的 `x y z` 只是 sampling location，例如 cell centroid，不能描述 cell 形狀。
 
 ### `output/`
 
@@ -161,11 +171,50 @@ build.json
 
 ```text
 resolved_case.yaml
-temperature.*
-heat_flux.*
+dump/
+  ├─ 0.dump
+  ├─ 1.dump
+  └─ ...
 summary.csv
 run.log
 ```
+
+場資料採用類似 LAMMPS custom dump 的文字格式。每個 dump 是一個 timestep 的空間快照，例如：
+
+```text
+ITEM: TIMESTEP
+0
+ITEM: TIME
+0.0
+ITEM: MESH_ID
+287b3fe991f40c0a2526069ce8487657652e2237323ebc118b28d6f83db9b89f
+ITEM: NUMBER OF CELLS
+209
+ITEM: FIELDS cell_ID region_ID x y z T qx qy qz qmag
+0 1 0.0025 0.005 0.005 3.925 300.0 0.0 0.0 300.0
+...
+```
+
+規則：
+
+- `cell_ID` 是同一 `MESH_ID` 下跨 timestep 穩定的 finite-element cell 編號。
+- `x y z` 是該點座標。
+- `region_ID` 識別 semantic geometry region；材料指定仍來自 `case.yaml`。
+- `T` 是溫度，`qx qy qz` 是熱流向量分量，`qmag` 是熱流大小。
+- 欄位順序由 `main.py` 指定；`analyze.py` 準備物理資料，`dump.py` 只寫出指定欄位。
+- 穩態只寫一份 `0.dump`；暫態依輸出頻率寫 `{timestep}.dump`。
+- timestep 是整數步數；物理時間由 `time = timestep * dt` 得到並寫入 header。
+- dump 目錄、輸出頻率與欄位由各 run/test 的 `main.py` 設定，不放入 physics `case.yaml`。
+
+第一版只支援 cell dump。座標為 cell centroid，`T` 在 centroid 評估，熱流由 `analyze.py` 在 cell 上計算。nodes 等出現明確需求後再加入。
+
+`cell_ID` 由 mesh pipeline 建立並維持。不得假定它天然等於 Gmsh element tag 或 FEniCSx local cell index，因為 mesh import 可能重新排序。它的唯一契約是能可靠解析回同一 `MESH_ID` 的 `mesh.msh` 中某一實際 cell；第一版採能通過 Test 01 mapping 驗證的最簡方法，不建立通用 ID manager 或 mapping framework。
+
+cell 的 element type、vertex coordinates 與 connectivity 由對應的 `mesh.msh` 定義；dump 不假設 cell 是四面體、六面體或其他特定形狀。後處理若要畫真正的 3D mesh、surface 或 slice，必須同時讀取 `build/mesh.msh` 與 dump，先驗證兩者 `MESH_ID` 相同，再依 `cell_ID` 對應 field values。
+
+完整 header、欄位定義、單位與檔名規則以 [`dump-format.md`](dump-format.md) 為唯一規格。
+
+`summary.csv` 只保存區域統計與總熱流等彙總量，不取代逐 cell dump。第一版由 `main.py` 使用 Python 標準庫 `csv` 將 `analyze.py` 回傳的 summary data 寫出，不為此新增另一層 abstraction。XDMF/HDF5 可作為選配輸出，不是 dump 的必要部分。
 
 ---
 
@@ -202,17 +251,36 @@ $$
 
 ### `analyze.py`
 
-固定後處理，例如：
+計算衍生物理量，例如：
 
 - $T(\mathbf x)$
 - $\mathbf q=-k\nabla T$
 - region 平均 / 最大 / 最小溫度
 - tagged surface 的 total heat flow
+- region 統計資料
 
 $$
 \dot Q_S=
 \int_S \mathbf q\cdot\mathbf n\,dA
 $$
+
+### `dump.py`
+
+只負責把 `analyze.py` 已準備好的資料依指定 fields 序列化成 `{timestep}.dump`。不計算 Fourier law、surface integral 或其他物理量，也不負責畫圖。
+
+示意：
+
+```python
+dump = {
+    "directory": case_dir / "output" / "dump",
+    "every": 10,
+    "fields": ["cell_ID", "region_ID", "x", "y", "z", "T", "qx", "qy", "qz", "qmag"],
+}
+```
+
+### `postprocess/plot_dump.py`
+
+獨立讀取既有 dump，再用 Python 產生圖片或衍生 CSV。需要 mesh topology 的圖形時，同時讀取對應的 `build/mesh.msh`，驗證 `MESH_ID` 後依 `cell_ID` 合併資料。模擬本身不自動畫圖；重畫圖片不應重新求解 FEM。
 
 ---
 
@@ -262,13 +330,13 @@ heat_switch:
 
 ---
 
-## 8. `materials/`
+## 8. 材料資料
 
 只存真正需要跨 run 重用的材料資料。
 
 第一版 constant-$k$ 模型可以完全不需要材料檔。
 
-未來需要 $k(T)$ 時再加入，例如：
+未來需要跨 run 重用的 $k(T)$ 或 $c_p(T)$ 時，才建立例如：
 
 ```text
 lib/materials/
@@ -340,7 +408,8 @@ $$
 \nabla\cdot(k\nabla T)+Q
 $$
 
-屆時修改 `model.py` / `solve.py`。
+屆時修改 `model.py` / `solve.py`。求解迴圈依 `dump.every` 寫出 `{timestep}.dump`，每份檔案的 header 同時保存 timestep 與 time。
+Python 可視化程式再從多份 dump 產生測點溫度－時間曲線或指定 timestep 的場圖，不與求解器耦合。
 
 ### Fluid
 

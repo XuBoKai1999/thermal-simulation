@@ -1,1 +1,15 @@
-# Added in Stage 2.
+model:
+  type: steady_conduction
+
+regions:
+  bar:
+    k: 10.0
+
+boundary_conditions:
+  hot_end:
+    type: fixed_temperature
+    value_K: 4.0
+
+  cold_end:
+    type: fixed_temperature
+    value_K: 1.0

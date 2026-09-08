@@ -1,1 +1,4 @@
-# Added in Stage 3.
+tolerances:
+  temperature_K: 1.0e-10
+  heat_flux_W_m2: 1.0e-8
+  total_heat_W: 1.0e-12

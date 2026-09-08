@@ -21,8 +21,7 @@ adr-thermal/
 │  ├─ mesh.py
 │  ├─ model.py
 │  ├─ solve.py
-│  ├─ analyze.py
-│  └─ materials/
+│  └─ analyze.py
 └─ test/
    └─ 01_steady_bar/
       ├─ main.py
@@ -93,7 +92,6 @@ test/01_steady_bar/main.py
 bar
 hot_end
 cold_end
-heatflow_section
 ```
 
 其中：
@@ -101,7 +99,6 @@ heatflow_section
 - `bar`：volume
 - `hot_end`：一端面
 - `cold_end`：另一端面
-- `heatflow_section`：量 total heat flow 的截面
 
 `main.py` 目前只負責：
 
@@ -154,7 +151,6 @@ mesh cache valid, reuse existing mesh
 bar
 hot_end
 cold_end
-heatflow_section
 ```
 
 不接受只有數字 tag。
@@ -230,24 +226,16 @@ $$
 
 ## 成功條件
 
-`python main.py` 能解出溫度場並寫入：
+`python main.py` 能解出溫度場，並在 terminal 顯示 hot end、midpoint、cold end 的代表性溫度值。
 
-```text
-output/
-```
+## 檢查
 
-## 肉眼檢查
-
-### ParaView 看溫度
-
-應看到：
+Stage 2 只確認求解成功，不正式 dump。終端 sample 應能確認：
 
 - hot end = 4 K
 - cold end = 1 K
 - 沿長度方向單調下降
 - 垂直棒長的每個截面基本等溫
-
-視覺上應是一條乾淨的線性漸層。
 
 若出現局部 hot spot、橫向溫差或非單調變化，先停止查錯。
 
@@ -291,14 +279,6 @@ $$
 T(x)=T_1+\frac{T_2-T_1}{L}x
 $$
 
-$$
-q_x=-k\frac{T_2-T_1}{L}
-$$
-
-$$
-\dot Q=-kA\frac{T_2-T_1}{L}
-$$
-
 `expected.yaml` 只保存 tolerance 等測試資訊。
 
 ## 成功條件
@@ -307,8 +287,6 @@ terminal 最後明確顯示：
 
 ```text
 Temperature profile: PASS
-Heat flux: PASS
-Total heat flow: PASS
 ```
 
 並列出誤差。
@@ -320,8 +298,6 @@ Total heat flow: PASS
 ```text
 quantity              FEM          analytic      error
 T(midpoint)            ...          ...           ...
-q_x                    ...          ...           ...
-Q_dot                  ...          ...           ...
 ```
 
 FEM 與 analytic 應肉眼看起來一致。
@@ -330,7 +306,7 @@ Test 01 未通過前，不建立 ADR baseline。
 
 ---
 
-# Stage 4 — 完成固定後處理
+# Stage 4 — 衍生物理量與守恆
 
 ## 要做什麼
 
@@ -363,54 +339,123 @@ $$
 
 ## 成功條件
 
-`output/` 至少有：
-
-```text
-temperature.*
-heat_flux.*
-summary.csv
-```
-
-`summary.csv` 至少包含：
-
-```text
-T_min
-T_max
-T_avg
-Q_dot_heatflow_section
-```
-
-## 肉眼檢查
-
-### ParaView
-
-看：
-
-1. `T`
-2. `|q|`
-3. `q` vector
-
-對直棒而言：
-
-- `T`：線性變化
-- `|q|`：整根棒幾乎為常數
-- `q`：全部朝同一方向
-
-### 守恆
-
-不同截面量到的 total heat flow 應近似相同：
+比較 FEM 與解析解：
 
 $$
-\dot Q_{S_1}\approx\dot Q_{S_2}
+q_x=-k\frac{T_2-T_1}{L}
+$$
+
+$$
+\dot Q=-kA\frac{T_2-T_1}{L}
+$$
+
+terminal 明確顯示：
+
+```text
+Heat flux: PASS
+Hot-end total heat flow: PASS
+Cold-end total heat flow: PASS
+Heat-flow conservation: PASS
+```
+
+`analyze.py` 回傳已準備好的 cell fields 與 summary data，但不寫 dump、不決定檔案格式。
+
+## 檢查
+
+- `q_x` 方向與大小符合解析解。
+- 直接在既有 `hot_end` 與 `cold_end` 積分，不建立 internal `heatflow_section`。
+- 兩端 outward-normal heat flow 符號相反、絕對值相同：
+
+$$
+|\dot Q_\mathrm{hot}|\approx|\dot Q_\mathrm{cold}|.
 $$
 
 ---
 
-# Stage 5 — 建立第一版 ADR baseline
+# Stage 5 — LAMMPS-like cell dump
+
+## 要做什麼
+
+實作：
+
+```text
+lib/dump.py
+```
+
+`analyze.py` 準備 fields；`dump.py` 只驗證並序列化資料，不計算 $T$、$\mathbf q$ 或 $\dot Q$。
+`summary.csv` 與 dump 分開；第一版由 `main.py` 使用 Python 標準庫 `csv` 寫出 `analyze.py` 回傳的 summary data。
+
+由 `main.py` 指定：
+
+```python
+dump = {
+    "directory": case_dir / "output" / "dump",
+    "every": 1,
+    "fields": ["cell_ID", "region_ID", "x", "y", "z", "T", "qx", "qy", "qz", "qmag"],
+}
+```
+
+v1 只支援 cell dump，格式遵守 [`dump-format.md`](dump-format.md)。`region_ID` 是 semantic geometry region，不是 material ID。
+
+## 成功條件
+
+產生：
+
+```text
+output/dump/0.dump
+output/summary.csv
+```
+
+並確認：
+
+- dump 的 `MESH_ID` 與 `build/mesh.msh` / `build.json` 一致。
+- `cell_ID` 在同一 `MESH_ID` 的不同 timestep 間穩定。
+- 不假定 `cell_ID` 等於 Gmsh element tag 或 FEniCSx local cell index。
+- 對每個 dumped `cell_ID`，解析回 `mesh.msh` 的實際 cell，重新計算 centroid，並在 tolerance 內與 dump 的 `x y z` 一致。
+- `NUMBER OF CELLS` 等於實際資料列數。
+- 每列欄位與 `FIELDS` 完全一致。
+- 改變 `main.py` 的 fields 後，只輸出指定欄位。
+- 未知欄位或非有限值會明確失敗。
+
+不要求改變 MPI process 數後仍產生完全相同的 ID；此需求延後。
+不得為此建立通用 ID manager、mapping framework 或 registry；只實作 serial Test 01 所需的最小可靠 mapping。
+
+---
+
+# Stage 6 — 獨立 Python 後處理
+
+## 要做什麼
+
+實作：
+
+```text
+postprocess/plot_dump.py
+```
+
+它不重新求解 PDE。簡單曲線可只讀 dump；真正的 3D mesh、surface 或 slice 必須同時讀取既有 `build/mesh.msh`、`build/build.json` 與 dump，驗證 `MESH_ID` 後依 `cell_ID` 合併 topology 與 field values。
+
+第一版只需能從 `0.dump` 產生：
+
+```text
+T(x)
+qmag(x)
+```
+
+輸出路徑由後處理命令指定。後續有明確需求時再加入 slice、scatter、heatmap、animation、time series 或 CSV conversion。
+
+## 成功條件
+
+- 改變配色、圖尺寸或輸出路徑，不會觸發 FEM。
+- 刪除或暫時移開 FEM environment 後，只要 Python 繪圖相依套件仍在，便可讀 dump 畫圖。
+- 圖上的直棒溫度為線性變化，`qmag` 近似常數。
+
+---
+
+# Stage 7 — 建立第一版 ADR baseline
 
 ## 前提
 
-Stage 1–4 全部通過。
+Stage 1–6 全部通過。
 
 ## 要做什麼
 
@@ -468,6 +513,8 @@ solve
   ↓
 analyze
   ↓
+dump
+  ↓
 output
 ```
 
@@ -482,7 +529,7 @@ output
 - support 接在正確位置
 - semantic tags 齊全
 
-### 2. ParaView 看 `T`
+### 2. 檢查 dump 中的 `T`
 
 確認：
 
@@ -490,7 +537,7 @@ output
 - 溫度場連續
 - 沒有明顯數值異常點
 
-### 3. ParaView 看 `q`
+### 3. 檢查 dump 中的 `q`
 
 確認熱流方向大致由高溫往低溫。
 
@@ -514,9 +561,9 @@ Q_dot
 
 ---
 
-# Stage 6 — 加入新的物理，一次只加一項
+# 後續 — 加入新的物理，一次只加一項
 
-Stage 5 成功後，才依需求逐項加入，例如：
+Stage 7 成功後，才依需求逐項加入，例如：
 
 ```text
 contact conductance
@@ -540,6 +587,19 @@ fluid
 
 不要一次加入多個新物理。
 
+加入 transient 時，dump 必須符合：
+
+```text
+output/dump/0.dump
+output/dump/{dump_every}.dump
+output/dump/{2 * dump_every}.dump
+...
+```
+
+每份檔案保存該 timestep 與 `time = timestep * dt`，並在相同 `MESH_ID` 下維持相同 `cell_ID` 對應同一 finite-element cell。
+
+可視化另立後續工作：`postprocess/plot_dump.py` 讀取 dump 後才產生圖片或時間序列 CSV；不得為了改圖而重跑模擬。
+
 ---
 
 # 施工規則
@@ -552,7 +612,7 @@ fluid
 
 ```text
 Gmsh geometry
-ParaView field
+指定欄位的 dump
 terminal PASS / FAIL
 summary.csv
 ```
@@ -566,11 +626,15 @@ summary.csv
     ↓
 看得見 T
     ↓
-對得上解析解
+T 對得上解析解
     ↓
-看得見 q
+derive q
     ↓
-算得對 Q_dot
+q、Q_dot 與守恆驗證
+    ↓
+dump 指定 fields
+    ↓
+獨立讀 dump 畫圖
     ↓
 再進 ADR
 ```
