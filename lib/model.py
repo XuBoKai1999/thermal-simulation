@@ -1,9 +1,12 @@
 """Define the steady-conduction finite-element problem."""
 
+import numpy as np
 from dolfinx import fem
 from mpi4py import MPI
 from petsc4py import PETSc
 import ufl
+
+from . import materials
 
 
 def build_model(mesh_data, case_data, semantic_tags):
@@ -15,13 +18,36 @@ def build_model(mesh_data, case_data, semantic_tags):
     trial = ufl.TrialFunction(space)
     test = ufl.TestFunction(space)
 
-    region = next(iter(case_data["regions"].values()))
-    conductivity = fem.Constant(domain, PETSc.ScalarType(region["k"]))
+    conductivity = materials.conductivity_field(
+        mesh_data, case_data, semantic_tags
+    )
     a = ufl.inner(conductivity * ufl.grad(trial), ufl.grad(test)) * ufl.dx
     source = fem.Constant(domain, PETSc.ScalarType(0.0))
     linear = source * test * ufl.dx
 
     return a, linear, boundary_conditions, space
+
+
+def build_nonlinear_model(mesh_data, case_data, semantic_tags, material):
+    materials.validate(material, ("k",))
+    domain = mesh_data.mesh
+    space = fem.functionspace(domain, ("Lagrange", 1))
+    boundary_conditions = build_boundary_conditions(
+        space, mesh_data.facet_tags, case_data, semantic_tags
+    )
+    temperature = fem.Function(space)
+    temperature.x.array[:] = np.mean([
+        condition["value_K"]
+        for condition in case_data["boundary_conditions"].values()
+    ])
+    fem.set_bc(temperature.x.array, boundary_conditions)
+    temperature.x.scatter_forward()
+    test = ufl.TestFunction(space)
+    residual = ufl.inner(
+        material.k(temperature) * ufl.grad(temperature), ufl.grad(test)
+    ) * ufl.dx
+    jacobian = ufl.derivative(residual, temperature)
+    return residual, temperature, boundary_conditions, jacobian
 
 
 def build_boundary_conditions(space, facet_tags, case_data, semantic_tags):

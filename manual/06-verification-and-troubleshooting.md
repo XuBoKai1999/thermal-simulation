@@ -23,10 +23,44 @@ P1 temperature 對 straight constant-k bar 恰可表示線性解，不能用 Tes
 `model.type` 不是目前兩個字串之一。使用 `steady_conduction` 或
 `transient_conduction`；其他 physics 尚未實作。
 
-### `Stage 2 requires exactly one material region`
+### `Region material currently supports only 'local'`
 
-目前不是 multi-region material framework。`regions` 必須恰好一項；不要只在 YAML 多加
-材料期待 model 自動依 cell tags 分派。
+目前沒有 named-material registry。常數材料直接寫 `k`；案例自訂 steady $k(T)$ 使用
+`material: local`，並由同目錄 `material.py` 提供。薄層 contact 則使用
+`type: thin_layer_resistance`，不是 named material。
+
+### `Local temperature-dependent material is steady-only in v1`
+
+第一版只驗證 steady $k(T)$。transient $k(T)$、$\rho(T)$、$c_p(T)$ 尚未形成已驗證的
+time-stepping contract，因此 validator 會明確拒絕。
+
+### `Local material must define callable: k`
+
+確認案例 `main.py` import 的是正確 `material.py`，且其中定義 `def k(T): ...`。回傳值
+必須是 UFL-compatible scalar expression；不要在函式中對 symbolic `T` 使用一般
+`numpy.interp`、Python `if T > ...` 或其他只接受 numeric array 的操作。
+
+### Nonlinear solver 未收斂
+
+先檢查 $k(T)$ 在 BC 與預期 solution 範圍是否有限且嚴格為正。過強非線性也可能需要
+更好的 initial guess、continuation 或 solver tuning，但這些目前尚未公開成 case options；
+不要以放寬 verification tolerance 掩蓋 SNES failure。
+
+### `regions must contain at least one material region`
+
+steady constant-property case 可有多個 regions，但每個 key 都必須對應 geometry 的 volume
+semantic tag。transient 與 local $k(T)$ 仍限制單一 region。
+
+### `Every mesh cell must belong to a configured material region`
+
+至少有 cell 沒有被 `regions` 對應的 physical volume tag 覆蓋。檢查 `geometry.py`、
+`tags.json` 與 case region names；未標記 volume 不會默認取得某個材料。
+
+### Thin-layer contact 結果不合理
+
+確認 `contacts.<name>.region` 指向實際薄層 volume、`thickness_m` 等於 geometry 的法向
+厚度，且薄層至少有可接受品質的 cells。薄層太薄而 mesh size 太大會造成劣質元素；這時
+應局部細化或調整 representation，而不是只修改熱阻數值。
 
 ### `Stage 2 requires exactly two boundary conditions`
 
@@ -87,4 +121,3 @@ dump 不是 solver 自動功能。確認 `main.py` 有呼叫 `analyze`, `map_cel
 
 現有 plotter刻意畫 cell-centroid samples，不含 connectivity/interpolation。真正 mesh/slice
 視覺化尚未實作，不能只靠 dump centroid 重建。
-

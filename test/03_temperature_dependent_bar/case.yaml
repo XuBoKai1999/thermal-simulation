@@ -1,0 +1,14 @@
+model:
+  type: steady_conduction
+
+regions:
+  bar:
+    material: local
+
+boundary_conditions:
+  hot_end:
+    type: fixed_temperature
+    value_K: 4.0
+  cold_end:
+    type: fixed_temperature
+    value_K: 1.0

@@ -139,6 +139,10 @@ mesh rebuilt      → new MESH_ID
 
 `summary.csv` 與 dump 分開：前者保存 region min/max/average、tagged surface total heat flow 等彙總結果；後者保存空間場快照。
 
+對 multi-region 或 thin-layer contact case，`region_ID` 只標識對應的 semantic volume
+region（例如 `left`、`contact_layer`、`right`）。dump 不重複保存 $k$、contact resistance
+或 layer thickness；這些 physics definitions 仍以該 run/test 的 `case.yaml` 為準。
+
 簡單的場曲線可只讀 dump。若要畫真正的 3D mesh、surface 或 slice，後處理必須同時讀取：
 
 ```text

@@ -7,10 +7,13 @@ from petsc4py import PETSc
 import ufl
 
 
-def analyze(temperature, mesh_data, case_data, semantic_tags):
+def analyze(temperature, mesh_data, case_data, semantic_tags, material=None):
     domain = mesh_data.mesh
-    conductivity_value = next(iter(case_data["regions"].values()))["k"]
-    conductivity = fem.Constant(domain, PETSc.ScalarType(conductivity_value))
+    if material is None:
+        from .materials import conductivity_field
+        conductivity = conductivity_field(mesh_data, case_data, semantic_tags)
+    else:
+        conductivity = material.k(temperature)
     if temperature.function_space.element.basix_element.degree == 0:
         heat_flux = fem.Constant(
             domain, np.zeros(domain.geometry.dim, dtype=PETSc.ScalarType)

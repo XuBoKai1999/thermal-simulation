@@ -1,0 +1,7 @@
+quantity,value
+effective_contact_k_W_mK,0.5
+analytic_qx_W_m2,318.30238726790446
+contact_temperature_drop_K,0.636604774535809
+temperature_max_error_K,2.6645352591003757e-14
+heat_flux_error_W_m2,4.149569576838985e-12
+hot_end_total_heat_error_W,1.3877787807814457e-16

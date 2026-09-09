@@ -1,0 +1,5 @@
+quantity,value
+newton_iterations,4
+temperature_max_error_K,0.0005654681560380848
+heat_flux_error_W_m2,1.7053025658242404e-13
+hot_end_total_heat_error_W,0.00012906257847741104

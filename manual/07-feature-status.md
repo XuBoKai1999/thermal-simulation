@@ -8,15 +8,15 @@
 | Mesh generation/loading | implemented | `mesh.ensure_mesh`, `mesh.load_mesh`; `gdim=3` |
 | Region/cell tags | implemented | Gmsh volume physical groups + `cell_tags`/`tags.json` |
 | Facet/boundary tags | implemented | Gmsh surface physical groups + `facet_tags` |
-| Case/config loading | implemented, narrow | `case.load_case`; exact one region/two fixed-T BC |
-| Materials/properties | partial | inline constant scalar `k`; transient `rho`,`cp`; no registry |
-| Steady conduction | implemented | single-region, constant k, Q=0 |
+| Case/config loading | implemented, narrow | `case.load_case`; steady multi-region；two fixed-T BC |
+| Materials/properties | partial | inline constants；steady case-local UFL $k(T)$；no registry/table |
+| Steady conduction | implemented | single-region；constant k 或 local $k(T)$；Q=0 |
 | Transient conduction | implemented, minimal | Backward Euler; loop lives in Test 02 runner |
 | Initial condition | partial | x-split two-value DG0 only |
 | Fixed-temperature BC | implemented | exactly two |
 | Heat-flux/adiabatic/total-heat loads | absent as configurable features | untagged natural zero flux only |
 | Volumetric heat source | absent | model source is hard-coded zero |
-| Contact/interface conductance | absent | old docs only |
+| Contact resistance | implemented, approximate | steady mesh-resolved thin layer；constant $R_c''$ |
 | Heat switch | absent | old docs only |
 | Time stepping | partial | single-step model + case-specific loop |
 | Solver configuration | partial | fixed PETSc preonly/LU; only prefix argument |
@@ -30,15 +30,17 @@
 | Mesh caching/reuse | implemented | geometry-file hash only |
 | CLI/package entry point | absent | execute case `main.py` through WSL wrapper |
 | External CAD | absent workflow | only mentioned as possible future path |
-| Multi-material / region-dependent k | absent | exactly one region |
-| k(T), rho(T), cp(T), anisotropic k | absent | constants only |
+| Multi-material / region-dependent k | implemented, narrow | steady constant scalar k by cell tags |
+| k(T) | implemented, narrow | steady single-region；case-local `material.py`；UFL expression |
+| rho(T), cp(T), anisotropic k | absent | transient properties remain constants |
+| Nonlinear solve | implemented, narrow | steady $k(T)$；fixed PETSc SNES/Newton options |
 
 ## 舊文件與 source 的差異
 
-Source code 與兩個 working cases 是本手冊依據。已確認下列差異：
+Source code 與四個 working cases 是本手冊依據。已確認下列差異：
 
-- `arch.md` 的 `loads`, `contacts`, `heat_switch` YAML 是示意/未來設計；`case.py` 不驗證，
-  `model.py` 也完全不使用它們。
+- `arch.md` 的 `loads`、`heat_switch` YAML 仍是示意/未來設計；`contacts` 目前只有
+  `thin_layer_resistance` 已實作。
 - `steps.md` Stage 7 baseline 與 `runs/baseline` 尚不存在。
 - `arch.md` 說 analysis 有 region min/max/average；實作只有 whole-domain T summary。
 - `arch.md`/`dump-format.md` 談真正 3D topology postprocess merge；現有 reader/plotter沒有
@@ -49,7 +51,11 @@ Source code 與兩個 working cases 是本手冊依據。已確認下列差異�
   Gmsh volume element tags；文件刻意要求 caller 不依賴其數值來源，這仍是合理契約。
 - `dump-format.md` 說 3D postprocessor「必須」驗證 MESH_ID；規格正確，但目前尚無此類
   3D postprocessor implementation。
-- `README.md` 只有標題，未提供使用方式。
+- 根目錄 `README.md` 現已提供專案定位、四個案例與 WSL2 執行入口。
+
+Test 03 現已驗證 `material: local` 與 steady $k(T)$；Test 04 已驗證 multi-region constant
+$k$ 與 thin-layer contact resistance。Reusable material tables、transient
+temperature-dependent properties 與 zero-thickness contact 仍不是現有功能。
 
 ## 讓文件化困難的現行 API 問題
 
@@ -60,8 +66,8 @@ Source code 與兩個 working cases 是本手冊依據。已確認下列差異�
 - semantic tags 要由 caller另讀 JSON；`analyze` hard-code `hot_end`/`cold_end`。
 - output schedule、summary serialization 與 transient stepping 重複留給 case `main.py`。
 - PETSc options 不可由 caller mapping/config 調整；`solve.solve` prefix 綁定 steady-bar 名稱。
+- nonlinear SNES options 同樣固定在 `solve.solve_nonlinear`，尚無 YAML/caller options。
 - `write_dump` 所稱「unknown field」其實只檢查 data 是否有 key，並非限制於標準 fields。
 - reader metadata types 不一致（大多 string，bounds/regions 結構化，IDs data 為 float）。
 
 這些是未來可改善項目；本次沒有為了手冊而重構 API 或 solver。
-

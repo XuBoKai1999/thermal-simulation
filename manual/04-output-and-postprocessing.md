@@ -4,6 +4,7 @@
 
 ```python
 derived = analyze.analyze(temperature, mesh_data, case_data, semantic_tags)
+# local k(T): analyze.analyze(..., material=material)
 ```
 
 回傳：
@@ -19,11 +20,18 @@ $$
 \mathbf q=-k\nabla T \quad [\mathrm{W/m^2}].
 $$
 
+constant multi-region/contact case 的 $k$ 是依 cell tags 建立的 DG0 conductivity field；
+接觸層 cell 使用 `thickness_m / resistance_m2K_W`。
+
 `Q_dot_*` 是 $\int_\Gamma \mathbf q\cdot\mathbf n\,dA$，單位 W，符號採 outward normal。
 函式 hard-code semantic names `hot_end` 與 `cold_end`，不是任意 tagged-surface API。
 
 對 degree-0 initial state，`analyze` 將 heat flux 設為零。因此 Test 02 的 `0.dump` q fields
 為零，不能解讀為 discontinuous IC 的物理界面熱流。
+
+對 Test 03 類型的 nonlinear steady case，必須把同一個 local material module 傳給
+`analyze`，使 dump heat flux 使用 $-k(T)\nabla T$；未傳入時函式會尋找 YAML constant
+`k`，local-material case 因此會失敗，而不是靜默使用錯誤物性。
 
 `summary.csv` 不是 library writer；兩個案例由自己的 `main.py` 用 `csv.writer` 寫出。
 
@@ -110,4 +118,3 @@ plot_heatmap(x_grid, y_grid, values, "T.png",
 它不會從 scattered dump data 插值成 grid，也不會讀 dump。repository 沒有通用 heat-flux
 profile、region statistics、slice、animation 或 3D viewer。Test 02 的 `validate.py` 是案例特定
 的 cross-section bin average 與解析解 plot，不是 public plotting API。
-

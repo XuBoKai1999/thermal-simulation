@@ -1,0 +1,24 @@
+model:
+  type: steady_conduction
+
+regions:
+  left:
+    k: 10.0
+  contact_layer: {}
+  right:
+    k: 20.0
+
+contacts:
+  joint:
+    type: thin_layer_resistance
+    region: contact_layer
+    resistance_m2K_W: 0.002
+    thickness_m: 0.001
+
+boundary_conditions:
+  hot_end:
+    type: fixed_temperature
+    value_K: 4.0
+  cold_end:
+    type: fixed_temperature
+    value_K: 1.0

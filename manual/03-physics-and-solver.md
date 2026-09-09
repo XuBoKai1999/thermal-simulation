@@ -17,7 +17,8 @@ $$
 其中 $k$ 為單一、正值、isotropic scalar constant，單位 W/(m K)。`model.build_model`
 雖建立值為 0 的 source constant，但 case 無 heat-source schema，使用者不能指定 $Q$。
 
-必要資料：一個 region 的 `k` 與兩個 fixed-temperature boundaries。
+必要資料：至少一個由 semantic cell tags 完整覆蓋的 constant-$k$ region，以及兩個
+fixed-temperature boundaries。local $k(T)$ 使用下述獨立 nonlinear builder。
 
 ## Transient conduction
 
@@ -79,16 +80,33 @@ Adiabatic boundary 沒有可設定的 BC type。未被 Dirichlet 標記的 bound
 zero normal flux，但目前恰好兩個 BC 的 validation 仍然存在；不可宣稱已有通用 adiabatic
 configuration。
 
-以下皆未實作：specified heat flux、total heat、convection、radiation、contact/interface
-conductance、heat switch。
+以下皆未實作：specified heat flux、total heat、convection、radiation、真正零厚度
+contact/interface law、heat switch。
 
 ## Materials 與熱物性限制
 
-- 恰好一個 region；`model` 直接取 `regions` 的第一個 value。
+- steady constant-property model 可有多個 region，conductivity 以 DG0 field 依 cell tag 指派。
+- transient 與 local $k(T)$ 仍各自限制單一 region。
 - `k`、`rho`、`cp` 均為 scalar constants。
-- 不支援 region-dependent material、多材料 interface、anisotropic tensor、`k(T)`、
-  `rho(T)` 或 `cp(T)`。
+- steady 支援依 cell tags 指派多個 constant scalar $k$，以及單一 local $k(T)$ region；
+  兩者目前不能組合。
+- 不支援 anisotropic tensor、transient $k(T)$、`rho(T)` 或 `cp(T)`。
 - 沒有 materials registry 或外部 property table。
+
+## Thin-layer contact resistance
+
+第一版用實體薄層近似面積比接觸熱阻 $R_c''$：
+
+$$
+k_\mathrm{contact}=\frac{\delta}{R_c''}.
+$$
+
+接觸層必須是 geometry 中獨立、conforming、具有 semantic volume tag 的有限厚度 region。
+此時跨層溫降為 $\Delta T=q_nR_c''$。優點是沿用 continuous P1 與既有 linear solve；限制是
+薄層必須 mesh-resolved，且 `thickness_m` 與實際幾何厚度由案例作者自行保持一致。
+
+尚未實作真正 zero-thickness interface、同一幾何位置兩側獨立 DOFs、DG/Nitsche/mortar
+coupling，以及溫度或壓力相依 contact resistance。
 
 ## Linear solver
 
@@ -102,10 +120,26 @@ conductance、heat switch。
 `make_solver` 讓 caller 指定 prefix，但不 expose tolerances 或 options mapping。case.yaml 中
 沒有 `solver` section、relative/absolute tolerance、nonlinear options 或 convergence monitor。
 
+## Temperature-dependent conductivity 與 nonlinear solver
+
+steady 單一材料可由案例本地 `material.py` 定義 UFL-compatible：
+
+$$
+k=k(T),\qquad \nabla\cdot(k(T)\nabla T)=0.
+$$
+
+`model.build_nonlinear_model` 建立 residual 與 automatic Jacobian；
+`solve.solve_nonlinear` 使用 PETSc SNES `newtonls`，每個 Newton linearization 仍用
+preonly/LU。固定設定為 `snes_rtol=1e-10`、`snes_atol=1e-12`、最多 50 iterations，且
+linear/nonlinear 不收斂都直接報錯。
+
+第一版不支援 YAML solver options、CSV/table interpolation、一般 Python black-box material、
+多材料或 transient $\rho(T),c_p(T)$。使用者必須確保 $k(T)>0$ 且 expression 可由 UFL
+微分。
+
 ## MPI 行為
 
 FEniCSx mesh import、assembly、BC facet count 與 summaries 使用 `MPI.COMM_WORLD`，solve 本身
 可在 MPI communicator 上工作；但 dump 所需的 `mesh.map_cell_ids` 明確只支援
 `comm.size == 1`，否則丟出 `NotImplementedError`。因此現有 end-to-end examples 與 dump
 workflow 是 **serial only**。不要用 `mpirun -np 2` 跑這兩個完整案例。
-

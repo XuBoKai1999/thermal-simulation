@@ -4,7 +4,8 @@
 > 每個 Stage 只完成目前需要的一件事。  
 > 每完成一個 Stage 就停止，先讓人用肉眼檢查，再進下一階段。
 
-目前狀態：Stage 0–6 已由 Test 01 完成；另已完成 Test 02 暫態棒驗證。尚未進入
+目前狀態：Stage 0–6 已由 Test 01 完成；另已完成 Test 02 暫態棒、Test 03
+temperature-dependent material 與 Test 04 thin-layer contact resistance 驗證。尚未進入
 Stage 7 ADR baseline。
 
 ---
@@ -462,6 +463,27 @@ Stage 1–6 全部通過。
 
 目前暫停於此 Stage 之前；Test 02 不是 ADR baseline。
 
+Test 03 也不是 ADR baseline。它驗證案例本地：
+
+```text
+material.py → k(T) → nonlinear weak form → SNES/Newton → analyze → dump
+```
+
+其解析 benchmark 使用 $k(T)=10(1+0.1T)$，並以 Kirchhoff transform 比較溫度與
+heat flux。現行結果為 Newton 4 iterations、最大溫度誤差約
+$5.65\times10^{-4}\ \mathrm K$，測試 PASS。
+
+Test 04 驗證三個 steady regions 與 mesh-resolved contact layer：
+
+$$
+k_\mathrm{contact}=\frac{\delta}{R_c''},\qquad
+R''_\mathrm{total}=\frac{L_1}{k_1}+R_c''+\frac{L_2}{k_2}.
+$$
+
+現行 benchmark 使用 $k_1=10$、$k_2=20\ \mathrm{W/(mK)}$、
+$R_c''=0.002\ \mathrm{m^2K/W}$、$\delta=0.001\ \mathrm m$，得到
+$q_x=318.302\ \mathrm{W/m^2}$、接觸層溫降 $0.636605\ \mathrm K$，PASS。
+
 ## 要做什麼
 
 現在才建立：
@@ -571,9 +593,7 @@ Q_dot
 Stage 7 成功後，才依需求逐項加入例如：
 
 ```text
-contact conductance
 heat switch G_on / G_off
-k(T)
 sample heat load
 radiation
 fluid

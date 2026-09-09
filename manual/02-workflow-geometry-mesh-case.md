@@ -29,6 +29,7 @@ geometry.py
 | `scripts/wsl-run.ps1` | 將命令送入 WSL2 Ubuntu | 通常不改 |
 | `<case>/geometry.py` | CAD、mesh size、physical groups | geometry 改變時修改 |
 | `<case>/case.yaml` | model、材料、BC、time | 每個 case 通常修改 |
+| `<case>/material.py` | 案例私有的 steady $k(T)$；只有需要時建立 | 自訂 nonlinear material 時修改 |
 | `<case>/main.py` | 串接流程、time loop、輸出策略、case-specific checks | 可從相近案例複製後調整 |
 | `<case>/expected.yaml` / `validate.py` | 案例特定 verification | 建議為驗證案例建立 |
 | `<case>/build/` | 可重用 mesh artifact | 不手改 |
@@ -163,8 +164,8 @@ time:
 | path | type | SI unit | requirement |
 |---|---|---|---|
 | `model.type` | string | — | `steady_conduction` 或 `transient_conduction` |
-| `regions` | mapping | — | **恰好一個** entry |
-| `regions.<name>.k` | positive number | W/(m K) | steady/transient 必要 |
+| `regions` | mapping | — | 至少一個；transient/local-$k(T)$ 仍限制一個 |
+| `regions.<name>.k` | positive number | W/(m K) | 常數材料必要；steady local material 時由 `k(T)` 取代 |
 | `regions.<name>.rho` | positive number | kg/m³ | transient 必要 |
 | `regions.<name>.cp` | positive number | J/(kg K) | transient 必要 |
 | `boundary_conditions` | mapping | — | **恰好兩個** entries |
@@ -175,7 +176,66 @@ time:
 | `time.initial_condition.split_x_m` | number | m | transient 必要 |
 | `time.initial_condition.left_T_K` | number | K | transient 必要 |
 | `time.initial_condition.right_T_K` | number | K | transient 必要 |
+| `contacts.<name>.type` | string | — | thin-layer contact 必須為 `thin_layer_resistance` |
+| `contacts.<name>.region` | string | — | 必須指向一個已設定且有 geometry tag 的薄層 region |
+| `contacts.<name>.resistance_m2K_W` | positive number | m² K/W | 面積比接觸熱阻 |
+| `contacts.<name>.thickness_m` | positive number | m | 必須等於 geometry 薄層的實際法向厚度 |
 
-沒有 framework-level defaults；上表欄位均須明確提供。loader 對未知額外 key 不報錯，
+除了下節 steady `material: local` 明確取代 numeric `k` 的情況，沒有 framework-level
+defaults；必要欄位均須明確提供。loader 對未知額外 key 不報錯，
 但 model 也不會因此實作它們，因此不要把未使用 key 當成有效功能。
 
+### 案例本地溫度相依材料（steady v1）
+
+steady 單一 region 可改成：
+
+```yaml
+regions:
+  bar:
+    material: local
+```
+
+同目錄的 `material.py` 提供：
+
+```python
+def k(T):
+    return 10.0 * (1.0 + 0.1 * T)
+```
+
+`T` 是 UFL expression，不是一般 float/NumPy array。案例 `main.py` 必須明確
+`import material`，再把 module 傳給 `model.build_nonlinear_model` 與
+`analyze.analyze(..., material=material)`；model builder 會驗證必要的 `k` callable。
+
+`material: local` 第一版只允許 steady conduction；transient local material 會被 case
+validator 拒絕。材料函式必須在案例可能溫度範圍保持有限且為正值，現行 code 不會自動
+證明 symbolic expression 的 positivity。
+
+### 多 region 與薄層接觸熱阻
+
+steady constant-property case 可定義多個 region。非接觸層 region 各自提供 `k`；geometry
+的 volume physical-group names 必須對應 region keys。面積比熱阻使用：
+
+```yaml
+regions:
+  left: {k: 10.0}
+  contact_layer: {}
+  right: {k: 20.0}
+
+contacts:
+  joint:
+    type: thin_layer_resistance
+    region: contact_layer
+    resistance_m2K_W: 0.002
+    thickness_m: 0.001
+```
+
+model 對接觸層使用：
+
+$$
+k_\mathrm{contact}=\frac{\texttt{thickness\_m}}
+{\texttt{resistance\_m2K\_W}}.
+$$
+
+`thickness_m` 必須與 geometry 中該 layer 的實際法向厚度一致，目前不自動量測。
+contact layer 必須被 mesh 解析；這不是 zero-thickness contact formulation。transient、local
+$k(T)$ 與 contacts 目前不能組合使用。

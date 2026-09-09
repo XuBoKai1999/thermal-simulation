@@ -68,3 +68,45 @@ $$
 
 因此 0–20 s 的密集輸出用於觀察 early transient，500 s 結果接近 steady state。
 
+## 03 temperature-dependent material bar
+
+目的：驗證案例本地 `material.py`、$k(T)$ nonlinear weak form、SNES/Newton、解析解與
+dump pipeline。
+
+- Geometry/BC：同 Test 01。
+- Case：`regions.bar.material: local`，不把專案材料塞進 `lib/`。
+- Material：$k(T)=10(1+0.1T)\ \mathrm{W/(m\,K)}$。
+- Solver：PETSc SNES `newtonls`；Newton linearization 使用 LU。
+- Verification：使用 Kirchhoff transform
+  $\Phi(T)=\int k(T)\,dT$ 建立一維解析解。
+
+執行：
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 test/03_temperature_dependent_bar/main.py"
+```
+
+目前驗證結果：4 Newton iterations，cell-centroid 最大溫度誤差約
+$5.65\times10^{-4}\ \mathrm K$，平均 $q_x$ 誤差約
+$1.71\times10^{-13}\ \mathrm{W/m^2}$，PASS。輸出位於
+`test/03_temperature_dependent_bar/output/`。
+
+## 04 contact resistance bar
+
+目的：驗證三個 steady regions、thin-layer contact resistance、cell-tag conductivity field、
+解析串聯熱阻與 dump。
+
+- 左棒：$L_1=0.0495\ \mathrm m$、$k_1=10\ \mathrm{W/(mK)}$。
+- 接觸層：$\delta=0.001\ \mathrm m$、$R_c''=0.002\ \mathrm{m^2K/W}$，所以
+  $k_\mathrm{contact}=0.5\ \mathrm{W/(mK)}$。
+- 右棒：$L_2=0.0495\ \mathrm m$、$k_2=20\ \mathrm{W/(mK)}$。
+- BC：4 K 與 1 K；其餘外表面自然絕熱。
+
+執行：
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 test/04_contact_resistance_bar/main.py"
+```
+
+解析與 FEM 均得到 $q_x=318.302\ \mathrm{W/m^2}$，接觸層溫降
+$0.636605\ \mathrm K$；溫度最大誤差約 $2.66\times10^{-14}\ \mathrm K$，PASS。

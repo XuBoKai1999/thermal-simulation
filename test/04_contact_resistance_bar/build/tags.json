@@ -1,0 +1,22 @@
+{
+  "cold_end": {
+    "dimension": 2,
+    "tag": 5
+  },
+  "contact_layer": {
+    "dimension": 3,
+    "tag": 2
+  },
+  "hot_end": {
+    "dimension": 2,
+    "tag": 4
+  },
+  "left": {
+    "dimension": 3,
+    "tag": 1
+  },
+  "right": {
+    "dimension": 3,
+    "tag": 3
+  }
+}

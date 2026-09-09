@@ -51,11 +51,19 @@ serial only。回傳 `(cell_ids, mesh_centroids)`；前者順序對齊 local FEn
 ### `build_model(mesh_data, case_data, semantic_tags)`
 
 建立 steady weak form，回傳 `(a, linear, boundary_conditions, space)`。`space` 為 P1；
-`linear` source 固定為零。只使用第一個 region 的 `k`。
+`linear` source 固定為零。conductivity 是由 `materials.conductivity_field` 依 semantic cell
+tags 建立的 DG0 field，可包含多個 constant-$k$ regions 與 thin contact layer。
 
 ```python
 a, L, bcs, V = model.build_model(mesh_data, case_data, semantic_tags)
 ```
+
+### `build_nonlinear_model(mesh_data, case_data, semantic_tags, material)`
+
+建立 steady $\nabla\cdot(k(T)\nabla T)=0$ residual、自動 Jacobian 與 P1 unknown，回傳
+`(residual, temperature, boundary_conditions, jacobian)`。`material.k(T)` 必須接受 UFL
+expression。初始 guess 是兩個 fixed boundary temperatures 的平均值，boundary DOFs 再套用
+Dirichlet values。
 
 ### `build_transient_model(mesh_data, case_data, semantic_tags, previous=None)`
 
@@ -85,9 +93,14 @@ a, L, bcs, V = model.build_model(mesh_data, case_data, semantic_tags)
 回傳 `dolfinx.fem.petsc.LinearProblem`。四個 arguments 都 required；`prefix` 應是 PETSc
 options prefix string。solver options 固定，沒有其他 arguments/defaults。
 
+### `solve_nonlinear(residual, temperature, boundary_conditions, jacobian, prefix)`
+
+建立並執行 FEniCSx `NonlinearProblem`，使用固定 SNES/Newton + LU options。回傳
+`(solution, newton_iterations)`；SNES/KSP 未收斂時直接 raise PETSc error。
+
 ## `lib.analyze`
 
-### `analyze(temperature, mesh_data, case_data, semantic_tags)`
+### `analyze(temperature, mesh_data, case_data, semantic_tags, material=None)`
 
 四個 arguments 均 required。`temperature` 單位 K；material `k` 取自 case。回傳：
 
@@ -102,6 +115,22 @@ options prefix string。solver options 固定，沒有其他 arguments/defaults�
 ```
 
 需要 semantic tags `hot_end`、`cold_end`。summary 是全 domain，不是 per-region。
+`material=None` 時從唯一 region 讀 constant `k`；local-material case 必須傳入具有 `k(T)`
+的 module。
+
+## `lib.materials`
+
+### `validate(material, names)`
+
+確認 `material` object/module 對每個 `names` 項目都有 callable，否則丟出 `ValueError`。
+`build_nonlinear_model` 會以 `("k",)` 呼叫它。它不載入 module、不建立 registry，也不
+檢查 symbolic function 在整個溫度範圍的 positivity。
+
+### `conductivity_field(mesh_data, case_data, semantic_tags)`
+
+建立 DG0 conductivity function。一般 region 使用 `regions.<name>.k`；被 contact 指向的
+region 使用 `thickness_m / resistance_m2K_W`。每個 owned mesh cell 都必須取得有限值，
+否則丟出 `ValueError`。回傳 function 單位 W/(m K)。
 
 ## `lib.dump`
 

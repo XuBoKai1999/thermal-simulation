@@ -14,13 +14,40 @@ def load_case(path):
         raise ValueError("Unsupported model.type")
 
     regions = data.get("regions", {})
-    if len(regions) != 1:
-        raise ValueError("Stage 2 requires exactly one material region")
-    conductivity = next(iter(regions.values())).get("k")
-    if not isinstance(conductivity, (int, float)) or conductivity <= 0:
-        raise ValueError("Region conductivity k must be positive")
+    if not regions:
+        raise ValueError("regions must contain at least one material region")
+    contacts = data.get("contacts", {})
+    if not isinstance(contacts, dict):
+        raise ValueError("contacts must be a mapping")
+    contact_regions = set()
+    for name, contact in contacts.items():
+        if contact.get("type") != "thin_layer_resistance":
+            raise ValueError(f"{name} must use thin_layer_resistance")
+        if contact.get("region") not in regions:
+            raise ValueError(f"{name}.region must name a configured region")
+        for field in ("resistance_m2K_W", "thickness_m"):
+            if not isinstance(contact.get(field), (int, float)) or contact[field] <= 0:
+                raise ValueError(f"{name}.{field} must be positive")
+        contact_regions.add(contact["region"])
+    local_regions = []
+    for name, region in regions.items():
+        local_material = region.get("material") == "local"
+        if "material" in region and not local_material:
+            raise ValueError("Region material currently supports only 'local'")
+        if local_material:
+            local_regions.append(name)
+        elif name not in contact_regions:
+            conductivity = region.get("k")
+            if not isinstance(conductivity, (int, float)) or conductivity <= 0:
+                raise ValueError(f"Region {name} conductivity k must be positive")
+    if local_regions and (len(regions) != 1 or contacts):
+        raise ValueError("Local material requires one region and no contacts in v1")
     if model_type == "transient_conduction":
+        if contacts or len(regions) != 1:
+            raise ValueError("Transient conduction supports one region and no contacts in v1")
         region = next(iter(regions.values()))
+        if local_regions:
+            raise ValueError("Local temperature-dependent material is steady-only in v1")
         for name in ("rho", "cp"):
             if not isinstance(region.get(name), (int, float)) or region[name] <= 0:
                 raise ValueError(f"Region {name} must be positive")

@@ -47,6 +47,7 @@ adr-thermal/
 │  ├─ analyze.py
 │  ├─ dump.py
 │  ├─ dump_reader.py
+│  ├─ materials.py
 │  └─ plotting.py
 │
 ├─ postprocess/
@@ -68,7 +69,7 @@ adr-thermal/
       ├─ expected.yaml
       ├─ build/
       └─ output/
-   └─ 02_transient_bar/
+   ├─ 02_transient_bar/
       ├─ main.py
       ├─ geometry.py
       ├─ case.yaml
@@ -76,6 +77,21 @@ adr-thermal/
       ├─ build/
       ├─ output/dump/
       └─ validation/
+   ├─ 03_temperature_dependent_bar/
+      ├─ main.py
+      ├─ geometry.py
+      ├─ case.yaml
+      ├─ material.py
+      ├─ expected.yaml
+      ├─ build/
+      └─ output/
+   └─ 04_contact_resistance_bar/
+      ├─ main.py
+      ├─ geometry.py
+      ├─ case.yaml
+      ├─ expected.yaml
+      ├─ build/
+      └─ output/
 ```
 
 目前不要新增：
@@ -235,6 +251,8 @@ cell 的 element type、vertex coordinates 與 connectivity 由對應的 `mesh.m
 
 讀取與檢查 `case.yaml`。
 
+單一 steady region 可用 `material: local` 表示物性由案例自己的 `material.py` 提供。
+
 ### `mesh.py`
 
 建立或載入 mesh，並提供 semantic region / facet tags。
@@ -265,7 +283,8 @@ $$
 
 ### `solve.py`
 
-只負責解已建立好的 FEM problem。
+只負責解已建立好的 FEM problem。常數材料使用 linear LU；溫度相依材料使用
+PETSc SNES/Newton，未收斂時必須失敗。
 
 ### `analyze.py`
 
@@ -300,6 +319,18 @@ dump = {
 
 獨立解析 LAMMPS-like dump header、metadata 與欄位資料，並讀取依 `TIME`
 排序、具有相同 `MESH_ID` 的 dump series。它不依賴 FEM solver。
+
+### `materials.py`
+
+只驗證案例本地材料模組是否提供必要 callable。第一版 steady nonlinear material 契約為：
+
+```python
+def k(T):
+    ...  # return a UFL-compatible scalar expression
+```
+
+`material.py` 放在 run/test 目錄，由該案例的 `main.py` 明確 import 並傳給 model；不把
+專案私有物性放進 `lib/`，也不做任意路徑 dynamic import。
 
 ### `plotting.py`
 
@@ -341,8 +372,10 @@ loads:
 
 contacts:
   bus_to_cold_stage:
-    type: contact_conductance
-    h_W_m2K: 500.0
+    type: thin_layer_resistance
+    region: bus_contact_layer
+    resistance_m2K_W: 0.002
+    thickness_m: 0.001
 
 heat_switch:
   state: off
@@ -352,9 +385,14 @@ heat_switch:
 
 目前：
 
-- contact 直接放在 case
+- steady constant-property model 支援多個 semantic material regions
+- `thin_layer_resistance` contact 直接放在 case，geometry 必須有對應薄層 volume region
+- model 使用 $k_\mathrm{contact}=\delta/R_c''$ 表示面積比熱阻
 - heat switch 直接放在 case
 - 不建立 interface database
+
+此 contact 是 mesh-resolved thin-layer approximation，不是零厚度 interface law。
+`thickness_m` 必須與 geometry 的實際薄層厚度一致。
 
 ---
 
@@ -362,18 +400,27 @@ heat_switch:
 
 只存真正需要跨 run 重用的材料資料。
 
-第一版 constant-$k$ 模型可以完全不需要材料檔。
-
-未來需要跨 run 重用的 $k(T)$ 或 $c_p(T)$ 時，才建立例如：
+constant-$k$ 模型完全不需要材料檔。目前 Test 03 已支援案例本地、溫度相依的
+$k(T)$，例如：
 
 ```text
-lib/materials/
+test/03_temperature_dependent_bar/material.py
+```
+
+現行函式必須能直接接受 UFL temperature expression；一般 NumPy black-box function
+或 CSV interpolation 不能直接作為材料函式。
+
+未來真的出現跨 run 重用的物性時，才建立例如：
+
+```text
+lib/material_library/
 └─ copper/
    ├─ k.csv
    └─ sources.md
 ```
 
-不要先建立中央 materials registry。
+不要先建立中央 materials registry。第一版不支援 transient $\rho(T),c_p(T)$、table
+material、temperature-dependent multi-region 或其他 state variables。
 
 ---
 
