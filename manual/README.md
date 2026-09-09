@@ -3,7 +3,8 @@
 本手冊描述 repository **目前程式碼實際提供**的功能。它不是未來設計藍圖，也不是
 通用熱傳套件的承諾。目前有四個已驗證入口：Test 01 constant-$k$ steady、Test 02
 transient、Test 03 案例本地 $k(T)$ nonlinear solve、Test 04 multi-region
-thin-layer contact resistance，以及 Test 05 獨立 1D P1 zero-thickness nonlinear contact benchmark。
+thin-layer contact resistance，以及 Test 05 獨立 1D P1 zero-thickness nonlinear contact、
+長時間 transient 與固定 0.125 s 的 `dx × dt` numerical-reference benchmark。
 
 ## 建議閱讀順序
 

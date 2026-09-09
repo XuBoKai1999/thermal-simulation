@@ -490,6 +490,17 @@ $$
 `validate.py` 只讀 dumps，將 3D cell samples 沿橫截面平均後，與獨立的一維 Fourier
 解析解比較並畫出 $T(x,t)$ 與 $q_x(x,t)$；修改繪圖不會重新求解 FEM。
 
+### Test 05：1D nonlinear zero-thickness contact
+
+Test 05 使用兩個位於同一介面座標、但不共享自由度的 1D P1 nodes，直接施加
+$q=h_c(T_L-T_R)$。steady 部分有 closed-form analytic solution；transient 部分沒有宣稱
+解析解。固定 `t=0.125 s` 的收斂切片以最細
+`dx=0.00125 m, dt=0.015625 s` 作 numerical reference，其他 15 組只與它比較。
+
+這是 `lib/contact.py` 的獨立 1D solver，並不表示通用 3D FEniCSx zero-thickness
+contact 已完成。各 `dx` 的 `mesh.msh` 保存兩個斷開 halves 的 line topology；dump 保存
+對應 cell-centroid fields。
+
 ### Fluid
 
 真的加入流體、而且 `model.py` 已經明顯過大時，再考慮拆成：

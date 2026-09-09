@@ -139,5 +139,16 @@ constant heat flux、Kirchhoff transform 及 mesh-convergence 圖。
 0、0.125、0.5、2、10、50、100、200、500 s。此數值暫態用來觀察解趨向已知 steady
 endpoint，不宣稱為 transient analytic solution。
 
+另外固定在 `t=0.125 s` 執行 16 組 `dx × dt`：
+
+```text
+dx = 0.01, 0.005, 0.0025, 0.00125 m
+dt = 0.125, 0.0625, 0.03125, 0.015625 s
+```
+
+其中 `dx=0.00125 m, dt=0.015625 s` 定義為 numerical reference，不是解析解。
+`slice_0p125_temperature_comparison.png` 與 `slice_0p125_heat_flux_comparison.png`
+分別把全部 16 組疊在同一張圖；`errors_vs_finest.csv` 保存相對 RMSE。
+
 解析與 FEM 均得到 $q_x=318.302\ \mathrm{W/m^2}$，接觸層溫降
 $0.636605\ \mathrm K$；溫度最大誤差約 $2.66\times10^{-14}\ \mathrm K$，PASS。

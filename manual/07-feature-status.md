@@ -16,7 +16,7 @@
 | Fixed-temperature BC | implemented | exactly two |
 | Heat-flux/adiabatic/total-heat loads | absent as configurable features | untagged natural zero flux only |
 | Volumetric heat source | absent | model source is hard-coded zero |
-| Contact resistance | implemented, approximate | steady mesh-resolved thin layer；constant $R_c''$ |
+| Contact resistance | implemented, narrow | 3D mesh-resolved thin layer；Test 05 獨立 1D zero-thickness contact |
 | Heat switch | absent | old docs only |
 | Time stepping | partial | single-step model + case-specific loop |
 | Solver configuration | partial | fixed PETSc preonly/LU; only prefix argument |
@@ -25,7 +25,7 @@
 | Heat flux calculation | implemented | cell $-k\nabla T$; DG0 IC special-cased zero |
 | Dump writing/reading | implemented | v1 cell dump; serial ID mapping |
 | Plotting/postprocessing | partial | x scatter CLI; low-level pcolormesh helper |
-| Validation utilities | examples only | Test 01 inline; Test 02 case-specific validator |
+| Validation utilities | examples only | Test 01 inline；Test 02 與 Test 05 case-specific validators |
 | MPI | partial | assembly/solve aware; dump mapping serial only |
 | Mesh caching/reuse | implemented | geometry-file hash only |
 | CLI/package entry point | absent | execute case `main.py` through WSL wrapper |

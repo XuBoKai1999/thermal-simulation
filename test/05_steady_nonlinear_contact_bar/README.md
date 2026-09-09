@@ -37,3 +37,22 @@ initial state is 4 K throughout the left half and 1 K throughout the right half.
 Snapshots at 0, 0.125, 0.5, 2, 10, 50, 100, 200, and 500 s are written under
 `output/transient/dump/`. This is a numerical transient reference approaching the analytic
 steady endpoint; it is not presented as a transient closed-form solution.
+
+## Fixed-time transient convergence slice
+
+At `t=0.125 s`, the runner also computes all 16 combinations of:
+
+```text
+dx = 0.01, 0.005, 0.0025, 0.00125 m
+dt = 0.125, 0.0625, 0.03125, 0.015625 s
+```
+
+The `dx=0.00125 m, dt=0.015625 s` result is the numerical reference, not an analytic
+transient solution. Dumps are under `output/slice_0p125/dx_*/dt_*/dump/`; comparison
+errors are in `output/slice_0p125/errors_vs_finest.csv`. The validator overlays all 16
+temperature curves in one figure and all 16 heat-flux curves in another.
+
+```text
+validation/slice_0p125_temperature_comparison.png
+validation/slice_0p125_heat_flux_comparison.png
+```

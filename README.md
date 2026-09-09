@@ -12,7 +12,7 @@ analysis 與 LAMMPS-like dump I/O；每個 `test/<name>/main.py` 則像 LAMMPS i
 | `02_transient_bar` | Early transient Backward Euler `dt × dx` 收斂與解析解 profiles 比較 |
 | `03_temperature_dependent_bar` | 案例本地 $k(T)$ 與 SNES/Newton nonlinear solve |
 | `04_contact_resistance_bar` | steady multi-region 與 mesh-resolved thin-layer contact resistance |
-| `05_steady_nonlinear_contact_bar` | 1D P1 nonlinear $k(T)$、零厚度接觸跳躍、解析解及 mesh convergence |
+| `05_steady_nonlinear_contact_bar` | 1D P1 nonlinear $k(T)$、零厚度接觸、steady exact、transient 與 0.125 s `dx × dt` slice |
 
 執行範例：
 

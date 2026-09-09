@@ -456,6 +456,19 @@ qmag(x)
 
 ---
 
+# Test 05 補充驗證 — nonlinear zero-thickness contact
+
+Test 05 分成三個彼此不可混稱的結果：
+
+1. steady closed-form benchmark：驗證 $T_L=3$ K、$T_R=2$ K、$q_x=250$ W/m²。
+2. finest-resolution transient：`dx=0.00125 m, dt=0.125 s`，觀察 0–500 s 趨向
+   steady exact endpoint；它不是 transient analytic solution。
+3. fixed-time convergence slice：固定 `t=0.125 s`，計算四組 dx 與四組 dt。最細
+   `dx=0.00125 m, dt=0.015625 s` 只作 numerical reference，其餘 15 組與它比較。
+
+固定時間切片必須輸出全部 16 組疊合的 T 與 qx profiles，以及
+`errors_vs_finest.csv`。不要將最細 numerical reference 標成 analytic/exact solution。
+
 # Stage 7 — 建立第一版 ADR baseline
 
 ## 前提

@@ -91,6 +91,12 @@ frames = read_dump_series(
 metadata_10, data_10 = next(
     frame for frame in frames if float(frame[0]["TIME"]) == 10.0
 )
+
+# Test 05：固定 0.125 s、指定 dx/dt 的單一切片
+metadata, data = read_dump(
+    "test/05_steady_nonlinear_contact_bar/output/slice_0p125/"
+    "dx_0p00125/dt_0p015625/dump/8.dump"
+)
 ```
 
 Reader 將 scalar metadata（含 `TIME`, `TIMESTEP`, `NUMBER OF CELLS`）保留為 string；
