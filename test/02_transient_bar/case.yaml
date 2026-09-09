@@ -1,0 +1,25 @@
+model:
+  type: transient_conduction
+
+regions:
+  bar:
+    k: 10.0
+    rho: 1000.0
+    cp: 100.0
+
+boundary_conditions:
+  hot_end:
+    type: fixed_temperature
+    value_K: 4.0
+
+  cold_end:
+    type: fixed_temperature
+    value_K: 1.0
+
+time:
+  initial_condition:
+    split_x_m: 0.05
+    left_T_K: 4.0
+    right_T_K: 1.0
+  dt_s: 1.0
+  end_s: 500.0

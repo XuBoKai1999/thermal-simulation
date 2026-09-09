@@ -8,8 +8,10 @@ import ufl
 
 def build_model(mesh_data, case_data, semantic_tags):
     domain = mesh_data.mesh
-    facet_tags = mesh_data.facet_tags
     space = fem.functionspace(domain, ("Lagrange", 1))
+    boundary_conditions = build_boundary_conditions(
+        space, mesh_data.facet_tags, case_data, semantic_tags
+    )
     trial = ufl.TrialFunction(space)
     test = ufl.TestFunction(space)
 
@@ -19,6 +21,11 @@ def build_model(mesh_data, case_data, semantic_tags):
     source = fem.Constant(domain, PETSc.ScalarType(0.0))
     linear = source * test * ufl.dx
 
+    return a, linear, boundary_conditions, space
+
+
+def build_boundary_conditions(space, facet_tags, case_data, semantic_tags):
+    domain = space.mesh
     boundary_conditions = []
     facet_dimension = domain.topology.dim - 1
     for name, condition in case_data["boundary_conditions"].items():
@@ -31,4 +38,38 @@ def build_model(mesh_data, case_data, semantic_tags):
         value = PETSc.ScalarType(condition["value_K"])
         boundary_conditions.append(fem.dirichletbc(value, dofs, space))
 
-    return a, linear, boundary_conditions, space
+    return boundary_conditions
+
+
+def build_transient_model(mesh_data, case_data, semantic_tags, previous=None):
+    domain = mesh_data.mesh
+    space = fem.functionspace(domain, ("Lagrange", 1))
+    boundary_conditions = build_boundary_conditions(
+        space, mesh_data.facet_tags, case_data, semantic_tags
+    )
+    trial = ufl.TrialFunction(space)
+    test = ufl.TestFunction(space)
+    if previous is None:
+        initial_space = fem.functionspace(domain, ("DG", 0))
+        previous = fem.Function(initial_space)
+        initial = case_data["time"]["initial_condition"]
+        x = initial_space.tabulate_dof_coordinates()[:, 0]
+        previous.x.array[:] = [
+            initial["left_T_K"] if coordinate < initial["split_x_m"]
+            else initial["right_T_K"]
+            for coordinate in x
+        ]
+        previous.x.scatter_forward()
+
+    region = next(iter(case_data["regions"].values()))
+    dt = case_data["time"]["dt_s"]
+    rho_cp_over_dt = fem.Constant(
+        domain, PETSc.ScalarType(region["rho"] * region["cp"] / dt)
+    )
+    conductivity = fem.Constant(domain, PETSc.ScalarType(region["k"]))
+    a = (
+        rho_cp_over_dt * trial * test * ufl.dx
+        + ufl.inner(conductivity * ufl.grad(trial), ufl.grad(test)) * ufl.dx
+    )
+    linear = rho_cp_over_dt * previous * test * ufl.dx
+    return a, linear, boundary_conditions, space, previous

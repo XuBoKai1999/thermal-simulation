@@ -11,7 +11,12 @@ def analyze(temperature, mesh_data, case_data, semantic_tags):
     domain = mesh_data.mesh
     conductivity_value = next(iter(case_data["regions"].values()))["k"]
     conductivity = fem.Constant(domain, PETSc.ScalarType(conductivity_value))
-    heat_flux = -conductivity * ufl.grad(temperature)
+    if temperature.function_space.element.basix_element.degree == 0:
+        heat_flux = fem.Constant(
+            domain, np.zeros(domain.geometry.dim, dtype=PETSc.ScalarType)
+        )
+    else:
+        heat_flux = -conductivity * ufl.grad(temperature)
 
     def global_integral(expression):
         local = fem.assemble_scalar(fem.form(expression))
@@ -19,7 +24,7 @@ def analyze(temperature, mesh_data, case_data, semantic_tags):
 
     volume = global_integral(1 * ufl.dx(domain=domain))
     average_flux = [
-        global_integral(heat_flux[i] * ufl.dx) / volume
+        global_integral(heat_flux[i] * ufl.dx(domain=domain)) / volume
         for i in range(domain.geometry.dim)
     ]
 
