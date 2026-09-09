@@ -1,0 +1,23 @@
+model:
+  type: steady_nonlinear_contact_1d
+
+boundary_conditions:
+  hot_end:
+    type: fixed_temperature
+    value_K: 4.0
+  cold_end:
+    type: fixed_temperature
+    value_K: 1.0
+
+contact:
+  position_m: 0.05
+  resistance_m2K_W: 0.004
+  conductance_W_m2K: 250.0
+
+transient:
+  rho_kg_m3: 1000.0
+  cp_J_kgK: 100.0
+  dt_s: 0.125
+  end_s: 500.0
+  initial_left_K: 4.0
+  initial_right_K: 1.0

@@ -54,8 +54,9 @@ Source code 與四個 working cases 是本手冊依據。已確認下列差異�
 - 根目錄 `README.md` 現已提供專案定位、四個案例與 WSL2 執行入口。
 
 Test 03 現已驗證 `material: local` 與 steady $k(T)$；Test 04 已驗證 multi-region constant
-$k$ 與 thin-layer contact resistance。Reusable material tables、transient
-temperature-dependent properties 與 zero-thickness contact 仍不是現有功能。
+$k$ 與 thin-layer contact resistance；Test 05 驗證獨立 1D P1 nonlinear $k(T)$ 與
+zero-thickness contact。Reusable material tables、transient temperature-dependent properties
+與通用 3D zero-thickness contact 仍不是現有功能。
 
 ## 讓文件化困難的現行 API 問題
 

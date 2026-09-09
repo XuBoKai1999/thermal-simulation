@@ -8,7 +8,7 @@ WIDTH = 0.01
 MESH_SIZE = 0.005
 
 
-def build_geometry(mesh_path):
+def build_geometry(mesh_path, mesh_size=MESH_SIZE):
     gmsh.initialize()
     try:
         gmsh.model.add("transient_bar")
@@ -43,8 +43,8 @@ def build_geometry(mesh_path):
             gmsh.model.setPhysicalName(dimension, physical_tag, name)
             tags[name] = {"dimension": dimension, "tag": physical_tag}
 
-        gmsh.option.setNumber("Mesh.MeshSizeMin", MESH_SIZE)
-        gmsh.option.setNumber("Mesh.MeshSizeMax", MESH_SIZE)
+        gmsh.option.setNumber("Mesh.MeshSizeMin", mesh_size)
+        gmsh.option.setNumber("Mesh.MeshSizeMax", mesh_size)
         gmsh.model.mesh.generate(3)
         gmsh.write(str(mesh_path))
         return tags

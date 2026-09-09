@@ -11,12 +11,14 @@ from dolfinx.io import gmsh as gmsh_io
 from mpi4py import MPI
 
 
-def ensure_mesh(build_dir, geometry_file, build_geometry):
+def ensure_mesh(build_dir, geometry_file, build_geometry, cache_key=""):
     build_dir = Path(build_dir)
     mesh_path = build_dir / "mesh.msh"
     tags_path = build_dir / "tags.json"
     manifest_path = build_dir / "build.json"
-    fingerprint = hashlib.sha256(Path(geometry_file).read_bytes()).hexdigest()
+    fingerprint = hashlib.sha256(
+        Path(geometry_file).read_bytes() + str(cache_key).encode()
+    ).hexdigest()
 
     if mesh_path.exists() and tags_path.exists() and manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))

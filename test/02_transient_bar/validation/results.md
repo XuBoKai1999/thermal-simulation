@@ -1,18 +1,22 @@
-# Transient bar validation
+# Transient bar space-time convergence
 
-後處理只讀 `output/dump/*.dump`，不重新執行 FEM。圖中 continuous lines 是獨立
-Fourier 解析解，markers 是 3D tetrahedral-cell dump 沿橫截面平均後的結果。
-
-目前展示時間為：
+本測試使用同一物理案例，比較：
 
 ```text
-temperature: 0, 1, 2, 5, 10, 20, 500 s
-heat flux:      1, 2, 5, 10, 20, 500 s
+dx = 0.01, 0.005, 0.0025 m
+dt = 0.0625, 0.03125, 0.015625 s
+comparison time = 0.0625, 0.125, 0.25, 0.5 s
 ```
 
-- `temperature_profiles_comparison.png` 顯示初始階躍逐步擴散並趨近線性穩態。
-- `heat_flux_profiles_comparison.png` 顯示熱流先集中於 $x=L/2$ 附近，再趨近均勻
-  穩態值 $q_x=300\ \mathrm{W/m^2}$。
-- $t=0$ 的 heat flux 不作嚴格比較，因初始溫度在 $x=L/2$ 不連續。
-- 早期數值與解析曲線的差距主要來自 $\Delta t=1\ \mathrm s$ 的 backward Euler
-  時間離散與有限元素空間離散。
+共 9 組 early-transient run。每組 dump 位於
+`output/convergence/dx_*/dt_*/dump/`，後處理只讀 dump 並與獨立 Fourier 解析解比較。
+
+- `temperature_profiles_varying_dt.png`：固定 `dx=0.0025 m`，比較不同 dt。
+- `heat_flux_profiles_varying_dt.png`：固定 `dx=0.0025 m`，比較不同 dt。
+- `temperature_profiles_varying_dx.png`：固定 `dt=0.015625 s`，比較不同 dx。
+- `heat_flux_profiles_varying_dx.png`：固定 `dt=0.015625 s`，比較不同 dx。
+- `convergence_errors.csv`：所有 dx、dt 與比較時間的 T/qx RMSE、最大誤差。
+
+粗網格在最早時間的溫度跳躍兩側可見 overshoot/undershoot，`qx` 亦可能出現局部
+負值並低估尖峰；加密 dx、dt 後逐漸貼近解析曲線。這些圖刻意不包含後期或穩態，
+以免 early-transient 異常被幾乎重合的 late-time profiles 掩蓋。

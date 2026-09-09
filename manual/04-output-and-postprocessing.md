@@ -85,7 +85,9 @@ temperature = data["T"]
 x = data["x"]
 qx = data["qx"]
 
-frames = read_dump_series("test/02_transient_bar/output/dump")
+frames = read_dump_series(
+    "test/02_transient_bar/output/convergence/dx_0p0025/dt_0p25/dump"
+)
 metadata_10, data_10 = next(
     frame for frame in frames if float(frame[0]["TIME"]) == 10.0
 )

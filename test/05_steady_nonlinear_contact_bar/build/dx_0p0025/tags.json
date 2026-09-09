@@ -1,0 +1,26 @@
+{
+  "cold_end": {
+    "dimension": 0,
+    "tag": 6
+  },
+  "cold_half": {
+    "dimension": 1,
+    "tag": 2
+  },
+  "contact_left": {
+    "dimension": 0,
+    "tag": 4
+  },
+  "contact_right": {
+    "dimension": 0,
+    "tag": 5
+  },
+  "hot_end": {
+    "dimension": 0,
+    "tag": 3
+  },
+  "hot_half": {
+    "dimension": 1,
+    "tag": 1
+  }
+}

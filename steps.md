@@ -5,7 +5,8 @@
 > 每完成一個 Stage 就停止，先讓人用肉眼檢查，再進下一階段。
 
 目前狀態：Stage 0–6 已由 Test 01 完成；另已完成 Test 02 暫態棒、Test 03
-temperature-dependent material 與 Test 04 thin-layer contact resistance 驗證。尚未進入
+temperature-dependent material、Test 04 thin-layer contact resistance，以及 Test 05
+一維 nonlinear zero-thickness contact 驗證。尚未進入
 Stage 7 ADR baseline。
 
 ---

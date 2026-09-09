@@ -1,0 +1,5 @@
+tolerances:
+  interface_temperature_K: 1.0e-8
+  contact_residual_W_m2: 1.0e-7
+  finest_temperature_K: 2.0e-4
+  finest_heat_flux_W_m2: 5.0e-2

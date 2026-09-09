@@ -105,8 +105,9 @@ $$
 此時跨層溫降為 $\Delta T=q_nR_c''$。優點是沿用 continuous P1 與既有 linear solve；限制是
 薄層必須 mesh-resolved，且 `thickness_m` 與實際幾何厚度由案例作者自行保持一致。
 
-尚未實作真正 zero-thickness interface、同一幾何位置兩側獨立 DOFs、DG/Nitsche/mortar
-coupling，以及溫度或壓力相依 contact resistance。
+Test 05 已提供 1D P1 zero-thickness contact：介面以兩個重合但不共享的 nodes 保存
+獨立 $T_L,T_R$，弱式直接加入 $h_c(T_L-T_R)$。這是獨立 benchmark solver；通用 3D
+FEniCSx DG/Nitsche/mortar coupling，以及溫度或壓力相依 contact resistance 仍未實作。
 
 ## Linear solver
 

@@ -1,6 +1,7 @@
-"""Plot transient temperature and heat-flux profiles from existing dumps."""
+"""Plot spatial-and-temporal convergence from existing Test 02 dumps."""
 
 from pathlib import Path
+import csv
 import sys
 
 import matplotlib
@@ -16,44 +17,76 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from lib.dump_reader import read_dump_series
 
 
-def analytic_temperature(x, t, L, rho, c, k, tolerance=1.0e-13):
-    x = np.asarray(x, dtype=float)
+def analytic_temperature(x, t, L, rho, c, k, terms=400):
+    x = np.asarray(x)
     if t == 0:
         return np.where(x < L / 2, 4.0, 1.0)
+    m = np.arange(1, terms + 1)[:, None]
     alpha = k / (rho * c)
-    beta = alpha * (2 * np.pi / L) ** 2 * t
-    terms = max(1, int(np.ceil(np.sqrt(-np.log(tolerance) / beta))))
-    result = 4.0 - 3.0 * x / L
-    for m in range(1, terms + 1):
-        result += (3 * (-1) ** (m + 1) / (m * np.pi)
-                   * np.sin(2 * m * np.pi * x / L) * np.exp(-beta * m * m))
-    return result
+    modes = 3 * (-1) ** (m + 1) / (m * np.pi)
+    return 4 - 3 * x / L + np.sum(
+        modes * np.sin(2 * m * np.pi * x / L)
+        * np.exp(-alpha * (2 * m * np.pi / L) ** 2 * t), axis=0
+    )
 
 
-def analytic_heat_flux(x, t, L, rho, c, k, tolerance=1.0e-13):
-    if t <= 0:
-        raise ValueError("Heat flux is not compared at t=0")
-    x = np.asarray(x, dtype=float)
+def analytic_heat_flux(x, t, L, rho, c, k, terms=400):
+    x = np.asarray(x)
+    m = np.arange(1, terms + 1)[:, None]
     alpha = k / (rho * c)
-    beta = alpha * (2 * np.pi / L) ** 2 * t
-    terms = max(1, int(np.ceil(np.sqrt(-np.log(tolerance) / beta))))
-    series = np.zeros_like(x)
-    for m in range(1, terms + 1):
-        series += ((-1) ** (m + 1) * np.cos(2 * m * np.pi * x / L)
-                   * np.exp(-beta * m * m))
-    return 3 * k / L - 6 * k / L * series
+    return 3 * k / L - 6 * k / L * np.sum(
+        (-1) ** (m + 1) * np.cos(2 * m * np.pi * x / L)
+        * np.exp(-alpha * (2 * m * np.pi / L) ** 2 * t), axis=0
+    )
 
 
-def cross_section_average(data, edges, field):
-    bins = np.clip(np.digitize(data["x"], edges) - 1, 0, len(edges) - 2)
-    x = []
-    values = []
-    for index in range(len(edges) - 1):
-        selected = bins == index
-        if np.any(selected):
-            x.append(np.mean(data["x"][selected]))
-            values.append(np.mean(data[field][selected]))
-    return np.asarray(x), np.asarray(values)
+def label(prefix, value):
+    return f"{prefix}_{value:g}".replace(".", "p")
+
+
+def cross_section_average(data, field, bins=50):
+    edges = np.linspace(np.min(data["x"]), np.max(data["x"]), bins + 1)
+    indices = np.clip(np.digitize(data["x"], edges) - 1, 0, bins - 1)
+    means = [
+        (np.mean(data["x"][indices == i]), np.mean(data[field][indices == i]))
+        for i in range(bins) if np.any(indices == i)
+    ]
+    return np.asarray(means).T
+
+
+def save(figure, path):
+    if path.exists():
+        path.unlink()
+    figure.tight_layout()
+    figure.savefig(path, dpi=180)
+    plt.close(figure)
+
+
+def profile_figure(runs, values, fixed, times, field, exact, L, material, output):
+    varying = "dt" if fixed[0] == "dx" else "dx"
+    figure, axes = plt.subplots(1, len(times), figsize=(5 * len(times), 4.2), sharey=True)
+    dense_x = np.linspace(0, L, 800)
+    colors = plt.cm.viridis(np.linspace(0.15, 0.85, len(values)))
+    for axis, time in zip(np.atleast_1d(axes), times):
+        axis.plot(
+            dense_x / L, exact(dense_x, time, L, *material), "k-",
+            linewidth=1.8, label="analytic",
+        )
+        for color, value in zip(colors, values):
+            key = (fixed[1], value) if varying == "dt" else (value, fixed[1])
+            data = runs[key][time]
+            x, y = cross_section_average(data, field)
+            unit = "s" if varying == "dt" else "m"
+            axis.plot(x / L, y, "o-", color=color, markersize=3,
+                      label=f"{varying}={value:g} {unit}")
+        axis.set(xlabel="x/L", title=f"t={time:g} s")
+        axis.grid(alpha=0.25)
+    axes = np.atleast_1d(axes)
+    axes[0].set_ylabel("T [K]" if field == "T" else r"$q_x$ [W/m²]")
+    axes[-1].legend(fontsize=8)
+    title_field = "Temperature" if field == "T" else "Heat flux"
+    figure.suptitle(f"{title_field}: varying {varying}, fixed {fixed[0]}={fixed[1]:g}")
+    save(figure, output)
 
 
 def main():
@@ -61,56 +94,72 @@ def main():
     output = case_dir / "validation"
     output.mkdir(exist_ok=True)
     case = yaml.safe_load((case_dir / "case.yaml").read_text(encoding="utf-8"))
-    material = next(iter(case["regions"].values()))
-    rho, c, k = (material[name] for name in ("rho", "cp", "k"))
-    frames = read_dump_series(case_dir / "output" / "dump")
-    by_time = {float(metadata["TIME"]): data for metadata, data in frames}
-    selected_times = [time for time in (0, 1, 2, 5, 10, 20, 500) if time in by_time]
-    L = float(frames[0][0]["BOUNDS"][0, 1] - frames[0][0]["BOUNDS"][0, 0])
-    dense_x = np.linspace(0, L, 800)
-    edges = np.linspace(0, L, 41)
-    colors = plt.cm.plasma(np.linspace(0.05, 0.9, len(selected_times)))
+    mat = next(iter(case["regions"].values()))
+    material = (mat["rho"], mat["cp"], mat["k"])
+    rows = list(csv.DictReader(
+        (case_dir / "output" / "convergence" / "runs.csv").open(encoding="utf-8")
+    ))
+    dx_values = sorted({float(row["dx_m"]) for row in rows}, reverse=True)
+    dt_values = sorted({float(row["dt_s"]) for row in rows}, reverse=True)
+    runs = {}
+    for row in rows:
+        dx, dt = float(row["dx_m"]), float(row["dt_s"])
+        frames = read_dump_series(
+            case_dir / "output" / "convergence" / label("dx", dx)
+            / label("dt", dt) / "dump"
+        )
+        runs[(dx, dt)] = {float(meta["TIME"]): data for meta, data in frames}
+    first = next(iter(runs.values()))
+    first_data = next(iter(first.values()))
+    L = np.ptp(first_data["x"])
+    # Centroid bounds omit half a boundary cell; use the case's known geometric length.
+    L = 0.1
+    times = (0.0625, 0.125, 0.25, 0.5)
+    finest_dx, finest_dt = min(dx_values), min(dt_values)
 
-    figure, axis = plt.subplots(figsize=(8, 5.2))
-    for color, time in zip(colors, selected_times):
-        data = by_time[time]
-        x, temperature = cross_section_average(data, edges, "T")
-        axis.plot(dense_x / L, analytic_temperature(dense_x, time, L, rho, c, k),
-                  color=color, linewidth=1.8, label=f"analytic {time:g} s")
-        axis.scatter(x / L, temperature, color=color, s=18,
-                     label=f"simulation {time:g} s")
-    axis.plot(dense_x / L, 4 - 3 * dense_x / L, "k--", linewidth=1.5,
-              label="steady analytic")
-    axis.set(xlabel="x/L", ylabel="T [K]", title="Transient temperature profiles")
-    axis.grid(alpha=0.25)
-    axis.legend(ncol=2, fontsize=7)
-    figure.tight_layout()
-    figure.savefig(output / "temperature_profiles_comparison.png", dpi=180)
-    plt.close(figure)
+    profile_figure(
+        runs, dt_values, ("dx", finest_dx), times, "T", analytic_temperature,
+        L, material, output / "temperature_profiles_varying_dt.png",
+    )
+    profile_figure(
+        runs, dt_values, ("dx", finest_dx), times, "qx", analytic_heat_flux,
+        L, material, output / "heat_flux_profiles_varying_dt.png",
+    )
+    profile_figure(
+        runs, dx_values, ("dt", finest_dt), times, "T", analytic_temperature,
+        L, material, output / "temperature_profiles_varying_dx.png",
+    )
+    profile_figure(
+        runs, dx_values, ("dt", finest_dt), times, "qx", analytic_heat_flux,
+        L, material, output / "heat_flux_profiles_varying_dx.png",
+    )
 
-    q_times = [time for time in selected_times if time > 0]
-    figure, axis = plt.subplots(figsize=(8, 5.2))
-    for color, time in zip(colors[1:], q_times):
-        data = by_time[time]
-        x, heat_flux = cross_section_average(data, edges, "qx")
-        axis.plot(dense_x / L, analytic_heat_flux(dense_x, time, L, rho, c, k),
-                  color=color, linewidth=1.8, label=f"analytic {time:g} s")
-        axis.scatter(x / L, heat_flux, color=color, s=18,
-                     label=f"dump qx {time:g} s")
-    axis.axhline(3 * k / L, color="k", linestyle="--", linewidth=1.5,
-                 label="steady analytic")
-    axis.set(xlabel="x/L", ylabel=r"$q_x$ [W/m²]",
-             title="Transient heat-flux profiles")
-    axis.ticklabel_format(axis="y", style="plain", useOffset=False)
-    axis.grid(alpha=0.25)
-    axis.legend(ncol=2, fontsize=7)
-    figure.tight_layout()
-    figure.savefig(output / "heat_flux_profiles_comparison.png", dpi=180)
-    plt.close(figure)
+    errors = []
+    for (dx, dt), frames in sorted(runs.items()):
+        for time in times:
+            data = frames[time]
+            e_t = data["T"] - analytic_temperature(data["x"], time, L, *material)
+            e_q = data["qx"] - analytic_heat_flux(data["x"], time, L, *material)
+            errors.append((
+                dx, dt, time, np.sqrt(np.mean(e_t**2)), np.max(np.abs(e_t)),
+                np.sqrt(np.mean(e_q**2)), np.max(np.abs(e_q)),
+            ))
+    with (output / "convergence_errors.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as file:
+        writer = csv.writer(file)
+        writer.writerow((
+            "dx_m", "dt_s", "time_s", "rmse_T", "linf_T", "rmse_q", "linf_q"
+        ))
+        writer.writerows(errors)
 
-    print("selected times:", ", ".join(f"{time:g}" for time in selected_times), "s")
-    print(output / "temperature_profiles_comparison.png")
-    print(output / "heat_flux_profiles_comparison.png")
+    print("profile comparisons: varying dt and varying dx")
+    for name in (
+        "temperature_profiles_varying_dt.png", "heat_flux_profiles_varying_dt.png",
+        "temperature_profiles_varying_dx.png", "heat_flux_profiles_varying_dx.png",
+        "convergence_errors.csv",
+    ):
+        print(output / name)
 
 
 if __name__ == "__main__":

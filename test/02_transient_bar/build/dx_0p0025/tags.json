@@ -1,0 +1,14 @@
+{
+  "bar": {
+    "dimension": 3,
+    "tag": 1
+  },
+  "cold_end": {
+    "dimension": 2,
+    "tag": 3
+  },
+  "hot_end": {
+    "dimension": 2,
+    "tag": 2
+  }
+}
