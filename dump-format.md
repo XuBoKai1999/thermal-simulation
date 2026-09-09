@@ -25,7 +25,9 @@ dump = {
 20.dump
 ```
 
-穩態問題只有 timestep 0，因此只寫 `0.dump`。暫態在 `timestep % every == 0` 時寫檔；若最後一步不在輸出間隔上，是否另存最後一步由 `main.py` 明確決定。
+穩態問題只有 timestep 0，因此只寫 `0.dump`。暫態輸出策略完全由 `main.py`
+決定：可以固定 `every`，也可以指定一組 timestep，例如為觀察快速暫態而輸出
+`0–20.dump`，再另存接近穩態的 `500.dump`。dump 格式不限制時間取樣策略。
 
 檔案使用 UTF-8、LF newline、空白分隔。
 
@@ -151,6 +153,9 @@ output/dump/<timestep>.dump
 ```text
 postprocess/plot_dump.py
 ```
+
+共用 reader 位於 `lib/dump_reader.py`。案例特定的解析解與 validation 留在該案例，
+例如 `test/02_transient_bar/validate.py`，不放進 dump reader 或 writer。
 
 模擬流程不自動畫圖。修改配色、視角或選擇 timestep 時，不應重新執行 FEM 求解。
 

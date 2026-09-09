@@ -45,7 +45,9 @@ adr-thermal/
 │  ├─ model.py
 │  ├─ solve.py
 │  ├─ analyze.py
-│  └─ dump.py
+│  ├─ dump.py
+│  ├─ dump_reader.py
+│  └─ plotting.py
 │
 ├─ postprocess/
 │  └─ plot_dump.py
@@ -59,13 +61,21 @@ adr-thermal/
 │     └─ output/
 │
 └─ test/
-   └─ 01_steady_bar/
+   ├─ 01_steady_bar/
       ├─ main.py
       ├─ geometry.py
       ├─ case.yaml
       ├─ expected.yaml
       ├─ build/
       └─ output/
+   └─ 02_transient_bar/
+      ├─ main.py
+      ├─ geometry.py
+      ├─ case.yaml
+      ├─ validate.py
+      ├─ build/
+      ├─ output/dump/
+      └─ validation/
 ```
 
 目前不要新增：
@@ -99,7 +109,8 @@ main.py
   → output/dump/
 
 output/dump/
-  → postprocess/plot_dump.py
+  → lib/dump_reader.py
+  → postprocess/plot_dump.py 或案例自己的 validate.py
 ```
 
 `main.py` 只負責串接流程，不負責重新實作 FEM。
@@ -232,17 +243,24 @@ cell 的 element type、vertex coordinates 與 connectivity 由對應的 `mesh.m
 
 定義 PDE 與 weak form。
 
-目前只實作：
+目前實作：
 
 ```yaml
 model:
-  type: steady_conduction
+  type: steady_conduction | transient_conduction
 ```
 
 steady conduction：
 
 $$
 \nabla\cdot(k\nabla T)+Q=0
+$$
+
+transient conduction 使用 backward Euler：
+
+$$
+\rho c_p\frac{T^{n+1}-T^n}{\Delta t}
+=\nabla\cdot(k\nabla T^{n+1}).
 $$
 
 ### `solve.py`
@@ -277,6 +295,16 @@ dump = {
     "fields": ["cell_ID", "region_ID", "x", "y", "z", "T", "qx", "qy", "qz", "qmag"],
 }
 ```
+
+### `dump_reader.py`
+
+獨立解析 LAMMPS-like dump header、metadata 與欄位資料，並讀取依 `TIME`
+排序、具有相同 `MESH_ID` 的 dump series。它不依賴 FEM solver。
+
+### `plotting.py`
+
+保存已實際重用的後處理繪圖小工具。目前只有通用 scalar-field heatmap；不預先
+建立尚未使用的 vector-field framework。
 
 ### `postprocess/plot_dump.py`
 
@@ -400,7 +428,7 @@ cache 無效   → rebuild mesh
 
 只有真正需要時才加入。
 
-### Transient
+### Transient（已由 Test 02 驗證最小版本）
 
 $$
 \rho c_p\frac{\partial T}{\partial t}
@@ -408,8 +436,12 @@ $$
 \nabla\cdot(k\nabla T)+Q
 $$
 
-屆時修改 `model.py` / `solve.py`。求解迴圈依 `dump.every` 寫出 `{timestep}.dump`，每份檔案的 header 同時保存 timestep 與 time。
-Python 可視化程式再從多份 dump 產生測點溫度－時間曲線或指定 timestep 的場圖，不與求解器耦合。
+目前 `test/02_transient_bar` 已驗證 constant-property transient conduction、分段初始
+溫度、固定溫度邊界與多 timestep dump。輸出時點由案例 `main.py` 決定，可採固定
+間隔，也可像 Test 02 一樣在早期密集輸出並另存最終狀態。
+
+`validate.py` 只讀 dumps，將 3D cell samples 沿橫截面平均後，與獨立的一維 Fourier
+解析解比較並畫出 $T(x,t)$ 與 $q_x(x,t)$；修改繪圖不會重新求解 FEM。
 
 ### Fluid
 

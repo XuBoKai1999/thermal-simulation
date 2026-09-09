@@ -4,6 +4,9 @@
 > 每個 Stage 只完成目前需要的一件事。  
 > 每完成一個 Stage 就停止，先讓人用肉眼檢查，再進下一階段。
 
+目前狀態：Stage 0–6 已由 Test 01 完成；另已完成 Test 02 暫態棒驗證。尚未進入
+Stage 7 ADR baseline。
+
 ---
 
 # Stage 0 — 建立最小骨架
@@ -457,6 +460,8 @@ qmag(x)
 
 Stage 1–6 全部通過。
 
+目前暫停於此 Stage 之前；Test 02 不是 ADR baseline。
+
 ## 要做什麼
 
 現在才建立：
@@ -563,14 +568,13 @@ Q_dot
 
 # 後續 — 加入新的物理，一次只加一項
 
-Stage 7 成功後，才依需求逐項加入，例如：
+Stage 7 成功後，才依需求逐項加入例如：
 
 ```text
 contact conductance
 heat switch G_on / G_off
 k(T)
 sample heat load
-transient
 radiation
 fluid
 ```
@@ -587,18 +591,49 @@ fluid
 
 不要一次加入多個新物理。
 
-加入 transient 時，dump 必須符合：
+已完成的最小 transient 驗證案例為：
+
+```text
+test/02_transient_bar/
+```
+
+其條件為：
+
+$$
+T(0,t)=4\ \mathrm K,\qquad T(L,t)=1\ \mathrm K,
+$$
+
+$$
+T(x,0)=
+\begin{cases}
+4\ \mathrm K, & x<L/2,\\
+1\ \mathrm K, & x\ge L/2.
+\end{cases}
+$$
+
+網格在 $x=L/2$ 貼合初始溫度跳躍面。`0.dump` 是未做時間步進的初始 cell
+field；為觀察快速暫態，現行輸出為：
 
 ```text
 output/dump/0.dump
-output/dump/{dump_every}.dump
-output/dump/{2 * dump_every}.dump
+output/dump/1.dump
 ...
+output/dump/20.dump
+output/dump/500.dump
 ```
 
 每份檔案保存該 timestep 與 `time = timestep * dt`，並在相同 `MESH_ID` 下維持相同 `cell_ID` 對應同一 finite-element cell。
 
-可視化另立後續工作：`postprocess/plot_dump.py` 讀取 dump 後才產生圖片或時間序列 CSV；不得為了改圖而重跑模擬。
+`test/02_transient_bar/validate.py` 獨立讀取 dumps，比較一維 Fourier 解析解，並
+輸出溫度與 $q_x$ 的空間分布圖。它不得匯入或重跑 FEM solver。執行方式：
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 test/02_transient_bar/main.py"
+.\scripts\wsl-run.ps1 "python3 test/02_transient_bar/validate.py"
+```
+
+因本案例 $\alpha=10^{-4}\ \mathrm{m^2/s}$、$L=0.1\ \mathrm m$，50 s 已達
+$\tau=\alpha t/L^2=0.5$，所以早期逐步 dumps 是觀察暫態所必需。
 
 ---
 
