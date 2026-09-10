@@ -1,0 +1,213 @@
+id: nist.copper-ofhc
+name: Copper (OFHC)
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/OFHC%20Copper/OFHC_Copper_rev1.htm
+  retrieved: '2026-09-10'
+  sha256: e0d129c851c66be076dfd00ebfda10d00e42b8ee1be553daba661fa64d1fb013
+  official_content_sha256: 4a7c7ffd8b90abddfaeea49f4f6435be9955252c6b2d332588abcb55e772a6fc
+  page_title: cryogenic material properties OFHC Copper
+  revision: 02/03/2010
+identity:
+  uns: C10100/C10200
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-rrr-50
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity RRR = 50
+    rrr: 50
+  representation:
+    family: ofhc_copper_conductivity
+    coefficients:
+    - 1.8743
+    - -0.41538
+    - -0.6018
+    - 0.13294
+    - 0.26426
+    - -0.0219
+    - -0.051276
+    - 0.0014871
+    - 0.003723
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-rrr-50.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0006462421577478103
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: k-rrr-100
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity RRR = 100
+    rrr: 100
+  representation:
+    family: ofhc_copper_conductivity
+    coefficients:
+    - 2.2154
+    - -0.47461
+    - -0.88068
+    - 0.13871
+    - 0.29505
+    - -0.02043
+    - -0.04831
+    - 0.001281
+    - 0.003207
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-rrr-100.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0008599364066528419
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: k-rrr-150
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity RRR = 150
+    rrr: 150
+  representation:
+    family: ofhc_copper_conductivity
+    coefficients:
+    - 2.3797
+    - -0.4918
+    - -0.98615
+    - 0.13942
+    - 0.30475
+    - -0.019713
+    - -0.046897
+    - 0.0011969
+    - 0.0029988
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-rrr-150.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0009741084189874313
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: k-rrr-300
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity RRR = 300
+    rrr: 300
+  representation:
+    family: ofhc_copper_conductivity
+    coefficients:
+    - 1.357
+    - 0.3981
+    - 2.669
+    - -0.1346
+    - -0.6683
+    - 0.01342
+    - 0.05773
+    - 0.0002147
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-rrr-300.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00028044629370773907
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: k-rrr-500
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity RRR = 500
+    rrr: 500
+  representation:
+    family: ofhc_copper_conductivity
+    coefficients:
+    - 2.8075
+    - -0.54074
+    - -1.2777
+    - 0.15362
+    - 0.36444
+    - -0.02105
+    - -0.051727
+    - 0.0012226
+    - 0.0030964
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-rrr-500.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003188999663379191
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: cp-3-1-1
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.91844
+    - -0.15973
+    - 8.61013
+    - -18.996
+    - 21.9661
+    - -12.7328
+    - 3.54322
+    - -0.3797
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: 10 ( T < 15K); 5 ( T ≥ 15K)
+  derived_table: cp-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0002658791638222669
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257

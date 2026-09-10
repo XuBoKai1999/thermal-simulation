@@ -1,0 +1,73 @@
+id: nist.glass-mat-epoxy
+name: Glass mat/epoxy
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Glassmat-epoxy/GlassMat_epoxy_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 1bcf1ba385692225e680ed8f2a9998bc214214a1d096b2aed9266d20eb2477f5
+  official_content_sha256: 3ab36be827af580461b9d4aebfe13efe97bc4964cee4726e6dbfd898109bb596
+  page_title: cryogenic material properties Glass mat-epoxy
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: delta_l_over_l-1-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (chopped strand mat)
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -658.98
+    - 4.7697
+    - -0.029638
+    - 0.00011501
+    - -1.4763e-07
+  data_range_K:
+  - 77.0
+  - 293.0
+  equation_range_K:
+  - 77.0
+  - 293.0
+  source_fit_error: '2'
+  derived_table: delta_l_over_l-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 8.876533844652528e-05
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-1-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (continuous strand)
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -439.2
+    - 1.525
+    - -0.002384
+    - 8.665e-06
+    - -2.857e-09
+  data_range_K:
+  - 77.0
+  - 293.0
+  equation_range_K:
+  - 77.0
+  - 293.0
+  source_fit_error: '2'
+  derived_table: delta_l_over_l-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00010245738451961585
+    target: 0.001
+    sample_count: 65

@@ -1,0 +1,87 @@
+## A. Index ingestion
+
+- NIST entries discovered: 43
+  - 42 general materials
+  - 1 Regenerator Materials dataset
+- Downloaded: 43/43
+- Failed: 0
+- Every entry has its official source URL and local `source.html`.
+- Source: https://trc.nist.gov/cryogenics/materials/materialproperties.htm
+
+## B. Normalization
+
+- Fully normalized: 38
+- Partially normalized: 1
+  - Invar (Fe-36Ni): one discontinuous piecewise linear-expansion fit cannot meet the 0.1% CSV interpolation target, so no derived CSV was emitted for that series.
+- Manual required: 3
+  - Kevlar-49 Fiber
+  - Kevlar-49 Composite
+  - Silicon
+
+Their coefficients, ranges, source snapshots, and equation images are preserved; formulas were not guessed.
+
+## C. Property coverage
+
+- Thermal conductivity: 52 series
+- Specific heat: 29 series
+- Expansion:
+  - Linear expansion: 37 series
+  - Thermal expansion coefficient: 2 series
+- Young’s modulus: 12 series
+- Other:
+  - Regenerator volumetric heat capacity: 30 material columns
+
+Specimen qualifiers including RRR, direction, density, fill gas, and original NIST labels are retained per series where present.
+
+## D. Derived tables
+
+- CSV count: 129
+  - 128 analytical property tables
+  - 1 Regenerator table
+- Worst successful interpolation metric: 0.098745%
+- Failed generated-table validations: 0
+- Omitted after validation: 1 Invar expansion series, documented above.
+- CSV generation is restricted to each equation range.
+
+## E. Regenerator dataset
+
+- Dimensions: 501 rows × 31 columns
+  - 1 temperature column
+  - 30 material columns
+- Temperature range: 1–300 K
+- Original unit: J/(cm³ K)
+- Missing columns: 0
+- Blank cells: 193
+- Blank cells explicitly mean NIST provides no value, not zero.
+
+## F. Repository changes
+
+Added:
+
+- `materials/nist/`
+  - Index snapshot and manifest
+  - 42 material directories
+  - Regenerator dataset
+  - 43 source-page snapshots
+  - Material metadata, equation assets, and derived CSV files
+  - Database README/report
+- `scripts/import-nist-materials.py`
+- `scripts/list-materials.py`
+- `test/test_nist_materials.py`
+
+Updated:
+
+- `manual/README.md`
+- `manual/07-feature-status.md`
+
+Validation:
+
+- Database tests: 6/6 passed
+- Importer compile and ingestion: passed
+- Material filters and Regenerator CLI query: passed
+- Solver integration remains explicitly unimplemented.
+- ADR and thermal solver physics were not modified.
+
+## G. Verdict
+
+NIST DATABASE INGESTION COMPLETE

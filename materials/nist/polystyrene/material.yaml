@@ -1,0 +1,368 @@
+id: nist.polystyrene
+name: Polystyrene
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Polystyrene/polystyrenerev.html
+  retrieved: '2026-09-10'
+  sha256: dc57f073baf440b910a29b4e0ae517023543dd5f9f334abfdcdffe2007e1153c
+  official_content_sha256: 4d72092dad458f176f95f0cd34f15ca026e0bc2425e0b4815cd416875ab7444e
+  page_title: cryogenic material properties Polystyrene
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 31.88 kg/m 3 (=1.99 lb/ft 3 Freon
+      filled )'
+    density_kg_m3: 31.88
+    fill_gas: Freon fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1557.5
+    - 3984.7
+    - -3940.245
+    - 1649.668
+    - 12.80097
+    - -294.2616
+    - 119.5898
+    - -20.6301
+    - 1.36067
+  data_range_K:
+  - 90.0
+  - 300.0
+  equation_range_K:
+  - 90.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 4.574005461240647e-05
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-2
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 32.04 kg/m 3 (=2.0 lb/ft 3 )'
+    density_kg_m3: 32.04
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1145.45
+    - 4086.02
+    - -6234.293
+    - 5260.106
+    - -2649.914
+    - 797.0372
+    - -132.5244
+    - 9.3968
+    - 0.0
+  data_range_K:
+  - 33.0
+  - 300.0
+  equation_range_K:
+  - 25.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0009874466574642977
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-3
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 49.98 kg/m 3 (=3.12 lb/ft 3 )'
+    density_kg_m3: 49.98
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.5194
+    - -4.6449
+    - 11.643
+    - -15.969
+    - 12.722
+    - -5.821
+    - 1.4174
+    - -0.14128
+    - 0.0
+  data_range_K:
+  - 7.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0006347247524883775
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-4
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 99.96 kg/m 3 (=6.24 lb/ft 3 )'
+    density_kg_m3: 99.96
+  representation:
+    family: log10_poly
+    coefficients:
+    - 7.39582
+    - -59.6737
+    - 160.58
+    - -240.33
+    - 218.817
+    - -124.155
+    - 42.9088
+    - -8.26683
+    - 0.68082
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '3'
+  derived_table: k-1-1-4.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0009694160582277836
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: cp-3-1-1
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: 'Specific Heat density: 99.96 kg/m 3 (=6.24 lb/ft 3 )'
+    density_kg_m3: 99.96
+  representation:
+    family: log10_poly
+    coefficients:
+    - -5911.474
+    - 14991.16
+    - -15513.753
+    - 8232.5666
+    - -2237.3586
+    - 225.423
+    - 20.33505
+    - -4.6169
+    - 0.0
+  data_range_K:
+  - 100.0
+  - 300.0
+  equation_range_K:
+  - 90.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: cp-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00019198733011352914
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-3-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: 'Specific Heat density: 9.93 kg/m 3 (=.062 lb/ft 3 )'
+    density_kg_m3: 9.93
+  representation:
+    family: log10_poly
+    coefficients:
+    - -734.172
+    - 1163.613
+    - -135.157
+    - -878.514
+    - 791.787
+    - -308.6236
+    - 58.6764
+    - -4.4494
+    - 0.0
+  data_range_K:
+  - 100.0
+  - 300.0
+  equation_range_K:
+  - 90.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: cp-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 8.651755673754483e-05
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-3-1-3
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: 'Specific Heat density: 60.07 kg/m 3 (=3.75 lb/ft 3 )'
+    density_kg_m3: 60.07
+  representation:
+    family: log10_poly
+    coefficients:
+    - 2139.33
+    - -6518.015
+    - 9650.919
+    - -9229.889
+    - 6104.0571
+    - -2739.14
+    - 784.878
+    - -128.40103
+    - 9.08405
+  data_range_K:
+  - 100.0
+  - 300.0
+  equation_range_K:
+  - 80.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: cp-3-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0002621919804823015
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-5-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: 'Linear expansion density: 51.42 kg/m 3 (=3.21 lb/ft 3 )'
+    density_kg_m3: 51.42
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -1694.8
+    - -0.96845
+    - 0.078268
+    - -0.00024831
+    - 0.0
+    low_temperature_K: 6.4
+    low_temperature_constant: -1697.9
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 105.0
+  source_fit_error: '1'
+  derived_table: delta_l_over_l-5-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 4.9038235814519543e-05
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-5-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: 'Linear expansion density: 51.42 kg/m 3 (=3.21 lb/ft 3 )'
+    density_kg_m3: 51.42
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -2116.8
+    - 10.963
+    - -0.035335
+    - 0.00013552
+    - -1.989e-07
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 105.0
+  - 278.0
+  source_fit_error: '1'
+  derived_table: delta_l_over_l-5-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 5.0465736276966925e-05
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-5-1-3
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: 'Linear expansion density: 102.2 kg/m 3 (=6.38 lb/ft 3 )'
+    density_kg_m3: 102.2
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -1749.4
+    - 2.0607
+    - -0.047467
+    - 0.0012156
+    - -5.4405e-06
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 102.0
+  source_fit_error: '1'
+  derived_table: delta_l_over_l-5-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 8.773712134212648e-05
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-5-1-4
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: 'Linear expansion density: 102.2 kg/m 3 (=6.38 lb/ft 3 )'
+    density_kg_m3: 102.2
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -1937.4
+    - 3.6139
+    - 0.035974
+    - -0.00015164
+    - 2.1764e-07
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 102.0
+  - 286.0
+  source_fit_error: '2'
+  derived_table: delta_l_over_l-5-1-4.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 4.712608525836381e-05
+    target: 0.001
+    sample_count: 65

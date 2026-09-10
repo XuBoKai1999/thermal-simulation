@@ -1,0 +1,119 @@
+id: nist.polyvinyl-chloride-pvc
+name: Polyvinyl Chloride (PVC)
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/PVC/PVCrev.htm
+  retrieved: '2026-09-10'
+  sha256: 3bc946c61373ab817473db7e572241645c6511869fecfeb9483993ce74b9144a
+  official_content_sha256: d4a94d8c1afc4fcdf25ae610a8479479fcae39867bd8b47f613a548b77d31230
+  page_title: cryogenic material properties PVC
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 20.02 kg/m 3 (=1.25 lb/ft 3 air fill
+      gas)'
+    density_kg_m3: 20.02
+    fill_gas: air fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - 11314.56
+    - -30824.32
+    - 34964.24
+    - -21141.43
+    - 7187.43
+    - -1302.708
+    - 98.35252
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 100.0
+  - 300.0
+  equation_range_K:
+  - 90.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00045453733816862307
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-2
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 56.06 kg/m 3 (=3.5 lb/ft 3 CO 2 blown)'
+    density_kg_m3: 56.06
+    fill_gas: CO 2 blown
+  representation:
+    family: log10_poly
+    coefficients:
+    - -4123.51
+    - 9690.59
+    - -7920.09
+    - 1572.897
+    - 1459.993
+    - -1028.329
+    - 255.773
+    - -23.31925
+    - 0.0
+  data_range_K:
+  - 125.0
+  - 300.0
+  equation_range_K:
+  - 100.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00018441290641509967
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-3
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: 'Specific Heat density: 48.05 kg/m 3 (=3.00 lb/ft 3 )'
+    density_kg_m3: 48.05
+  representation:
+    family: log10_poly
+    coefficients:
+    - 190.776
+    - -991.521
+    - 2200.811
+    - -2726.414
+    - 2069.971
+    - -988.4221
+    - 290.405
+    - -48.0737
+    - 3.437928
+  data_range_K:
+  - 10.0
+  - 300.0
+  equation_range_K:
+  - 10.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: cp-1-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0008225283926841639
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129

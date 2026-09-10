@@ -1,0 +1,77 @@
+id: nist.inconel-718
+name: Inconel 718
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Iconel%20718/Inconel718_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 7704a930453a490a3966d1bf3f9047f010579a4efbcf75b041e3530a1e6c0c92
+  official_content_sha256: 0c866ebe772bae8fe92d2d292cc1e060ae792357e26b6bf7440ab574392bdbd9
+  page_title: cryogenic material properties Inconel 718
+  revision: null
+identity:
+  uns: N107718
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -8.28921
+    - 39.447
+    - -83.4353
+    - 98.169
+    - -67.2088
+    - 26.7082
+    - -5.7205
+    - 0.51115
+    - 0.0
+  data_range_K:
+  - 6.0
+  - 275.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0009284370604294406
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -236.8
+    - -0.212
+    - 0.005497
+    - -6.882e-06
+    - 0.0
+    low_temperature_K: 20.0
+    low_temperature_constant: -238.87
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1.1'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0002744407192100388
+    target: 0.001
+    sample_count: 65

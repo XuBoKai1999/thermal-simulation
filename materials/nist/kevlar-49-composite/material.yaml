@@ -1,0 +1,45 @@
+id: nist.kevlar-49-composite
+name: Kevlar-49 Composite
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Kevlar49/kevlarcomposite.htm
+  retrieved: '2026-09-10'
+  sha256: f3216a273601e7da5ed5bae790136ed41556c6941cf97df51de3768af47ecca4
+  official_content_sha256: 869797cd30d8de92e7db1adc90ee021d95600996a9fb948bc130ca1cf6194226
+  page_title: cryogenic material properties Kevlar 49 Composite
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: manual_required
+normalization_notes:
+- 'k-1-1-1: equation is image-only; coefficients preserved but not evaluated'
+equation_assets:
+- file: equation-1.png
+  source_url: https://trc.nist.gov/cryogenics/materials/Kevlar49/Kevlar%20composite%20eqn.png
+- file: equation-2.png
+  source_url: https://trc.nist.gov/cryogenics/materials/Kevlar49/Kevlar%20composite%20eqn%20solve.png
+- file: equation-3.gif
+  source_url: https://trc.nist.gov/cryogenics/materials/Kevlar49/erf.gif
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: image_equation_manual_required
+    coefficients:
+    - -2.65
+    - 1.986637
+    - 1.24851
+    - 0.57
+    - -8.0
+    - 0.777857
+  data_range_K:
+  - 6.0
+  - 302.0
+  equation_range_K:
+  - 0.0
+  - 350.0
+  source_fit_error: '7.4'

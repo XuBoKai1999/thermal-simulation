@@ -1,0 +1,136 @@
+id: nist.nickel-steel-fe-3-25-ni
+name: Nickel Steel Fe 3.25 Ni
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/NickelSteel/NickelSteel_Fe3.25Ni%29_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 475ee6e518467e17f25fb41fd9fc348eae6b5a26b05570cdcf1a43931c64b5cf
+  official_content_sha256: 6cd8270cb092f865d7cb5b6cb68736126dd9247f2a934f104f256cd836e9de5d
+  page_title: cryogenic material properties Nickel Steel (Fe-3.25 Ni)
+  revision: null
+identity:
+  uns: S20103
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 0.89481
+    - -8.1998
+    - 22.096
+    - -27.645
+    - 19.7524
+    - -8.1113
+    - 1.77866
+    - -0.16172
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0006293833665825433
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 15503.108
+    - -37280.377
+    - 26788.417
+    - 7010.0877
+    - -22731.651
+    - 15386.526
+    - -5175.7968
+    - 896.97274
+    - -64.055866
+  data_range_K:
+  - 60.0
+  - 300.0
+  equation_range_K:
+  - 55.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00036230156144692
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: E-3-1-1
+  property: youngs_modulus
+  symbol: E
+  unit: GPa
+  conditions:
+    source_label: Young's Modulus
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - 215.351
+    - 0.0104624
+    - -0.00035571
+    - 8.9497e-07
+    - -8.4864e-10
+  data_range_K:
+  - 0.0
+  - 298.0
+  equation_range_K:
+  - 0.0
+  - 298.0
+  source_fit_error: '1'
+  derived_table: E-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 8.795426948523381e-06
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -210.4
+    - -0.05699
+    - 0.005072
+    - -1.381e-05
+    - 1.897e-08
+    low_temperature_K: 6.0
+    low_temperature_constant: -210.56
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 265.0
+  source_fit_error: '1.5'
+  derived_table: delta_l_over_l-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0006490748895254362
+    target: 0.001
+    sample_count: 65

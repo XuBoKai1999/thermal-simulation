@@ -1,0 +1,177 @@
+id: nist.glass-fabric-polyester
+name: Glass Fabric/polyester
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Glass%20Fabric%20-%20Polyester/GlassFabric_Polyester_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 1a987a6f986cdbdbf9ce77c681cd294a37c75f936678cdc0f9bbd1739d4a2a22
+  official_content_sha256: 02000eaaddc648f16da453a28b61b430495d6c06563ce0b03a305f9ac8f1aac2
+  page_title: cryogenic material properties Glass Fabric - Polyester
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (Helium, warp Direction)
+    direction: warp
+    fill_gas: Helium
+  representation:
+    family: log10_poly
+    coefficients:
+    - 689.532
+    - -2543.63
+    - 3967.067
+    - -3400.366
+    - 1731.725
+    - -524.309
+    - 87.4249
+    - -6.19597
+    - 0.0
+  data_range_K:
+  - 38.0
+  - 300.0
+  equation_range_K:
+  - 18.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.000771034517778459
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: k-1-1-2
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (Nitrogen, Warp Direction)
+    direction: warp
+    fill_gas: Nitrogen
+  representation:
+    family: log10_poly
+    coefficients:
+    - -2141.58
+    - 4639.74
+    - -3249.405
+    - 51.72425
+    - 1101.977
+    - -613.8563
+    - 141.1432
+    - -12.3133
+    - 0.0
+  data_range_K:
+  - 80.0
+  - 300.0
+  equation_range_K:
+  - 60.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005389103430839925
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-3
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (Nitrogen, normal direction)
+    direction: normal
+    fill_gas: Nitrogen
+  representation:
+    family: log10_poly
+    coefficients:
+    - 2909.905
+    - -8616.64
+    - 10542.69
+    - -6832.068
+    - 2475.328
+    - -475.7
+    - 37.9003
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 84.0
+  - 300.0
+  equation_range_K:
+  - 70.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00020771050251586882
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (normal direction)
+    direction: normal
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -717.9
+    - -3.157
+    - 0.05251
+    - -0.0001947
+    - 2.752e-07
+  data_range_K:
+  - 80.0
+  - 293.0
+  equation_range_K:
+  - 80.0
+  - 285.0
+  source_fit_error: '2'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0002080916762344912
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (warp direction)
+    direction: warp
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -308.97
+    - 1.0245
+    - -0.0029503
+    - 1.8323e-05
+    - -2.7013e-08
+  data_range_K:
+  - 80.0
+  - 293.0
+  equation_range_K:
+  - 80.0
+  - 280.0
+  source_fit_error: '2'
+  derived_table: delta_l_over_l-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 2.570186581058153e-05
+    target: 0.001
+    sample_count: 65

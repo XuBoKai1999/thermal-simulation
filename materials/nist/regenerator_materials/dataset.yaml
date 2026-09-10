@@ -1,0 +1,51 @@
+id: nist.regenerator-materials
+name: Regenerator Materials
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/RegeneratorMaterials/Regenerator%20Materials%20rev%2009-22-06.htm
+  retrieved: '2026-09-10'
+  sha256: e62a88a1f3a897d4fdc3d4d584712779d91094719714d91090536b797b2c5a05
+  official_content_sha256: 7f7b937e38ef0b42213b6f51ed10d61788daaf525c05ce1fab9e47b5f081b260
+property: volumetric_heat_capacity
+temperature_unit: K
+original_unit: J/(cm^3 K)
+material_columns:
+- SS
+- G-10
+- Nylon
+- Lead
+- Brass
+- Nickel
+- Gd-Rh
+- Gd0.6-Er0.4-Rh
+- Er3-Ni
+- Er-Ni
+- Er-Ni2
+- Er-Al2
+- Er-Dy0.8-Ni2
+- Kapton
+- Nd
+- Er3-Ni (N)
+- Er0.9-Yb0.1-Ni
+- Er3-Co
+- Er0.6-Pr0.4
+- Ho-Cu2
+- Er-Ni0.9-Co0.1
+- Ho2-Al
+- Er-Ag0.9-Al0.1
+- Ho-Sb
+- Dy-Sb
+- Gd-Sb
+- Er
+- Er0.5-Pr0.5
+- GAP_GdAlO 3
+- GOS_Gd 2 O 2 S
+missing_value_semantics: blank cell means NIST provides no value; it is not zero
+rows: 501
+columns: 31
+temperature_range_K:
+- 1.0
+- 300.0
+missing_cells: 193
+derived_table: volumetric_heat_capacity.csv
+normalization_status: fully_normalized

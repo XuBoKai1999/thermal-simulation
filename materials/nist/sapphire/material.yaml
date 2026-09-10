@@ -1,0 +1,76 @@
+id: nist.sapphire
+name: Sapphire
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Sapphire/Sapphire_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 91943e80d9086f02bcdb92658b0171c335a3c520bf784982f52892ebc27476d8
+  official_content_sha256: 2d59c0bdfae191d813d31c1a8beaaccaa058bd8638e69381fc6509377f278367
+  page_title: cryogenic material properties PVC
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: alpha-1-1-1
+  property: thermal_expansion_coefficient
+  symbol: alpha
+  unit: 10 -6 /K
+  conditions:
+    source_label: Expansion Coefficient
+  representation:
+    family: log10_poly
+    coefficients:
+    - 10.97236
+    - -97.2354
+    - 240.2436
+    - -294.9933
+    - 195.9244
+    - -66.89247
+    - 9.19921
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 83.0
+  equation_range_K:
+  - 5.0
+  - 80.0
+  source_fit_error: '3'
+  derived_table: alpha-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0003568229170454647
+    target: 0.001
+    sample_count: 257
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -78.85
+    - -0.022346
+    - 0.00010185
+    - 5.5594e-06
+    - -8.5422e-09
+  data_range_K:
+  - 20.0
+  - 293.0
+  equation_range_K:
+  - 15.0
+  - 300.0
+  source_fit_error: '4'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00046000385725976096
+    target: 0.001
+    sample_count: 65

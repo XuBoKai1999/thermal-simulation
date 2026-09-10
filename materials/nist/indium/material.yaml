@@ -1,0 +1,48 @@
+id: nist.indium
+name: Indium
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Indium/Indium_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 4bc4e84081848705511b35eb4e417db905bbda0736e27fa6ae346bfb1b98447f
+  official_content_sha256: a617b4f722f7a6dd39a51178eb750160592d5b2dacb1beeeb5044d55111ee51d
+  page_title: cryogenic material properties Indium
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: cp-1-1-1
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg•K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -2.4259351
+    - 12.613611
+    - -46.472893
+    - 104.64717
+    - -127.1863
+    - 88.805612
+    - -35.915625
+    - 7.8307989
+    - -0.71218931
+  data_range_K:
+  - 1.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 295.0
+  source_fit_error: '3'
+  derived_table: cp-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00027317852302205926
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257

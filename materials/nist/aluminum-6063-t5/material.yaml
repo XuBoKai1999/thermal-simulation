@@ -1,0 +1,48 @@
+id: nist.aluminum-6063-t5
+name: Aluminum 6063-T5
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/6063_T5%20Alulminum/6063-T5Aluminum_rev.htm
+  retrieved: '2026-09-10'
+  sha256: fad195ebb42fe33ca5f49ab47e93abdc0aabbba68fc82b68df96d2f116d5c0bf
+  official_content_sha256: fe1e393ee907008c8c7144c01a971b1f9206eb454753398cc46e5b7aef88fbe0
+  page_title: cryogenic material properties 6063-T5 Aluminum
+  revision: null
+identity:
+  uns: A96063
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 22.401433
+    - -141.13433
+    - 394.95461
+    - -601.15377
+    - 547.83202
+    - -305.99691
+    - 102.38656
+    - -18.810237
+    - 1.4576882
+  data_range_K:
+  - 4.0
+  - 296.0
+  equation_range_K:
+  - 4.0
+  - 295.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005575960279618691
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129

@@ -64,7 +64,7 @@ repository 沒有 dependency lockfile，因此 Gmsh、PETSc、MPI 的確切 patc
 
 ```text
 lib/          generic mesh, case, material, FEM, solve, analysis and dump modules
-materials/    NOT PRESENT as a shared material database; case-local files are supported
+materials/    shared source-preserving data; `materials/nist/` mirrors official NIST data
 scripts/      Windows PowerShell → WSL helper
 postprocess/  simple dump plotting CLI
 test/         Test 01–07 verification cases
@@ -73,7 +73,9 @@ manual/       本 operation knowledge base
 ```
 
 `lib/` 的 callable-level 責任與 signatures 見 `08-api-reference.md`。不要假設存在 generic
-runner、installed package、shared materials registry、external CAD dependency manager 或 CLI。
+runner、installed package、external CAD dependency manager 或 material-selection CLI for cases。
+`materials/nist/` database 已存在，但 `case.yaml` external material reference 與 solver
+integration 尚未實作；不得把 database series ID 直接當成目前有效的 case material syntax。
 
 ## 目前能做什麼
 

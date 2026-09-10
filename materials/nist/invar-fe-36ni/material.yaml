@@ -1,0 +1,130 @@
+id: nist.invar-fe-36ni
+name: Invar (Fe-36Ni)
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Invar%28Fe-36Ni%29/Invar_rev.htm
+  retrieved: '2026-09-10'
+  sha256: ba954fd68f052d07e267936a9d572b34173a542e840b19acb8bcefd48b4811a0
+  official_content_sha256: fe85193904bcf996dcf7730fc65a975504b286c7bb0a735f428b24c27a1dfd71
+  page_title: cryogenic material properties Invar
+  revision: null
+identity:
+  uns: K93600
+  grade: null
+normalization_status: partially_normalized
+normalization_notes:
+- 'delta_l_over_l-3-1-2: interpolation error 0.396764% exceeds 0.1%'
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -2.7064
+    - 8.5191
+    - -15.923
+    - 18.276
+    - -11.9116
+    - 4.40318
+    - -0.86018
+    - 0.068508
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005840659520891869
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 28.08
+    - -228.23
+    - 777.587
+    - -1448.423
+    - 1596.567
+    - -1040.294
+    - 371.2125
+    - -56.004
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 20.0
+  equation_range_K:
+  - 4.0
+  - 27.0
+  source_fit_error: '2'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003881251957651443
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: E-3-1-1
+  property: youngs_modulus
+  symbol: E
+  unit: GPa
+  conditions:
+    source_label: Young's Modulus
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - 141.565
+    - 0.0254435
+    - -0.00100842
+    - 6.72797e-06
+    - -1.0823e-08
+  data_range_K:
+  - 1.0
+  - 298.0
+  equation_range_K:
+  - 3.0
+  - 298.0
+  source_fit_error: '1'
+  derived_table: E-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00040575028857747016
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -52.65
+    - 0.1009
+    - 0.0008395
+    - -1.973e-06
+    - 8.794e-11
+    low_temperature_K: 80.0
+    low_temperature_constant: -40.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '5'

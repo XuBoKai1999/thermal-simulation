@@ -9,7 +9,7 @@
 | Region/cell tags | implemented | Gmsh volume physical groups + `cell_tags`/`tags.json` |
 | Facet/boundary tags | implemented | Gmsh surface physical groups + `facet_tags` |
 | Case/config loading | implemented, narrow | `case.load_case`; multi-region；one or more fixed-T BCs |
-| Materials/properties | implemented, narrow | unified constant/table/Python `k/rho/cp`; no registry/database |
+| Materials/properties | implemented, narrow | case-local constant/table/Python `k/rho/cp`; shared NIST database exists but is not solver-integrated |
 | Steady conduction | implemented | multi-region constant k 或 single-region table/Python k(T)；Q=0 |
 | Transient conduction | implemented, narrow | multi-region constant或temperature-dependent properties；Backward Euler；loop lives in case runner |
 | Initial condition | partial | uniform或backward-compatible x-split DG0 |
@@ -51,8 +51,9 @@
 目前不能在 `case.yaml` 中使用：prescribed heat flux/total heat、convection、radiation、
 volumetric heat generation、time-dependent BC、heat switch、anisotropic conductivity、任意
 coordinate/region initial field、general 3D zero-thickness contact 或 transient contact resistance。
-此外，沒有 automatic generic runner、shared material database、automatic external CAD/helper
-dependency tracking、topology-aware 3D postprocessor，且 MPI dump/cell-ID mapping 未實作。
+此外，沒有 automatic generic runner、NIST database → `case.yaml` integration、automatic
+external CAD/helper dependency tracking、topology-aware 3D postprocessor，且 MPI dump/cell-ID
+mapping 未實作。
 
 ## 舊文件與 source 的差異
 

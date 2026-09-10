@@ -1,0 +1,48 @@
+id: nist.lead
+name: Lead
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Lead/Lead_rev.htm
+  retrieved: '2026-09-10'
+  sha256: c2d1f4bca03c6d605579810987c1a4bd6876b791fa7eb70f1c19f4d7b6bd58e4
+  official_content_sha256: 55cd544f001534738d5ef119a241c73fc7a8a8f670dd9b8aa4dd63fd9daad9d0
+  page_title: cryogenic material properties Lead
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 38.963479
+    - -221.40505
+    - 597.56622
+    - -900.93831
+    - 816.40461
+    - -455.08342
+    - 152.94025
+    - -28.451163
+    - 2.2516244
+  data_range_K:
+  - 4.0
+  - 296.0
+  equation_range_K:
+  - 5.0
+  - 295.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.000479189317693291
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257

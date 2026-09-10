@@ -1,0 +1,79 @@
+id: nist.polyimide-kapton
+name: Polyimide (Kapton)
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Polyimide%20Kapton/PolyimideKapton_rev.htm
+  retrieved: '2026-09-10'
+  sha256: be790c3e886c8c6666ae22467affbd7db0e5477514504c3d08c027784d46593f
+  official_content_sha256: ff47c9f2a7f1ab52559a7c3cc6b3fcf5c91b4964b758893b7bbbaa9463d402aa
+  page_title: cryogenic material properties Polyimide (Kapton)
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 5.73101
+    - -39.5199
+    - 79.9313
+    - -83.8572
+    - 50.9157
+    - -17.9835
+    - 3.42413
+    - -0.27133
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0007746107839683465
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.3684
+    - 0.65892
+    - 2.8719
+    - 0.42651
+    - -3.0088
+    - 1.9558
+    - -0.51998
+    - 0.051574
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '3'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0009125652264063998
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129

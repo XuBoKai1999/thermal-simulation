@@ -1,0 +1,106 @@
+id: nist.teflon
+name: Teflon
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Teflon/Teflon_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 64eee487e04bba60f2db5940b64909d5265acf2dea8e752e1dab033bf1e5c737
+  official_content_sha256: d444d8c48eef7ed2cb92d494f52874eae894ca1488684d91aca2db333c5c0740
+  page_title: cryogenic material properties PVC
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 2.738
+    - -30.677
+    - 89.43
+    - -136.99
+    - 124.69
+    - -69.556
+    - 23.32
+    - -4.3135
+    - 0.33829
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '5'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00038148019709854345
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 31.88256
+    - -166.51949
+    - 352.01879
+    - -393.44232
+    - 259.98072
+    - -104.61429
+    - 24.99276
+    - -3.20792
+    - 0.16503
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0007857505950943952
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -2125.0
+    - -0.8201
+    - 0.06161
+    - -0.0003171
+    - 6.85e-07
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0004209680065391451
+    target: 0.001
+    sample_count: 257

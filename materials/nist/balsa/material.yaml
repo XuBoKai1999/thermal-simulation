@@ -1,0 +1,81 @@
+id: nist.balsa
+name: Balsa
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Balsa/Balsa_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 6e59c6d21d0d3a3bdce1aedb32c05c83f20d15e530b820c4082f0d6dd35e4eea
+  official_content_sha256: 85e006575a2797dbbac07d5c8b59dfb00d86829380b84f067493484d0f2f0f01
+  page_title: cryogenic material properties Balsa
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (density = 6 lb/ft 3 )
+  representation:
+    family: log10_poly
+    coefficients:
+    - 4172.447
+    - -11309.97
+    - 12745.09
+    - -7647.584
+    - 2577.309
+    - -462.538
+    - 34.5351
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 88.0
+  - 300.0
+  equation_range_K:
+  - 70.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00043320482108164654
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-2
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (density = 11 lb/ft 3 )
+  representation:
+    family: log10_poly
+    coefficients:
+    - 4815.4
+    - -12969.63
+    - 14520.76
+    - -8654.164
+    - 2895.712
+    - -515.7272
+    - 38.19218
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 88.0
+  - 300.0
+  equation_range_K:
+  - 75.0
+  - 300.0
+  source_fit_error: '3'
+  derived_table: k-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003471373085665176
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65

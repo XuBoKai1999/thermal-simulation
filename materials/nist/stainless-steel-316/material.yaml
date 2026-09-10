@@ -1,0 +1,197 @@
+id: nist.stainless-steel-316
+name: Stainless Steel 316
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/316Stainless/316Stainless_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 9b2b85811ed77ca54395e23b6af9b91b2be10ac28c100556b3f6fb3ae66bb2b2
+  official_content_sha256: ef29a79464fb0bc3c919478149b646005a4e12100672a662941f04a21041537a
+  page_title: cryogenic material properties 316 Stainless
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.4087
+    - 1.3982
+    - 0.2543
+    - -0.626
+    - 0.2334
+    - 0.4256
+    - -0.4658
+    - 0.165
+    - -0.0199
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 1.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0007573673758043842
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: Specific Heat 1
+  representation:
+    family: log10_poly
+    coefficients:
+    - 12.2486
+    - -80.6422
+    - 218.743
+    - -308.854
+    - 239.5296
+    - -89.9982
+    - 3.15315
+    - 8.44996
+    - -1.91368
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 50.0
+  source_fit_error: '2'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0009094133362912324
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-3
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: Specific Heat 2
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1879.464
+    - 3643.198
+    - 76.70125
+    - -6176.028
+    - 7437.6247
+    - -4305.7217
+    - 1382.4627
+    - -237.22704
+    - 17.05262
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 50.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: cp-1-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00019137545169294146
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: E-3-1-1
+  property: youngs_modulus
+  symbol: E
+  unit: GPa
+  conditions:
+    source_label: Young's Modulus
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - 208.4729
+    - -0.1358965
+    - 0.008368629
+    - -0.00013817
+    - 6.83193e-07
+  data_range_K:
+  - 5.0
+  - 60.0
+  equation_range_K:
+  - 8.0
+  - 50.0
+  source_fit_error: '1'
+  derived_table: E-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 4.9974726695295115e-06
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: E-3-1-2
+  property: youngs_modulus
+  symbol: E
+  unit: GPa
+  conditions:
+    source_label: Young's Modulus
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - 207.9488
+    - 0.07394241
+    - -0.00096272
+    - 2.84556e-06
+    - -3.2408e-09
+  data_range_K:
+  - 48.0
+  - 294.0
+  equation_range_K:
+  - 50.0
+  - 294.0
+  source_fit_error: '1'
+  derived_table: E-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 1.0112329295677024e-05
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-3
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -295.54
+    - -0.39811
+    - 0.0092683
+    - -2.0261e-05
+    - 1.7127e-08
+    low_temperature_K: 23.0
+    low_temperature_constant: -300.04
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '5'
+  derived_table: delta_l_over_l-3-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00021099613532182777
+    target: 0.001
+    sample_count: 65

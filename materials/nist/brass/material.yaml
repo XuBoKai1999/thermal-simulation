@@ -1,0 +1,48 @@
+id: nist.brass
+name: Brass
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Brass/Brass_rev.htm
+  retrieved: '2026-09-10'
+  sha256: d31e9d937848d612716d06c0db2747f2e8a3aba9b798efba76d5cd1fbbbd3b36
+  official_content_sha256: 671eabcad49f4f2b462f48508694dff55f6d5bfd615d343c677d1ce1f9aea4fa
+  page_title: cryogenic material properties Brass
+  revision: null
+identity:
+  uns: C26000
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m•K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 0.021035
+    - -1.01835
+    - 4.54083
+    - -5.03374
+    - 3.20536
+    - -1.12933
+    - 0.174057
+    - -0.0038151
+    - 0.0
+  data_range_K:
+  - 5.0
+  - 116.0
+  equation_range_K:
+  - 5.0
+  - 110.0
+  source_fit_error: '1.5'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0001410239535099886
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65

@@ -1,0 +1,48 @@
+id: nist.aluminum-1100
+name: Aluminum 1100
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/1100%20Aluminum/1100%20Aluminum_rev.htm
+  retrieved: '2026-09-10'
+  sha256: fa74d613e3a3880ac8ef632ae5a3828cf3c0fea0f1306bf59a7a38ec975f95dd
+  official_content_sha256: 670f4b7afd34f90a5c96d6c081e709c10fb5a034c624b205f0929474d48c0b28
+  page_title: cryogenic material properties 1100 Aluminum
+  revision: null
+identity:
+  uns: A91100
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 23.39172
+    - -148.5733
+    - 422.1917
+    - -653.6664
+    - 607.0402
+    - -346.152
+    - 118.4276
+    - -22.2781
+    - 1.770187
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005415247583521817
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129

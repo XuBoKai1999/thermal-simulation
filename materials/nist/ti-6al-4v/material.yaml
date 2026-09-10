@@ -1,0 +1,77 @@
+id: nist.ti-6al-4v
+name: Ti-6Al-4V
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Ti6Al4V/Ti6Al4V_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 89254726260d33fda3d599ed3a5927343297607d4ecf5a6c4947840b8d1fc495
+  official_content_sha256: f458d05f3da7ccced2ea67fc176d891844c59076d320fceb0afd4fd29cdeeeec
+  page_title: cryogenic material properties Ti6 Al4V
+  revision: null
+identity:
+  uns: R56400
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: units:W/(m•K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -5107.8774
+    - 19240.422
+    - -30789.064
+    - 27134.756
+    - -14226.379
+    - 4438.2154
+    - -763.07767
+    - 55.796592
+    - 0.0
+  data_range_K:
+  - 23.0
+  - 300.0
+  equation_range_K:
+  - 20.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.000291947525187296
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -171.1
+    - -0.214
+    - 0.004807
+    - -7.111e-06
+    - 0.0
+    low_temperature_K: 24.0
+    low_temperature_constant: -173.61
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0007625496073931733
+    target: 0.001
+    sample_count: 65

@@ -1,0 +1,10 @@
+已修正 NIST 本地 HTML 的連結解析問題。
+
+- `materials/nist/index.html` 已加入官方 NIST index 的 `<base href>`。
+- 全部 43 個 `source.html` 都加入各自官方 source URL 的 `<base href>`。
+- 相對連結與圖片不再錯誤解析到 `C:\...`。
+- Metadata 現在分別保存官方 HTTP response checksum 與本地 navigable snapshot checksum。
+- `source.html` 除注入單一 `<base>` tag 外不改動 NIST 頁面內容。
+- Importer 重跑成功：43 entries、42 material pages、0 failures。
+- Database tests：7/7 passed。
+- 未修改 ADR 或 thermal solver physics。

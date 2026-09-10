@@ -1,0 +1,77 @@
+id: nist.beryllium-copper
+name: Beryllium Copper
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Beryllium%20Copper/BerylliumCopper_rev.htm
+  retrieved: '2026-09-10'
+  sha256: cef1ed2afdee56364d1ff4ee255f9d2593f255acc06158a7f141e8cf38711293
+  official_content_sha256: 1f80cc4cb1be16d4e7e0653171ce9f579d6b5e77bd66a0727754804ab4933c71
+  page_title: cryogenic material properties Beryllium Copper
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m•K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -0.50015
+    - 1.9319
+    - -1.6954
+    - 0.71218
+    - 1.2788
+    - -1.6145
+    - 0.68722
+    - -0.10501
+    - 0.0
+  data_range_K:
+  - 2.0
+  - 80.0
+  equation_range_K:
+  - 1.0
+  - 120.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003431861082253888
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -311.5
+    - -0.44498
+    - 0.010133
+    - -2.4718e-05
+    - 2.6277e-08
+    low_temperature_K: 24.0
+    low_temperature_constant: -316.68
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.0005722121103579097
+    target: 0.001
+    sample_count: 65

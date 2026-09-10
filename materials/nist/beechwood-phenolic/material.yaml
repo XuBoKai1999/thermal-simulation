@@ -1,0 +1,165 @@
+id: nist.beechwood-phenolic
+name: Beechwood/phenolic
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Beechwood_Phenolic/beechwood_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 60f28d5ec23551d5e6ab034f47a6ce54470d1726f0c07541084fff3665311bf2
+  official_content_sha256: 508984e2b6b56cf71add67a53a852a1ed0f3ec19dd22c51e811357305f90cd47
+  page_title: cryogenic material properties Beechwood Phenolic
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (cross-laminate [0/90], grain direction)
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1375.11
+    - 3740.69
+    - -4238.465
+    - 2559.333
+    - -868.6067
+    - 157.1018
+    - -11.82957
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 92.0
+  - 300.0
+  equation_range_K:
+  - 80.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 5.8239728300134254e-05
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-2
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: Thermal Conductivity (cross-laminate [0/90], flatwise)
+  representation:
+    family: log10_poly
+    coefficients:
+    - 1035.33
+    - -2191.85
+    - 1470.505
+    - 39.845
+    - -541.9035
+    - 289.844
+    - -65.2253
+    - 5.59956
+    - 0.0
+  data_range_K:
+  - 92.0
+  - 300.0
+  equation_range_K:
+  - 75.0
+  - 300.0
+  source_fit_error: '1.5'
+  derived_table: k-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00011651600529677324
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (unidirectional, flatwise)
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -683.9
+    - 2.18264
+    - 0.001701
+    - -7.1e-06
+    - 1.04e-08
+  data_range_K:
+  - 77.0
+  - 293.0
+  equation_range_K:
+  - 77.0
+  - 293.0
+  source_fit_error: '0.57'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 1.3899869122157849e-05
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (unidirectional, grain direction)
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -189.138
+    - 0.646759
+    - 0.000202
+    - -1.2e-06
+    - 1.85e-09
+  data_range_K:
+  - 77.0
+  - 293.0
+  equation_range_K:
+  - 77.0
+  - 270.0
+  source_fit_error: '0.54'
+  derived_table: delta_l_over_l-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 2.0538847442231285e-06
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-3
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: Linear Expansion (cross-laminate [0/90], grain direction)
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -944.081
+    - 2.909782
+    - 0.002971
+    - -1.0e-05
+    - 1.23e-08
+  data_range_K:
+  - 77.0
+  - 293.0
+  equation_range_K:
+  - 77.0
+  - 293.0
+  source_fit_error: '0.89'
+  derived_table: delta_l_over_l-3-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 6.19058237040579e-06
+    target: 0.001
+    sample_count: 65

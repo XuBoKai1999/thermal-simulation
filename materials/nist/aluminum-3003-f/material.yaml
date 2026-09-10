@@ -1,0 +1,108 @@
+id: nist.aluminum-3003-f
+name: Aluminum 3003-F
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/3003F%20Aluminum/3003FAluminum_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 784cc771edbeaf20284741f90bdad416bbe6f782314995ca181b08ce7d320ca8
+  official_content_sha256: 8061882aa69c2543c6be98fe84fe7bc0ce69467cfd14141273f888b23f533ef2
+  page_title: cryogenic material properties 3003F Aluminum
+  revision: null
+identity:
+  uns: A93003
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 0.63736
+    - -1.1437
+    - 7.4624
+    - -12.6905
+    - 11.9165
+    - -6.18721
+    - 1.63939
+    - -0.172667
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 1.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005304757304670213
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 46.6467
+    - -314.292
+    - 866.662
+    - -1298.3
+    - 1162.27
+    - -637.795
+    - 210.351
+    - -38.3094
+    - 2.96344
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '5'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003629398981074893
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -412.77
+    - -0.30389
+    - 0.0087696
+    - -9.9821e-06
+    - 0.0
+    low_temperature_K: 18.0
+    low_temperature_constant: -415.45
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '4'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00030485380835572145
+    target: 0.001
+    sample_count: 65

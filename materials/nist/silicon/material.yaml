@@ -1,0 +1,53 @@
+id: nist.silicon
+name: Silicon
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Silicon/Silicon.htm
+  retrieved: '2026-09-10'
+  sha256: 80520e7eb608f00a23809d6c9d676368eb22d012b29268300809f0352a01f760
+  official_content_sha256: d9fc9d8ba210aa34527d0ff3432775634bfd6ff9503886b1dfa3e8bc962d79eb
+  page_title: cryogenic material properties Silicon
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: manual_required
+normalization_notes:
+- 'alpha-1-1-1: equation is image-only; coefficients preserved but not evaluated'
+equation_assets:
+- file: equation-1.gif
+  source_url: https://trc.nist.gov/cryogenics/materials/Silicon/coefficient.gif
+- file: equation-2.png
+  source_url: https://trc.nist.gov/cryogenics/materials/Silicon/te.png
+- file: equation-3.gif
+  source_url: https://trc.nist.gov/cryogenics/materials/Silicon/temp.gif
+- file: equation-4.gif
+  source_url: https://trc.nist.gov/cryogenics/materials/Silicon/erf.gif
+series:
+- id: alpha-1-1-1
+  property: thermal_expansion_coefficient
+  symbol: alpha
+  unit: 10 -8 / K
+  conditions: {}
+  representation:
+    family: image_equation_manual_required
+    coefficients:
+    - 1.005e-05
+    - -5.99688e-06
+    - 1.25574e-06
+    - -1.12086e-07
+    - 3.63225e-09
+    - 0.0267708
+    - -0.000122829
+    - 1.62544e-18
+    - 472.374
+    - -35879.6
+    - -12419100.0
+    - 1259720000.0
+  data_range_K:
+  - 13.0
+  - 600.0
+  equation_range_K:
+  - 0.0
+  - 600.0
+  source_fit_error: 0.03x10 -8 ( T < 50K); 0.5x10 -8 ( T ≥ 50K)

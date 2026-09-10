@@ -1,0 +1,79 @@
+id: nist.platinum
+name: Platinum
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Platinum/Platinum_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 4a9e85eb2353e472ef1eac472b6bd6d3f241770519fdcb30b9ff33c62de09bad
+  official_content_sha256: 792f3a55b65404c6360d750a60b7cac9a6f0fdd35f4eb9bebf8cc4b28a6675a2
+  page_title: cryogenic material properties Platinum
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -7.33450054
+    - 80.8550484
+    - -268.441084
+    - 481.629105
+    - -503.890454
+    - 314.812622
+    - -115.699394
+    - 23.0957119
+    - -1.93361717
+  data_range_K:
+  - 3.0
+  - 298.0
+  equation_range_K:
+  - 4.0
+  - 295.0
+  source_fit_error: '3'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0008861798443249327
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.6135538
+    - 0.95823584
+    - 1.431777
+    - -3.5963989
+    - 5.1299735
+    - -2.4186452
+    - -0.12560841
+    - 0.34342394
+    - -0.06198179
+  data_range_K:
+  - 1.0
+  - 296.0
+  equation_range_K:
+  - 1.0
+  - 295.0
+  source_fit_error: '3'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003151671526473828
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257

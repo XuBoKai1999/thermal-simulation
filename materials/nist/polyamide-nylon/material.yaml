@@ -1,0 +1,106 @@
+id: nist.polyamide-nylon
+name: Polyamide (Nylon)
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Polyamide%20%28Nylon%29/PolyamideNylon_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 9bf077641340258df7262f4b12e132e9150b9e73154874f92206423179c20d25
+  official_content_sha256: c46c6b89b57b64b4153d878c94f9c9cd086d7819707e0a5e8f658ca8f20f63fd
+  page_title: cryogenic material properties Polyamide (Nylon)
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -2.6135
+    - 2.3239
+    - -4.7586
+    - 7.1602
+    - -4.9155
+    - 1.6324
+    - -0.2507
+    - 0.0131
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 1.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00040467677010161217
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -5.2929
+    - 25.301
+    - -54.874
+    - 71.061
+    - -52.236
+    - 21.648
+    - -4.7317
+    - 0.42518
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '4'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0006792244086138516
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -1389.0
+    - -0.1561
+    - 0.02988
+    - -7.948e-05
+    - 1.181e-07
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00037791795717174466
+    target: 0.001
+    sample_count: 129

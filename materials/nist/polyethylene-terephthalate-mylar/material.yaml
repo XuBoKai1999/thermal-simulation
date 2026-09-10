@@ -1,0 +1,48 @@
+id: nist.polyethylene-terephthalate-mylar
+name: Polyethylene Terephthalate (Mylar)
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/PET/PET_rev.htm
+  retrieved: '2026-09-10'
+  sha256: bc3fbbfd5f71b2977d55f33076842fbc034ab6208875d9f6c23ee9cc1040f673
+  official_content_sha256: 8e5076984fe536a7ebb7377c44de325f7c9b141d45dc3a48ff77b983eb372d9d
+  page_title: cryogenic material properties Polyethylene Terephthalate
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m•K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.37737
+    - -3.40668
+    - 20.5842
+    - -53.1244
+    - 73.2476
+    - -57.6546
+    - 26.1192
+    - -6.3479
+    - 0.640331
+  data_range_K:
+  - 1.0
+  - 83.0
+  equation_range_K:
+  - 2.0
+  - 80.0
+  source_fit_error: '1'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0006349129076605944
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65

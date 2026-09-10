@@ -1,0 +1,289 @@
+id: nist.polyurethane
+name: Polyurethane
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Polyurethane/polyurethanerev.html
+  retrieved: '2026-09-10'
+  sha256: b35463fc2fb62df3b243d49099ea17d18d7ca8d161440ad6ce56a46b2fa2bcb1
+  official_content_sha256: 5f9f18bae57a1ad8ddc3e70cf6b3eb7a6f635f8b154c5309df1c06916d7bb4af
+  page_title: cryogenic material properties Polyurethane
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 31.88 kg/m 3 (=1.99 lb/ft 3 Freon
+      filled )'
+    density_kg_m3: 31.88
+    fill_gas: Freon fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - -3218.679
+    - 9201.61
+    - -10956.66
+    - 6950.102
+    - -2476.94
+    - 470.284
+    - -37.1669
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 76.0
+  - 300.0
+  equation_range_K:
+  - 60.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005179780815119786
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-2
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 32.04 kg/m 3 (=2.0 lb/ft 3 CO 2 Filled)'
+    density_kg_m3: 32.04
+    fill_gas: CO 2 Fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - 3788.48
+    - -7642.66
+    - 4592.448
+    - 778.8423
+    - -2214.434
+    - 1090.293
+    - -235.6349
+    - 19.66088
+    - 0.0
+  data_range_K:
+  - 100.0
+  - 300.0
+  equation_range_K:
+  - 85.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00029425485375638626
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-3
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions:
+    source_label: 'Thermal Conductivity density: 49.02 kg/m 3 (=3.06 lb/ft 3 He Filled
+      )'
+    density_kg_m3: 49.02
+    fill_gas: He Fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - -33.898
+    - 117.81
+    - -178.376
+    - 142.038
+    - -63.034
+    - 14.958
+    - -1.5468
+    - 0.020625
+    - 0.0
+  data_range_K:
+  - 30.0
+  - 300.0
+  equation_range_K:
+  - 20.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: k-1-1-3.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005974092159113854
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: k-1-1-4
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K))
+  conditions:
+    source_label: 'Thermal Conductivity density: 64.08 kg/m 3 (=4.00 lb/ft 3 Freon
+      filled)'
+    density_kg_m3: 64.08
+    fill_gas: Freon fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - 789.79
+    - -2347.94
+    - 3024.61
+    - -2206.78
+    - 989.238
+    - -273.18
+    - 43.065
+    - -2.9863
+    - 0.0
+  data_range_K:
+  - 88.0
+  - 300.0
+  equation_range_K:
+  - 55.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-4.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.000369584881041177
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-3-1-1
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: 'Specific Heat density: 49.02 kg/m 3 (=3.06 lb/ft 3 He filled)'
+    density_kg_m3: 49.02
+    fill_gas: He fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - 89.69
+    - -269.32
+    - 333.276
+    - -214.635
+    - 76.2052
+    - -14.1137
+    - 1.061
+    - 0.0
+    - 0.0
+  data_range_K:
+  - 23.0
+  - 300.0
+  equation_range_K:
+  - 16.0
+  - 300.0
+  source_fit_error: '1'
+  derived_table: cp-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00046415145799889477
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: cp-3-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions:
+    source_label: 'Specific Heat density: 389.25 kg/m 3 (=24.3 lb/ft 3 air filled
+      )'
+    density_kg_m3: 389.25
+    fill_gas: air fill
+  representation:
+    family: log10_poly
+    coefficients:
+    - 4894.36
+    - -11608.63
+    - 10463.31
+    - -3895.8
+    - -40.0053
+    - 497.4517
+    - -147.7555
+    - 14.19365
+    - 0.0
+  data_range_K:
+  - 100.0
+  - 300.0
+  equation_range_K:
+  - 80.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: cp-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.00032902041362209606
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-5-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: 'Linear expansion density: 32.04 kg/m 3 (=2.0 lb/ft 3 , Freon blown,
+      parallel to foam rise)'
+    density_kg_m3: 32.04
+    direction: parallel
+    fill_gas: Freon blown
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -806.4
+    - -0.5049
+    - 0.0214
+    - -5.036e-05
+    - 5.192e-08
+  data_range_K:
+  - 20.0
+  - 300.0
+  equation_range_K:
+  - 20.0
+  - 275.0
+  source_fit_error: '1.5'
+  derived_table: delta_l_over_l-5-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00012466644928181198
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-5-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions:
+    source_label: 'Linear expansion density: 64.07 kg/m 3 (=4.0 lb/ft 3 , CO 2 blown,
+      parallel to foam rise)'
+    density_kg_m3: 64.07
+    direction: parallel
+    fill_gas: CO 2 blown
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -1064.7
+    - 0.31238
+    - 0.022854
+    - -5.9123e-05
+    - 6.7482e-08
+  data_range_K:
+  - 20.0
+  - 300.0
+  equation_range_K:
+  - 20.0
+  - 293.0
+  source_fit_error: '1'
+  derived_table: delta_l_over_l-5-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00018280973824783066
+    target: 0.001
+    sample_count: 65

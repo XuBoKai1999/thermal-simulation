@@ -1,0 +1,75 @@
+id: nist.molybdenum
+name: Molybdenum
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/Molybdenum/Molybdenum_rev.htm
+  retrieved: '2026-09-10'
+  sha256: cea93a287cb8cc0f43beb653af1a83a4ab8b4ba9ff44070e30d88295216cab9c
+  official_content_sha256: cb1b29d5571f430a904cca7df58f537a58549f3b59f2415a37561735014a6215
+  page_title: cryogenic material properties Molybdenum
+  revision: null
+identity:
+  uns: null
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 10.78259
+    - -72.13065
+    - 228.57351
+    - -384.50447
+    - 381.43825
+    - -228.83783
+    - 81.26658
+    - -15.69097
+    - 1.26814
+  data_range_K:
+  - 2.0
+  - 373.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '3'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003142775875844946
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - -90.912613
+    - -0.127173
+    - 0.00266801
+    - -5.0432e-06
+    - 3.5183e-09
+  data_range_K:
+  - 20.0
+  - 500.0
+  equation_range_K:
+  - 20.0
+  - 350.0
+  source_fit_error: '4'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00011036154954597072
+    target: 0.001
+    sample_count: 65

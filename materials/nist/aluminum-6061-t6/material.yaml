@@ -1,0 +1,136 @@
+id: nist.aluminum-6061-t6
+name: Aluminum 6061-T6
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/6061%20Aluminum/6061_T6Aluminum_rev.htm
+  retrieved: '2026-09-10'
+  sha256: 75b2bd0c2e9579b88556f8ba98cea6409de4c0db82a2c2a86c23c72b5bc5c14e
+  official_content_sha256: 130b832aa23d8a76a4cc4c1e1ee6736b8fcee89d65253bcbabe3aa2a9db6ec39
+  page_title: cryogenic material properties 6061 Aluminum
+  revision: null
+identity:
+  uns: A96061
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 0.07918
+    - 1.0957
+    - -0.07277
+    - 0.08084
+    - 0.02803
+    - -0.09464
+    - 0.04179
+    - -0.00571
+    - 0.0
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 1.0
+  - 300.0
+  source_fit_error: '0.5'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0005370778663234773
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - 46.6467
+    - -314.292
+    - 866.662
+    - -1298.3
+    - 1162.27
+    - -637.795
+    - 210.351
+    - -38.3094
+    - 2.96344
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '5'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003629398981074893
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 257
+- id: E-3-1-1
+  property: youngs_modulus
+  symbol: E
+  unit: GPa
+  conditions:
+    source_label: Young's Modulus
+  representation:
+    family: ordinary_poly
+    coefficients:
+    - 77.71221
+    - 0.01030646
+    - -0.00029241
+    - 8.9936e-07
+    - -1.0709e-09
+  data_range_K:
+  - 0.0
+  - 299.0
+  equation_range_K:
+  - 2.0
+  - 295.0
+  source_fit_error: '1'
+  derived_table: E-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 7.6948036081249e-05
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: delta_l_over_l-3-1-2
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -412.77
+    - -0.30389
+    - 0.0087696
+    - -9.9821e-06
+    - 0.0
+    low_temperature_K: 18.0
+    low_temperature_constant: -415.45
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '4'
+  derived_table: delta_l_over_l-3-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00030485380835572145
+    target: 0.001
+    sample_count: 65

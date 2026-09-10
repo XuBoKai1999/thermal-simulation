@@ -1,0 +1,108 @@
+id: nist.stainless-steel-304l
+name: Stainless Steel 304L
+source:
+  organization: NIST
+  url: https://trc.nist.gov/cryogenics/materials/304LStainless/304LStainless_rev.htm
+  retrieved: '2026-09-10'
+  sha256: a50a5689302b840c8e3f51eee7af01c9988a052d1f32d113653684c234cad5cc
+  official_content_sha256: 3a1733e7f85049c33dbb2dfd46975f7071e3d31334652310cf75102d54ede225
+  page_title: cryogenic material properties 304L Stainless
+  revision: null
+identity:
+  uns: S30403
+  grade: null
+normalization_status: fully_normalized
+normalization_notes: []
+equation_assets: []
+series:
+- id: k-1-1-1
+  property: thermal_conductivity
+  symbol: k
+  unit: W/(m-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -1.4087
+    - 1.3982
+    - 0.2543
+    - -0.626
+    - 0.2334
+    - 0.4256
+    - -0.4658
+    - 0.165
+    - -0.0199
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 1.0
+  - 300.0
+  source_fit_error: '2'
+  derived_table: k-1-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0007573673758043842
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 65
+- id: cp-1-1-2
+  property: specific_heat
+  symbol: cp
+  unit: J/(kg-K)
+  conditions: {}
+  representation:
+    family: log10_poly
+    coefficients:
+    - -351.51
+    - 3123.695
+    - -12017.28
+    - 26143.99
+    - -35176.33
+    - 29981.75
+    - -15812.78
+    - 4719.64
+    - -610.515
+  data_range_K:
+  - 4.0
+  - 20.0
+  equation_range_K:
+  - 4.0
+  - 23.0
+  source_fit_error: '1'
+  derived_table: cp-1-1-2.csv
+  derived_validation:
+    method: dense quarter-point maximum relative error
+    max_relative_interpolation_error: 0.0003683873902003719
+    max_normalized_absolute_interpolation_error: null
+    target: 0.001
+    sample_count: 129
+- id: delta_l_over_l-3-1-1
+  property: linear_expansion
+  symbol: delta_l_over_l
+  unit: '[(L-L 293 )/L 293 ] x 10 5 unitless, eg. m/m'
+  conditions: {}
+  representation:
+    family: ordinary_poly_low_constant
+    coefficients:
+    - -295.54
+    - -0.39811
+    - 0.0092683
+    - -2.0261e-05
+    - 1.7127e-08
+    low_temperature_K: 23.0
+    low_temperature_constant: -300.04
+  data_range_K:
+  - 4.0
+  - 300.0
+  equation_range_K:
+  - 4.0
+  - 300.0
+  source_fit_error: '5'
+  derived_table: delta_l_over_l-3-1-1.csv
+  derived_validation:
+    method: dense quarter-point maximum absolute error normalized by peak magnitude
+    max_relative_interpolation_error: null
+    max_normalized_absolute_interpolation_error: 0.00021099613532182777
+    target: 0.001
+    sample_count: 65
