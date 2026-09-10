@@ -28,8 +28,9 @@ def build_model(mesh_data, case_data, semantic_tags):
     return a, linear, boundary_conditions, space
 
 
-def build_nonlinear_model(mesh_data, case_data, semantic_tags, material):
-    materials.validate(material, ("k",))
+def build_nonlinear_model(mesh_data, case_data, semantic_tags, material=None):
+    if material is not None:
+        materials.validate(material, ("k",))
     domain = mesh_data.mesh
     space = fem.functionspace(domain, ("Lagrange", 1))
     boundary_conditions = build_boundary_conditions(
@@ -43,8 +44,15 @@ def build_nonlinear_model(mesh_data, case_data, semantic_tags, material):
     fem.set_bc(temperature.x.array, boundary_conditions)
     temperature.x.scatter_forward()
     test = ufl.TestFunction(space)
+    if material is None:
+        properties = next(iter(case_data["_region_properties"].values()))
+        conductivity = properties["k"].evaluate(temperature)
+    else:
+        conductivity = material.k(temperature)
+    if material is None and properties["k"].domain is not None:
+        temperature._property_domains = [("k", properties["k"].domain)]
     residual = ufl.inner(
-        material.k(temperature) * ufl.grad(temperature), ufl.grad(test)
+        conductivity * ufl.grad(temperature), ufl.grad(test)
     ) * ufl.dx
     jacobian = ufl.derivative(residual, temperature)
     return residual, temperature, boundary_conditions, jacobian
@@ -87,12 +95,11 @@ def build_transient_model(mesh_data, case_data, semantic_tags, previous=None):
         ]
         previous.x.scatter_forward()
 
-    region = next(iter(case_data["regions"].values()))
     dt = case_data["time"]["dt_s"]
-    rho_cp_over_dt = fem.Constant(
-        domain, PETSc.ScalarType(region["rho"] * region["cp"] / dt)
-    )
-    conductivity = fem.Constant(domain, PETSc.ScalarType(region["k"]))
+    density = materials.property_field(mesh_data, case_data, semantic_tags, "rho")
+    heat_capacity = materials.property_field(mesh_data, case_data, semantic_tags, "cp")
+    conductivity = materials.conductivity_field(mesh_data, case_data, semantic_tags)
+    rho_cp_over_dt = density * heat_capacity / dt
     a = (
         rho_cp_over_dt * trial * test * ufl.dx
         + ufl.inner(conductivity * ufl.grad(trial), ufl.grad(test)) * ufl.dx

@@ -9,9 +9,9 @@
 | Region/cell tags | implemented | Gmsh volume physical groups + `cell_tags`/`tags.json` |
 | Facet/boundary tags | implemented | Gmsh surface physical groups + `facet_tags` |
 | Case/config loading | implemented, narrow | `case.load_case`; steady multi-region；two fixed-T BC |
-| Materials/properties | partial | inline constants；steady case-local UFL $k(T)$；no registry/table |
-| Steady conduction | implemented | single-region；constant k 或 local $k(T)$；Q=0 |
-| Transient conduction | implemented, minimal | Backward Euler; loop lives in Test 02 runner |
+| Materials/properties | implemented, narrow | unified constant/table/Python `k/rho/cp`; no registry/database |
+| Steady conduction | implemented | multi-region constant k 或 single-region table/Python k(T)；Q=0 |
+| Transient conduction | implemented, narrow | multi-region constant properties；Backward Euler；loop lives in case runner |
 | Initial condition | partial | x-split two-value DG0 only |
 | Fixed-temperature BC | implemented | exactly two |
 | Heat-flux/adiabatic/total-heat loads | absent as configurable features | untagged natural zero flux only |
@@ -30,14 +30,14 @@
 | Mesh caching/reuse | implemented | geometry-file hash only |
 | CLI/package entry point | absent | execute case `main.py` through WSL wrapper |
 | External CAD | absent workflow | only mentioned as possible future path |
-| Multi-material / region-dependent k | implemented, narrow | steady constant scalar k by cell tags |
-| k(T) | implemented, narrow | steady single-region；case-local `material.py`；UFL expression |
+| Multi-material / region-dependent k | implemented | steady/transient constant scalar properties by cell tags |
+| k(T) | implemented, narrow | steady single-region；table or local Python；UFL expression |
 | rho(T), cp(T), anisotropic k | absent | transient properties remain constants |
 | Nonlinear solve | implemented, narrow | steady $k(T)$；fixed PETSc SNES/Newton options |
 
 ## 舊文件與 source 的差異
 
-Source code 與四個 working cases 是本手冊依據。已確認下列差異：
+Source code 與六個 working cases 是本手冊依據。已確認下列差異：
 
 - `arch.md` 的 `loads`、`heat_switch` YAML 仍是示意/未來設計；`contacts` 目前只有
   `thin_layer_resistance` 已實作。
@@ -53,10 +53,10 @@ Source code 與四個 working cases 是本手冊依據。已確認下列差異�
   3D postprocessor implementation。
 - 根目錄 `README.md` 現已提供專案定位、四個案例與 WSL2 執行入口。
 
-Test 03 現已驗證 `material: local` 與 steady $k(T)$；Test 04 已驗證 multi-region constant
+Test 03 現已驗證 CSV table與 steady $k(T)$；Test 04 已驗證 multi-region constant
 $k$ 與 thin-layer contact resistance；Test 05 驗證獨立 1D P1 nonlinear $k(T)$ 與
-zero-thickness contact。Reusable material tables、transient temperature-dependent properties
-與通用 3D zero-thickness contact 仍不是現有功能。
+zero-thickness contact。Test 06驗證property loader與multi-region constant transient。
+Temperature-dependent transient與通用3D zero-thickness contact仍不是現有功能。
 
 ## 讓文件化困難的現行 API 問題
 

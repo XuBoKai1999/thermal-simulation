@@ -471,16 +471,43 @@ Test 05 分成三個彼此不可混稱的結果：
 
 # Stage 7 — 建立第一版 ADR baseline
 
+## 建立新 case 的現行順序
+
+1. 在 `geometry.py` 建立 geometry 與 semantic volume/facet tags。
+2. 在 `case.yaml` 將 regions 指派到 materials。
+3. 為各材料指定 `k`、`rho`、`cp` 的 constant、table/CSV 或 Python source。
+4. 指定目前支援的兩個 fixed-temperature BC 與 transient IC。
+5. 建立或重用 mesh。
+6. 依 relevant properties 選 linear model，或對 single-region `k(T)` 選 nonlinear model/SNES。
+7. 做 analytic、mesh 與 time-step validation。
+8. 由 case `main.py` 控制 analyze、dump 與 summary output。
+
+CSV property：
+
+```yaml
+cp: {type: table, file: materials/cp.csv, x: T_K, y: cp_J_kgK}
+```
+
+使用 piecewise-linear interpolation，預設不允許 domain 外 evaluation。Python property：
+
+```yaml
+k: {type: python, file: materials/copper.py, function: k}
+```
+
+指定函式接受 `T` 並回傳 positive finite scalar或 UFL-compatible expression。不使用
+expression language。現行 multi-region transient只支援 constant `k/rho/cp`；任何
+temperature-dependent transient property 都會在 case validation 明確拒絕。
+
 ## 前提
 
 Stage 1–6 全部通過。
 
 目前暫停於此 Stage 之前；Test 02 不是 ADR baseline。
 
-Test 03 也不是 ADR baseline。它驗證案例本地：
+Test 03 也不是 ADR baseline。它驗證統一 table property：
 
 ```text
-material.py → k(T) → nonlinear weak form → SNES/Newton → analyze → dump
+case.yaml → CSV table → Property.evaluate(T) → nonlinear weak form → SNES/Newton → analyze → dump
 ```
 
 其解析 benchmark 使用 $k(T)=10(1+0.1T)$，並以 Kirchhoff transform 比較溫度與

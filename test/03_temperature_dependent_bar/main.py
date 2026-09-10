@@ -28,13 +28,13 @@ manifest = json.loads(
 )
 mesh_data = mesh.load_mesh(mesh_path)
 residual, temperature, boundary_conditions, jacobian = model.build_nonlinear_model(
-    mesh_data, case_data, semantic_tags, material
+    mesh_data, case_data, semantic_tags
 )
 temperature, iterations = solve.solve_nonlinear(
     residual, temperature, boundary_conditions, jacobian, "nonlinear_bar_"
 )
 derived = analyze.analyze(
-    temperature, mesh_data, case_data, semantic_tags, material=material
+    temperature, mesh_data, case_data, semantic_tags
 )
 data = derived["cell_data"]
 cell_ids, mesh_centroids = mesh.map_cell_ids(mesh_path, mesh_data.mesh)

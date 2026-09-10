@@ -76,11 +76,11 @@ $$
 
 ## 03 temperature-dependent material bar
 
-目的：驗證案例本地 `material.py`、$k(T)$ nonlinear weak form、SNES/Newton、解析解與
+目的：驗證 CSV table property、$k(T)$ nonlinear weak form、SNES/Newton、解析解與
 dump pipeline。
 
 - Geometry/BC：同 Test 01。
-- Case：`regions.bar.material: local`，不把專案材料塞進 `lib/`。
+- Case：`materials.bar_material.k` 指向 `k.csv`，以piecewise-linear table建立 `k(T)`。
 - Material：$k(T)=10(1+0.1T)\ \mathrm{W/(m\,K)}$。
 - Solver：PETSc SNES `newtonls`；Newton linearization 使用 LU。
 - Verification：使用 Kirchhoff transform

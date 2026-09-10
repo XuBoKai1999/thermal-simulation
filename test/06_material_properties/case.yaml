@@ -1,0 +1,40 @@
+model:
+  type: transient_conduction
+
+materials:
+  material_a:
+    k:
+      type: constant
+      value: 10.0
+    rho: 1000.0
+    cp: 100.0
+  material_b:
+    k: 20.0
+    rho:
+      type: constant
+      value: 2000.0
+    cp:
+      type: constant
+      value: 200.0
+
+regions:
+  material_a_region:
+    material: material_a
+  material_b_region:
+    material: material_b
+
+boundary_conditions:
+  hot_end:
+    type: fixed_temperature
+    value_K: 4.0
+  cold_end:
+    type: fixed_temperature
+    value_K: 1.0
+
+time:
+  initial_condition:
+    split_x_m: 0.05
+    left_T_K: 2.0
+    right_T_K: 2.0
+  dt_s: 1.0
+  end_s: 10.0

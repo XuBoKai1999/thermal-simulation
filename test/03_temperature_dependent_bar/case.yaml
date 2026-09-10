@@ -1,9 +1,17 @@
 model:
   type: steady_conduction
 
+materials:
+  bar_material:
+    k:
+      type: table
+      file: k.csv
+      x: T_K
+      y: k_W_mK
+
 regions:
   bar:
-    material: local
+    material: bar_material
 
 boundary_conditions:
   hot_end:

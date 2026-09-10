@@ -58,11 +58,11 @@ tags 建立的 DG0 field，可包含多個 constant-$k$ regions 與 thin contact
 a, L, bcs, V = model.build_model(mesh_data, case_data, semantic_tags)
 ```
 
-### `build_nonlinear_model(mesh_data, case_data, semantic_tags, material)`
+### `build_nonlinear_model(mesh_data, case_data, semantic_tags, material=None)`
 
 建立 steady $\nabla\cdot(k(T)\nabla T)=0$ residual、自動 Jacobian 與 P1 unknown，回傳
-`(residual, temperature, boundary_conditions, jacobian)`。`material.k(T)` 必須接受 UFL
-expression。初始 guess 是兩個 fixed boundary temperatures 的平均值，boundary DOFs 再套用
+`(residual, temperature, boundary_conditions, jacobian)`。預設使用case已解析的single-region
+table/Python `k(T)`；optional `material.k(T)`保留legacy runner相容性。初始 guess 是兩個 fixed boundary temperatures 的平均值，boundary DOFs 再套用
 Dirichlet values。
 
 ### `build_transient_model(mesh_data, case_data, semantic_tags, previous=None)`
@@ -74,7 +74,8 @@ Dirichlet values。
 | `semantic_tags` | dict | — | required | name → dimension/tag |
 | `previous` | `fem.Function` or `None` | K | default `None` | previous state；None 時由 x-split IC 建 DG0 function |
 
-回傳 `(a, linear, boundary_conditions, space, previous)`。只建單一 Backward Euler step。
+回傳 `(a, linear, boundary_conditions, space, previous)`。只建單一 Backward Euler step；
+constant `k/rho/cp`均由semantic cell tags建立DG0 fields，可有多個regions。
 
 ### `build_boundary_conditions(space, facet_tags, case_data, semantic_tags)`
 
@@ -115,10 +116,21 @@ options prefix string。solver options 固定，沒有其他 arguments/defaults�
 ```
 
 需要 semantic tags `hot_end`、`cold_end`。summary 是全 domain，不是 per-region。
-`material=None` 時從唯一 region 讀 constant `k`；local-material case 必須傳入具有 `k(T)`
-的 module。
+`material=None` 時使用case解析後的constant conductivity field或single-region `k(T)` property；
+legacy local-material case仍可傳入具有`k(T)`的module。
 
 ## `lib.materials`
+
+### `load_property(definition, base_dir, name="property")`
+
+將scalar或`type: constant/table/python`mapping載入為`Property`。`Property.evaluate(T, **state)`
+驗證numeric result finite且positive；table的`domain`明確保存上下界，domain外numeric evaluation
+失敗。相對CSV/Python路徑以`base_dir`解析。
+
+### `load_region_properties(case_data, base_dir)`
+
+解析`region -> material -> k/rho/cp`並回傳region property mapping；`case.load_case`將結果保存
+於內部`_region_properties`。
 
 ### `validate(material, names)`
 
@@ -126,9 +138,13 @@ options prefix string。solver options 固定，沒有其他 arguments/defaults�
 `build_nonlinear_model` 會以 `("k",)` 呼叫它。它不載入 module、不建立 registry，也不
 檢查 symbolic function 在整個溫度範圍的 positivity。
 
+### `property_field(mesh_data, case_data, semantic_tags, name)`
+
+依semantic cell tags為constant property建立DG0 field；`name`目前可為`k/rho/cp`。
+
 ### `conductivity_field(mesh_data, case_data, semantic_tags)`
 
-建立 DG0 conductivity function。一般 region 使用 `regions.<name>.k`；被 contact 指向的
+`property_field(..., "k")`的相容wrapper。一般 region 使用解析後的material property；被 contact 指向的
 region 使用 `thickness_m / resistance_m2K_W`。每個 owned mesh cell 都必須取得有限值，
 否則丟出 `ValueError`。回傳 function 單位 W/(m K)。
 

@@ -11,7 +11,16 @@ def analyze(temperature, mesh_data, case_data, semantic_tags, material=None):
     domain = mesh_data.mesh
     if material is None:
         from .materials import conductivity_field
-        conductivity = conductivity_field(mesh_data, case_data, semantic_tags)
+        properties = case_data["_region_properties"]
+        temperature_dependent = [
+            values["k"] for values in properties.values()
+            if values is not None and not values["k"].is_constant
+        ]
+        conductivity = (
+            temperature_dependent[0].evaluate(temperature)
+            if temperature_dependent
+            else conductivity_field(mesh_data, case_data, semantic_tags)
+        )
     else:
         conductivity = material.k(temperature)
     if temperature.function_space.element.basix_element.degree == 0:

@@ -23,13 +23,14 @@ P1 temperature 對 straight constant-k bar 恰可表示線性解，不能用 Tes
 `model.type` 不是目前兩個字串之一。使用 `steady_conduction` 或
 `transient_conduction`；其他 physics 尚未實作。
 
-### `Region material currently supports only 'local'`
+### `Region ... names unknown material`
 
 目前沒有 named-material registry。常數材料直接寫 `k`；案例自訂 steady $k(T)$ 使用
+確認region的`material`指向頂層`materials`中存在的名稱。Legacy runner仍可使用
 `material: local`，並由同目錄 `material.py` 提供。薄層 contact 則使用
 `type: thin_layer_resistance`，不是 named material。
 
-### `Local temperature-dependent material is steady-only in v1`
+### `temperature-dependent property in transient model is not yet supported`
 
 第一版只驗證 steady $k(T)$。transient $k(T)$、$\rho(T)$、$c_p(T)$ 尚未形成已驗證的
 time-stepping contract，因此 validator 會明確拒絕。
@@ -49,7 +50,8 @@ time-stepping contract，因此 validator 會明確拒絕。
 ### `regions must contain at least one material region`
 
 steady constant-property case 可有多個 regions，但每個 key 都必須對應 geometry 的 volume
-semantic tag。transient 與 local $k(T)$ 仍限制單一 region。
+semantic tag。Transient可有多個regions，但每個都必須有constant `k/rho/cp`；
+temperature-dependent steady仍限制單一region。
 
 ### `Every mesh cell must belong to a configured material region`
 

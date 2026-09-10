@@ -164,10 +164,10 @@ time:
 | path | type | SI unit | requirement |
 |---|---|---|---|
 | `model.type` | string | — | `steady_conduction` 或 `transient_conduction` |
-| `regions` | mapping | — | 至少一個；transient/local-$k(T)$ 仍限制一個 |
-| `regions.<name>.k` | positive number | W/(m K) | 常數材料必要；steady local material 時由 `k(T)` 取代 |
-| `regions.<name>.rho` | positive number | kg/m³ | transient 必要 |
-| `regions.<name>.cp` | positive number | J/(kg K) | transient 必要 |
+| `materials` | mapping | — | optional；named material definitions |
+| `regions` | mapping | — | 至少一個；可 inline properties 或引用 named material |
+| `regions.<name>.material` | string | — | optional；`materials` 中的名稱，或 legacy `local` |
+| `k`, `rho`, `cp` property | number/mapping | SI | scalar 或 `constant/table/python` definition；transient 三者必要且必須 constant |
 | `boundary_conditions` | mapping | — | **恰好兩個** entries |
 | `boundary_conditions.<name>.type` | string | — | 只能是 `fixed_temperature` |
 | `boundary_conditions.<name>.value_K` | number | K | 必要 |
@@ -181,38 +181,38 @@ time:
 | `contacts.<name>.resistance_m2K_W` | positive number | m² K/W | 面積比接觸熱阻 |
 | `contacts.<name>.thickness_m` | positive number | m | 必須等於 geometry 薄層的實際法向厚度 |
 
-除了下節 steady `material: local` 明確取代 numeric `k` 的情況，沒有 framework-level
-defaults；必要欄位均須明確提供。loader 對未知額外 key 不報錯，
+沒有 framework-level defaults；必要欄位均須明確提供。loader 對未知額外 key 不報錯，
 但 model 也不會因此實作它們，因此不要把未使用 key 當成有效功能。
 
-### 案例本地溫度相依材料（steady v1）
+### Material property sources
 
-steady 單一 region 可改成：
+Backward-compatible scalar、explicit constant、CSV table與Python callable分別為：
 
 ```yaml
+materials:
+  sample:
+    rho: 1000.0
+    cp: {type: constant, value: 100.0}
+    k: {type: table, file: materials/k.csv, x: T_K, y: k_W_mK}
 regions:
-  bar:
-    material: local
+  bar: {material: sample}
 ```
 
-同目錄的 `material.py` 提供：
+Python source寫成：
 
 ```python
-def k(T):
-    return 10.0 * (1.0 + 0.1 * T)
+k: {type: python, file: materials/sample.py, function: k}
 ```
 
-`T` 是 UFL expression，不是一般 float/NumPy array。案例 `main.py` 必須明確
-`import material`，再把 module 傳給 `model.build_nonlinear_model` 與
-`analyze.analyze(..., material=material)`；model builder 會驗證必要的 `k` callable。
-
-`material: local` 第一版只允許 steady conduction；transient local material 會被 case
-validator 拒絕。材料函式必須在案例可能溫度範圍保持有限且為正值，現行 code 不會自動
-證明 symbolic expression 的 positivity。
+相對路徑以 `case.yaml` 所在目錄解析。Table採piecewise-linear interpolation，numeric
+domain外evaluation失敗；Python function必須存在且numeric回傳為finite、positive。
+Single-region steady table/Python `k(T)`走nonlinear builder。Temperature-dependent transient
+會被validator以明確訊息拒絕。Legacy `material: local`仍可由舊runner明確傳module。
 
 ### 多 region 與薄層接觸熱阻
 
-steady constant-property case 可定義多個 region。非接觸層 region 各自提供 `k`；geometry
+steady或transient constant-property case 可定義多個 region。Transient各region還需
+constant `rho`、`cp`。非接觸層 region 各自提供 `k`；geometry
 的 volume physical-group names 必須對應 region keys。面積比熱阻使用：
 
 ```yaml

@@ -10,9 +10,22 @@ analysis 與 LAMMPS-like dump I/O；每個 `test/<name>/main.py` 則像 LAMMPS i
 |---|---|
 | `01_steady_bar` | 單一 constant-$k$ region 的穩態解析驗證 |
 | `02_transient_bar` | Early transient Backward Euler `dt × dx` 收斂與解析解 profiles 比較 |
-| `03_temperature_dependent_bar` | 案例本地 $k(T)$ 與 SNES/Newton nonlinear solve |
+| `03_temperature_dependent_bar` | CSV table $k(T)$ 與 SNES/Newton nonlinear solve |
 | `04_contact_resistance_bar` | steady multi-region 與 mesh-resolved thin-layer contact resistance |
 | `05_steady_nonlinear_contact_bar` | 1D P1 nonlinear $k(T)$、零厚度接觸、steady exact、transient 與 0.125 s `dx × dt` slice |
+| `06_material_properties` | constant/table/Python property loader 與 multi-region constant-property transient regression |
+
+## Material properties
+
+`k`、`rho`、`cp` 使用同一種 property representation。既有 scalar YAML 仍等價於
+constant property；新案例也可用 `type: constant`、CSV `type: table` 或案例本地
+`type: python`。Region 可直接保存舊式 properties，或以 `material: <name>` 指向頂層
+`materials` block。相對檔案路徑以 `case.yaml` 所在目錄為基準。
+
+- Steady linear：一個或多個 constant-property regions。
+- Steady nonlinear：單一 region 的 table/Python `k(T)`，使用 SNES/Newton。
+- Transient linear：一個或多個 regions，但 `k`、`rho`、`cp` 目前都必須是 constant。
+- Temperature-dependent transient 尚未實作，case loader 會明確拒絕。
 
 執行範例：
 

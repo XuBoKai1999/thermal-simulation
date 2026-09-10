@@ -4,9 +4,12 @@ from pathlib import Path
 
 import yaml
 
+from . import materials
+
 
 def load_case(path):
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    path = Path(path)
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("case.yaml must contain a mapping")
     model_type = data.get("model", {}).get("type")
@@ -32,25 +35,41 @@ def load_case(path):
     local_regions = []
     for name, region in regions.items():
         local_material = region.get("material") == "local"
-        if "material" in region and not local_material:
-            raise ValueError("Region material currently supports only 'local'")
         if local_material:
             local_regions.append(name)
-        elif name not in contact_regions:
-            conductivity = region.get("k")
-            if not isinstance(conductivity, (int, float)) or conductivity <= 0:
-                raise ValueError(f"Region {name} conductivity k must be positive")
     if local_regions and (len(regions) != 1 or contacts):
         raise ValueError("Local material requires one region and no contacts in v1")
+    data["_region_properties"] = materials.load_region_properties(data, path.parent)
+    for region_name, properties in data["_region_properties"].items():
+        if properties is None:
+            continue
+        if "k" not in properties:
+            raise ValueError(f"Region {region_name} requires k")
+        required = ("k", "rho", "cp") if model_type == "transient_conduction" else ("k",)
+        missing = [name for name in required if name not in properties]
+        if missing:
+            raise ValueError(f"Region {region_name} requires {', '.join(missing)}")
+        if model_type == "transient_conduction" and any(
+            not properties[name].is_constant for name in required
+        ):
+            raise ValueError(
+                "temperature-dependent property in transient model is not yet supported"
+            )
+    temperature_dependent_k = [
+        name for name, properties in data["_region_properties"].items()
+        if properties is not None and not properties["k"].is_constant
+    ]
+    if temperature_dependent_k and (len(regions) != 1 or contacts):
+        raise ValueError(
+            "Temperature-dependent conductivity supports one region and no contacts"
+        )
     if model_type == "transient_conduction":
-        if contacts or len(regions) != 1:
-            raise ValueError("Transient conduction supports one region and no contacts in v1")
-        region = next(iter(regions.values()))
+        if contacts:
+            raise ValueError("Transient conduction does not support contacts")
         if local_regions:
-            raise ValueError("Local temperature-dependent material is steady-only in v1")
-        for name in ("rho", "cp"):
-            if not isinstance(region.get(name), (int, float)) or region[name] <= 0:
-                raise ValueError(f"Region {name} must be positive")
+            raise ValueError(
+                "temperature-dependent property in transient model is not yet supported"
+            )
         time = data.get("time", {})
         for name in ("dt_s", "end_s"):
             if not isinstance(time.get(name), (int, float)) or time[name] <= 0:
@@ -68,6 +87,22 @@ def load_case(path):
             raise ValueError(f"{name} must be a fixed_temperature condition")
         if not isinstance(condition.get("value_K"), (int, float)):
             raise ValueError(f"{name}.value_K must be numeric")
+    temperatures = [condition["value_K"] for condition in conditions.values()]
+    if model_type == "transient_conduction":
+        initial = data["time"]["initial_condition"]
+        temperatures.extend((initial["left_T_K"], initial["right_T_K"]))
+    for region_name, properties in data["_region_properties"].items():
+        if properties is None:
+            continue
+        for property_name, prop in properties.items():
+            if not prop.is_constant:
+                for temperature in temperatures:
+                    try:
+                        prop.evaluate(temperature)
+                    except Exception as error:
+                        raise ValueError(
+                            f"Invalid {region_name}.{property_name} at {temperature} K: {error}"
+                        ) from error
     return data
 
 

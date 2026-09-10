@@ -86,12 +86,13 @@ contact/interface law、heat switch。
 ## Materials 與熱物性限制
 
 - steady constant-property model 可有多個 region，conductivity 以 DG0 field 依 cell tag 指派。
-- transient 與 local $k(T)$ 仍各自限制單一 region。
-- `k`、`rho`、`cp` 均為 scalar constants。
+- transient 支援多個 constant-property regions，以 cell tags 建立 DG0 `k/rho/cp` fields。
+- `k`、`rho`、`cp` 使用統一 constant/table/Python property representation。
 - steady 支援依 cell tags 指派多個 constant scalar $k$，以及單一 local $k(T)$ region；
   兩者目前不能組合。
 - 不支援 anisotropic tensor、transient $k(T)$、`rho(T)` 或 `cp(T)`。
-- 沒有 materials registry 或外部 property table。
+- CSV table使用piecewise-linear interpolation；Python callable是local extension code。
+- 沒有 materials registry或material database。
 
 ## Thin-layer contact resistance
 
@@ -123,7 +124,7 @@ FEniCSx DG/Nitsche/mortar coupling，以及溫度或壓力相依 contact resista
 
 ## Temperature-dependent conductivity 與 nonlinear solver
 
-steady 單一材料可由案例本地 `material.py` 定義 UFL-compatible：
+steady 單一材料可由 CSV table 或案例本地 Python callable 定義 UFL-compatible：
 
 $$
 k=k(T),\qquad \nabla\cdot(k(T)\nabla T)=0.
@@ -134,9 +135,8 @@ $$
 preonly/LU。固定設定為 `snes_rtol=1e-10`、`snes_atol=1e-12`、最多 50 iterations，且
 linear/nonlinear 不收斂都直接報錯。
 
-第一版不支援 YAML solver options、CSV/table interpolation、一般 Python black-box material、
-多材料或 transient $\rho(T),c_p(T)$。使用者必須確保 $k(T)>0$ 且 expression 可由 UFL
-微分。
+第一版不支援 YAML solver options、temperature-dependent multi-region或任何 transient
+`k(T)/rho(T)/cp(T)`。後者會在case validation明確拒絕。Python expression必須可由UFL微分。
 
 ## MPI 行為
 
