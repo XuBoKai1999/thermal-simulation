@@ -65,9 +65,9 @@ temperature-dependent steady仍限制單一region。
 厚度，且薄層至少有可接受品質的 cells。薄層太薄而 mesh size 太大會造成劣質元素；這時
 應局部細化或調整 representation，而不是只修改熱阻數值。
 
-### `Stage 2 requires exactly two boundary conditions`
+### `boundary_conditions must contain at least one condition`
 
-目前 validator hard-code 恰好兩個 BC，兩者都必須為 `fixed_temperature`。
+至少提供一個semantic surface fixed-temperature BC；目前仍不接受其他BC type。
 
 ### `Mesh has no facets tagged <name>` 或 semantic name `KeyError`
 
@@ -77,8 +77,8 @@ temperature-dependent steady仍限制單一region。
 
 ### 改了 geometry，卻仍 reuse 舊 mesh
 
-cache 只 hash `geometry.py`。若 geometry 由外部檔案/環境間接決定，這些變化不會被偵測。
-修改 geometry file 本身或移走該案例的 `mesh.msh`、`tags.json`、`build.json` 後再跑。
+cache只hash`geometry.py`與caller提供的`cache_key`。若geometry讀取外部STEP/CAD或helper，
+必須把該dependency的版本/hash納入`cache_key`，否則變化不會被偵測並可能錯誤reuse舊mesh。
 
 ### 只改 material 或 BC 卻重新 mesh
 
@@ -87,7 +87,7 @@ cache 只 hash `geometry.py`。若 geometry 由外部檔案/環境間接決定�
 ### Transient 缺 `rho` / `cp` / time / IC
 
 所有 transient fields 都沒有 defaults；依 schema補上正值 `rho`, `cp`, `dt_s`, `end_s`
-與三個 numeric initial-condition values。
+與`uniform/value_K`或legacy `split_x`所需的numeric initial-condition values。
 
 ### `time.end_s must be an integer multiple of time.dt_s`
 

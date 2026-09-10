@@ -15,6 +15,7 @@ analysis 與 LAMMPS-like dump I/O；每個 `test/<name>/main.py` 則像 LAMMPS i
 | `05_steady_nonlinear_contact_bar` | 1D P1 nonlinear $k(T)$、零厚度接觸、steady exact、transient 與 0.125 s `dx × dt` slice |
 | `06_material_properties` | constant/table/Python property loader 與 multi-region constant-property transient regression |
 | `06_material_properties/nonlinear_transient.py` | multi-region temperature-dependent `k/rho/cp` transient 與 SNES regression |
+| `07_3d_multiregion_transient` | uniform IC、一般 semantic surfaces、region statistics、selected heat flow 與 conformal interface |
 
 ## Material properties
 
@@ -27,6 +28,8 @@ constant property；新案例也可用 `type: constant`、CSV `type: table` 或�
 - Steady nonlinear：單一 region 的 table/Python `k(T)`，使用 SNES/Newton。
 - Transient linear：一個或多個 regions，且 relevant `k/rho/cp` 全為 constant。
 - Transient nonlinear：一個或多個 regions 的 table/Python `k(T)`、`rho(T)`、`cp(T)`，使用 SNES/Newton。
+- Initial condition：`uniform`，或 backward-compatible `split_x`。
+- 一個以上 fixed-temperature semantic surfaces；analysis 可指定任意 tagged surfaces 並回傳 per-region temperature statistics。
 
 執行範例：
 

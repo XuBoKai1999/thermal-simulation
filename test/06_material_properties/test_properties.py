@@ -128,6 +128,41 @@ time:
                 loaded["_region_properties"]["bar"]["k"].is_constant
             )
 
+    def test_uniform_initial_condition_and_boundary_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "case.yaml").write_text(
+                """model: {type: transient_conduction}
+regions:
+  solid: {k: 10, rho: 1000, cp: 100}
+boundary_conditions:
+  fixed_surface: {type: fixed_temperature, value_K: 4}
+time:
+  initial_condition: {type: uniform, value_K: 2}
+  dt_s: 1
+  end_s: 2
+""",
+                encoding="utf-8",
+            )
+            loaded = load_case(root / "case.yaml")
+            self.assertEqual(loaded["time"]["initial_condition"]["type"], "uniform")
+            loaded["time"]["initial_condition"]["type"] = "unknown"
+            (root / "case.yaml").write_text(
+                """model: {type: transient_conduction}
+regions:
+  solid: {k: 10, rho: 1000, cp: 100}
+boundary_conditions:
+  fixed_surface: {type: fixed_temperature, value_K: 4}
+time:
+  initial_condition: {type: unknown, value_K: 2}
+  dt_s: 1
+  end_s: 2
+""",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "Unsupported.*initial_condition"):
+                load_case(root / "case.yaml")
+
 
 if __name__ == "__main__":
     unittest.main()

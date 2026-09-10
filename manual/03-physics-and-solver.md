@@ -38,7 +38,13 @@ dump schedule 與 state update 是案例 `main.py` 的責任。現有 runner 要
 
 ## Initial condition
 
-唯一支援形式是沿全域 x 座標切分的兩個常數：
+一般3D case可使用uniform initial condition：
+
+```yaml
+initial_condition: {type: uniform, value_K: 4.0}
+```
+
+為保持既有rod tests相容，也保留沿全域 x 座標切分的兩個常數：
 
 $$
 T(x,0)=\begin{cases}
@@ -47,7 +53,7 @@ T_\mathrm{right}, & x\ge x_\mathrm{split}.
 \end{cases}
 $$
 
-初始 state 建在 `DG0` space，因此 discontinuity 可按 cell 表示；它不是 callable、region
+兩種初始 state 都建在 `DG0` space；split-x discontinuity可按cell表示。IC不是callable、region
 mapping、P1 function 或一般 coordinate expression API。之後每一步的解是 P1；現有 runner
 第一次 solve 後會以該 P1 function 重建 problem，後續 state 也為 P1。若 discontinuity
 沒有與 mesh cell boundary 對齊，cell-center-based DG0 assignment 會造成 mesh-dependent
@@ -74,10 +80,10 @@ boundary_conditions:
 ```
 
 key 必須存在於 `tags.json` 且指向有 mesh facets 的 physical surface。`value_K` 單位 K。
-case validator 要求恰好兩個 BC；model 沒有依 `type` 分派其他 BC。
+case validator 要求至少一個 BC；model 沒有依 `type` 分派其他 BC。
 
 Adiabatic boundary 沒有可設定的 BC type。未被 Dirichlet 標記的 boundary 在弱式中自然為
-zero normal flux，但目前恰好兩個 BC 的 validation 仍然存在；不可宣稱已有通用 adiabatic
+zero normal flux；不可宣稱已有可配置的 adiabatic
 configuration。
 
 以下皆未實作：specified heat flux、total heat、convection、radiation、真正零厚度

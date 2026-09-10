@@ -1,0 +1,96 @@
+## A. Modified
+
+- `lib/case.py`
+  - 新增 `uniform` initial condition。
+  - 保留省略 `type` 的 legacy `split_x` 格式。
+  - invalid IC type、非 finite 溫度會明確失敗。
+  - BC 數量改為至少一個，不再限制恰好兩個。
+
+- `lib/model.py`
+  - linear/nonlinear transient 共用最小 IC assignment helper。
+  - 移除 uniform IC 對 x 軸的依賴。
+
+- `lib/analyze.py`
+  - 移除 `hot_end`／`cold_end` hard coding。
+  - 新增 caller-selected `heatflow_surfaces`。
+  - 預設仍分析所有 fixed-temperature surfaces，保持舊 API 相容。
+  - 新增各 volume region 的 `T_min_K`、`T_max_K`、`T_avg_K`。
+
+- `test/07_3d_multiregion_transient`
+  - 新增唯一一個 general 3D regression。
+  - 驗證兩個 cuboids、multi-region、uniform IC、單一 BC、三個非 rod semantic surfaces、selected heat flow、region statistics、conformal interface 與 dump round trip。
+
+- `test/01_steady_bar/main.py`
+  - 將 nested region statistics 展平成可讀的 summary CSV rows。
+
+- `test/06_material_properties/test_properties.py`
+  - 增加 uniform IC、單一 BC 與 invalid IC type validation。
+
+- `.gitignore`
+  - 忽略 `__pycache__/`、`*.py[cod]`、`.pytest_cache/`。
+  - 20 個已追蹤 Python cache files 已從 Git index 移除，工作目錄檔案未刪除。
+  - 沒有忽略 benchmark `build/` 或 `output/`。
+
+- 文件已同步：
+  - `README.md`
+  - `arch.md`
+  - `steps.md`
+  - `manual/`
+  - `run/01_ADR01/framework-readiness-audit.md`
+
+`dump-format.md` reviewed — no change required because dump schema was unchanged. `AGENTS.md` 也不需修改。
+
+Mesh cache 文件已明確記錄：目前 fingerprint 只涵蓋 `geometry.py` 與 caller `cache_key`；未來外部 STEP/CAD/helper 必須由 caller 納入 cache key。
+
+## B. Tests
+
+所有 simulation 都經 `scripts/wsl-run.ps1` 在 WSL 執行。
+
+| Test | Result | 主要結果 |
+|---|---|---|
+| Test 01 steady analytic | PASS | midpoint error `5.33e-15 K`；flux error `1.14e-13 W/m²`；heat-flow conservation PASS |
+| Test 02 transient | PASS | 3 mesh sizes × 3 time steps；early-transient run PASS |
+| Test 02 validator | PASS | analytical profile及 `dx × dt` comparisons完成 |
+| Test 03 nonlinear `k(T)` | PASS | 4 Newton iterations；`T` error `5.65e-4 K` |
+| Test 04 thin-layer contact | PASS | temperature error `2.66e-14 K`；flux error `4.15e-12 W/m²` |
+| Test 05 zero-thickness reference | PASS | finest mean flux `249.9975 W/m²`；T RMSE `2.81e-5 K` |
+| Test 05 validator | PASS | 16-run convergence slice與500 s transient reference完成 |
+| Test 06 property units | PASS | 7/7 tests |
+| Test 06 constant multi-region transient | PASS | mesh、time-step及long-time checks通過 |
+| Test 06 nonlinear transient | PASS | time errors `0.02797 → 0.00954 → 0 K`；steady error `0.02466 K` |
+| Test 07 general 3D | PASS | shared interface、uniform IC、region statistics、surface heat flow、dump/MESH_ID round trip均通過 |
+
+Test 07 在 `t=5 s`：
+
+- `heated_block`: min `1.69016 K`, avg `2.77481 K`, max `4 K`
+- `passive_block`: min `1.27331 K`, avg `1.41602 K`, max `1.69751 K`
+- `Q_dot_heater_face = -0.174866 W`
+- `Q_dot_monitor_face = 0.0104475 W`
+- `Q_dot_side_probe = -0.00988932 W`
+
+`git diff --check` 通過；只有既有 Windows LF/CRLF 提示。
+
+## C. Remaining limitations
+
+仍未支援：
+
+- transient contact resistance
+- general 3D zero-thickness contact
+- radiation
+- convection
+- prescribed heat flux、total heat load、volumetric heat generation
+- time-dependent BC
+- heat switch
+- anisotropic conductivity
+- callable、region-mapped或外部檔案 initial field
+- MPI dump及parallel cell-ID mapping
+- 自動 solver/model selection與通用 time-loop runner
+- 外部 CAD dependency 自動追蹤
+
+目前 BC 仍只有 constant fixed temperature；未指定表面自然為零法向熱流。
+
+## D. ADR readiness verdict
+
+READY FOR ADR BASELINE
+
+目前已具備 arbitrary 3D multi-region geometry、multiple semantic boundaries、uniform IC、constant或temperature-dependent材料、perfect shared-mesh contact、temperature/heat-flux fields、per-region statistics、selected-surface heat flow，以及既有 mesh/time-step convergence workflow。

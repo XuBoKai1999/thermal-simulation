@@ -18,12 +18,12 @@
 - 單一 region steady `k(T)` 與 PETSc SNES/Newton。
 - 3D mesh-resolved thin-layer contact resistance。
 - 獨立的 1D zero-thickness nonlinear contact benchmark。
-- Cell-centroid dump、dump series reader、全域 summary 與兩個固定名稱端面的總熱流。
+- Cell-centroid dump、dump series reader、全域/per-region summary 與selected-surface總熱流。
 
 主要限制：
 
-- 通用 transient 不支援 `k(T)`、`rho(T)`、`cp(T)`。
-- 只能設定恰好兩個固定溫度邊界。
+- Transient支援constant或temperature-dependent `k/rho/cp`，但runner仍需明確選builder。
+- 只支援fixed-temperature boundary type，但可設定一個以上semantic surfaces。
 - Heat load、specified heat flux、convection、radiation、heat switch 都未實作。
 - 3D zero-thickness contact 尚未實作。
 - Transient loop、輸出排程及 summary 寫出都由各案例 `main.py` 自行處理。
@@ -66,7 +66,6 @@ case main.py
 - 沒有自動 transient loop。
 - 沒有通用 summary writer。
 - 沒有 `resolved_case.yaml` 或 `run.log` writer。
-- 沒有 per-region temperature statistics。
 - 沒有通用 3D mesh/dump merge visualizer。
 - `loads`、`heat_switch` YAML 是未來示意，loader 不接受也不使用它們。
 - STEP/BREP CAD import workflow 尚未建立作為 framework API。
@@ -78,9 +77,9 @@ case main.py
 | `case.py` | 載入及狹義驗證 `case.yaml`；另有 Test 01 型式的 `expected.yaml` validator。 |
 | `mesh.py` | 依 geometry source hash/cache key 建立或重用 Gmsh mesh；載入 FEniCSx mesh；serial-only Gmsh/FEniCSx cell-ID 對應。 |
 | `materials.py` | 載入並統一 constant、CSV/table、Python callable property evaluator；依 cell tags 建立 `k/rho/cp` DG0 constant fields；薄層以 `k = thickness / resistance` 轉換。 |
-| `model.py` | 建立 steady linear、steady nonlinear `k(T)`、multi-region constant-property transient weak form；建立兩個 fixed-T Dirichlet BC。 |
+| `model.py` | 建立steady linear/nonlinear與multi-region linear/nonlinear transient weak forms；建立一個以上fixed-T Dirichlet BC。 |
 | `solve.py` | PETSc preonly/LU linear solve；固定選項的 SNES/Newton nonlinear solve。 |
-| `analyze.py` | 計算 cell-centroid `T`、`q = -k grad(T)`、全域 min/max/average、平均熱流及 hard-coded `hot_end`/`cold_end` surface heat flow。 |
+| `analyze.py` | 計算cell-centroid `T`、`q = -k grad(T)`、全域/per-region temperature statistics、平均熱流與caller-selected surface heat flow。 |
 | `dump.py` | 驗證並序列化 caller 已準備好的 cell fields；建立 dump 目錄及 `<timestep>.dump`。 |
 | `dump_reader.py` | 讀單一 dump；按 TIME 排序並驗證相同 MESH_ID 的 dump series。 |
 | `contact.py` | 獨立 NumPy 1D P1、兩個不共享 interface nodes 的 steady/transient nonlinear zero-thickness contact solver；不是通用 FEniCSx 3D contact。 |
@@ -132,20 +131,19 @@ def build_geometry(mesh_path):
 - `regions`
   - steady constant material：正值 scalar `k`
   - steady nonlinear：唯一 region 設 `material: local`
-  - transient：唯一 region 必須有正值 scalar `k`、`rho`、`cp`
+  - transient：每個region必須有positive `k`、`rho`、`cp` properties
 - `contacts`
   - 只接受 `thin_layer_resistance`
   - 必須指定已有 volume region
   - 正值 `resistance_m2K_W`
   - 正值 `thickness_m`
 - `boundary_conditions`
-  - 必須恰好兩個
+  - 至少一個
   - 每個必須是 `fixed_temperature`
   - numeric `value_K`
 - transient `time`
   - 正值 `dt_s`、`end_s`
-  - `initial_condition.split_x_m`
-  - `left_T_K`、`right_T_K`
+  - `initial_condition.type: uniform`與`value_K`，或legacy `split_x`欄位
 
 Test 05 的 YAML 沒有經過 `case.load_case()`，而是由 runner 直接 `yaml.safe_load()`；不能把它視為通用 case schema。
 
@@ -214,13 +212,13 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 | 3D geometry | WORKING | `test/01-04/geometry.py` 均建立 3D box/tetrahedral mesh；`mesh.load_mesh(..., gdim=3)`。 |
 | Multiple material regions | WORKING | Test 04驗證3D steady；Test 06驗證multi-region constant-property transient；property fields依cell tags指派。 |
 | Transient conduction | WORKING | Test 02及Test 06通過；Backward Euler支援multi-region constant與temperature-dependent properties，loop仍在case runner。 |
-| `rho` | LIMITED | Multi-region constant property已驗證；transient `rho(T)`未實作。 |
-| `cp` | LIMITED | Multi-region constant property已驗證；transient `cp(T)`未實作。 |
+| `rho` | WORKING | Multi-region constant與transient `rho(T)`由Test 06驗證。 |
+| `cp` | WORKING | Multi-region constant與transient `cp(T)`由Test 06驗證。 |
 | Constant `k` | WORKING | Test 01 steady、Test 02 transient、Test 04 multi-region 均通過。 |
-| Temperature-dependent `k(T)` | LIMITED | Test 03 steady 3D single-region SNES 通過；Test 05 1D solver也使用 `k(T)`。通用 transient 不支援。 |
-| Multiple temperature-dependent materials | NOT IMPLEMENTED | Nonlinear temperature-dependent model仍限制單一region且不可有contacts。 |
-| Fixed-temperature BC | LIMITED | Test 01-04 通過；loader 強制恰好兩個 constant `fixed_temperature`。 |
-| Arbitrary initial temperature | LIMITED | 通用 transient只接受 x-direction split、左右兩個溫度；不是 callable、field file或 region mapping。 |
+| Temperature-dependent `k(T)` | WORKING | Test 03 steady與Test 06 multi-region transient SNES通過。 |
+| Multiple temperature-dependent materials | WORKING | Test 06 nonlinear transient使用multi-region property expressions。 |
+| Fixed-temperature BC | LIMITED | Test 01-04及07通過；一個以上constant fixed-temperature surfaces，其他type未實作。 |
+| Arbitrary initial temperature | LIMITED | 支援uniform與legacy split-x；不是callable、field file或region mapping。 |
 | Contact resistance | LIMITED | 3D finite-thickness steady layer及獨立1D zero-thickness solver；沒有通用3D interface contact。 |
 | Zero-thickness contact resistance | LIMITED | Test 05 steady/transient 1D benchmark通過；`lib/contact.py`，不是FEniCSx 3D framework model。 |
 | Thin-layer contact resistance | LIMITED | Test 04 3D steady通過；需要實際 meshed volume，`k = thickness / resistance`。Transient case禁止 contacts。 |
@@ -296,9 +294,9 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
   - 適用溫度範圍與資料來源。
 - Initial temperature：
   - 首版能否用均勻溫度。
-  - 目前 schema 沒有直接 uniform initial temperature；現行方式可令左右值相同，但仍依賴 `split_x_m`。
+  - 使用`type: uniform`與`value_K`。
 - Thermal BC：
-  - 兩個 fixed-temperature surfaces。
+  - 一個以上 fixed-temperature surfaces。
   - 各自溫度值。
 - Time：
   - total simulation time。
@@ -309,7 +307,7 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 - Outputs：
   - 至少指定需要的 dump times。
   - 要觀察的 `T_min`、`T_max`、`T_avg`、cell `T`、`q`。
-  - 是否真的需要特定 ADR component/region 的統計；目前 framework沒有直接提供。
+  - 需要哪些ADR component/region statistics與surface heat flows。
 
 ### 2. 可以先合理假設
 
@@ -337,12 +335,9 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 - 材料資料庫及 reusable config infrastructure。
 - MPI parallel dump。
 - 通用 3D visualization。
-- Per-region automated summary。
 
 ### 4. Framework 目前不支援，ADR 真需要時才處理
 
-- Transient `k(T)`、`rho(T)`、`cp(T)`。
-- Multiple temperature-dependent materials。
 - Volumetric heat generation。
 - Prescribed surface heat flux或 total heat load。
 - Time-dependent temperature/load。
@@ -352,7 +347,6 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 - 通用 3D zero-thickness contact。
 - Pressure-/temperature-dependent contact conductance。
 - 任意 initial field、region-based IC或從實驗場匯入。
-- 超過或少於兩個 fixed-temperature BC 的通用 case validation。
 
 ## 6. Contact resistance status
 
@@ -432,14 +426,13 @@ h_c = 1 / R_c
 
 1. 真實 ADR geometry、semantic part list及材料對應尚需輸入。
 2. ADR material table必須涵蓋完整預期溫度範圍，否則nonlinear solve會因domain validation失敗。
-3. 只有兩個常數 fixed-temperature BC。
+3. 只能使用constant fixed-temperature BC，但數量可為一個以上。
 4. 若 ADR 是由 internal heat load驅動，現行 framework無法表示。
 5. 若主要散熱機制是 convection/radiation，現行 framework無法表示。
 6. 若冷端或 heater隨時間改變，現行 framework無法表示。
 7. 若 interface熱阻對結果重要，現行通用3D transient沒有可直接使用的 contact model。
-8. `analyze()` hard-code `hot_end`、`cold_end`，ADR geometry必須暫時沿用這兩個名稱，否則需要未來再改 implementation。
-9. Arbitrary initial field未實作。
-10. Dump end-to-end只適合 serial。
+8. Callable/region-mapped arbitrary initial field未實作；uniform baseline已支援。
+9. Dump end-to-end只適合 serial。
 
 因此，在不擴充 framework 的情況下，ADR01 首版必須限定為：
 
@@ -447,7 +440,7 @@ h_c = 1 / R_c
 3D geometry
 + 一個或多個material regions
 + 各region constant k/rho/cp
-+ 兩個 constant fixed-temperature boundaries
++ 一個以上 constant fixed-temperature boundaries
 + 其餘表面 adiabatic
 + perfect internal thermal contact
 + no heat source/load
@@ -463,15 +456,15 @@ h_c = 1 / R_c
 - 哪些 parts 必須保留。
 - 材料對應及 `k`、`rho`、`cp`。
 - 初始溫度。
-- 兩個可合理視為固定溫度的表面及溫度。
+- 一個以上可合理視為固定溫度的表面及溫度。
 - 是否存在不可忽略的 heater/heat load。
 - 是否存在不可忽略的 convection/radiation。
 - 目標 transient duration及關注時間尺度。
 - 預期輸出時間與關注位置。
 
-接著先判斷「multi-region constant properties＋兩個 fixed-T BC＋adiabatic其餘表面」是否仍能回答第一版 ADR 問題：
+接著先判斷「multi-region constant properties＋一個以上fixed-T BC＋adiabatic其餘表面」是否仍能回答第一版 ADR 問題：
 
-- 若可以，直接以 Test 06 pattern建立最小 ADR01。
+- 若可以，直接以 Test 07 pattern建立最小 ADR01。
 - 若需要internal heat load或更複雜BC，再將第一個真正必要的物理缺口獨立處理；
   不要同時加入contact或其他物理。
 

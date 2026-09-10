@@ -35,9 +35,10 @@ geometry，以 YAML 指定 region、material、`k/rho/cp` properties 與兩個�
   為table/Python `p(T)`時走nonlinear SNES solver。
 - 穩態、零體積熱源 conduction。
 - Backward Euler 暫態、零體積熱源 conduction。
-- 恰好兩個 fixed-temperature Dirichlet boundaries。
-- 分段於 x 座標的兩值暫態 initial condition。
+- 一個以上 fixed-temperature Dirichlet boundaries。
+- Uniform或legacy split-x兩值暫態 initial condition。
 - P1 temperature、cell-centroid temperature/heat-flux dump、全域 summary 與兩端總熱流。
+- Per-region temperature min/max/average與caller-selected tagged-surface total heat flow。
 - 讀取單一 dump 或同 mesh dump series，以及簡單的 x-profile 圖。
 - steady case 可由 table 或案例自己的 Python file 提供 UFL-compatible $k(T)$，並以
   PETSc SNES/Newton 求解。

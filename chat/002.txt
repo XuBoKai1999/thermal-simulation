@@ -1,0 +1,3 @@
+已建立 `chat/001.txt`，內容為上一則完整 framework hardening report。
+
+本次確認訊息存於 `chat/002.txt`。往後每次回覆都會依 `003.txt`、`004.txt`……順序同步保存；不覆寫既有檔案。

@@ -9,6 +9,17 @@ import ufl
 from . import materials
 
 
+def _set_initial_values(function, initial):
+    if initial["type"] == "uniform":
+        function.x.array[:] = initial["value_K"]
+    else:
+        x = function.function_space.tabulate_dof_coordinates()[:, 0]
+        function.x.array[:] = np.where(
+            x < initial["split_x_m"], initial["left_T_K"], initial["right_T_K"]
+        )
+    function.x.scatter_forward()
+
+
 def build_model(mesh_data, case_data, semantic_tags):
     domain = mesh_data.mesh
     space = fem.functionspace(domain, ("Lagrange", 1))
@@ -86,14 +97,7 @@ def build_transient_model(mesh_data, case_data, semantic_tags, previous=None):
     if previous is None:
         initial_space = fem.functionspace(domain, ("DG", 0))
         previous = fem.Function(initial_space)
-        initial = case_data["time"]["initial_condition"]
-        x = initial_space.tabulate_dof_coordinates()[:, 0]
-        previous.x.array[:] = [
-            initial["left_T_K"] if coordinate < initial["split_x_m"]
-            else initial["right_T_K"]
-            for coordinate in x
-        ]
-        previous.x.scatter_forward()
+        _set_initial_values(previous, case_data["time"]["initial_condition"])
 
     dt = case_data["time"]["dt_s"]
     density = materials.property_field(mesh_data, case_data, semantic_tags, "rho")
@@ -120,12 +124,7 @@ def build_nonlinear_transient_model(
     if previous is None:
         initial_space = fem.functionspace(domain, ("DG", 0))
         initial_field = fem.Function(initial_space)
-        initial = case_data["time"]["initial_condition"]
-        x = initial_space.tabulate_dof_coordinates()[:, 0]
-        initial_field.x.array[:] = np.where(
-            x < initial["split_x_m"], initial["left_T_K"], initial["right_T_K"]
-        )
-        initial_field.x.scatter_forward()
+        _set_initial_values(initial_field, case_data["time"]["initial_condition"])
         previous = fem.Function(space)
         previous.interpolate(
             fem.Expression(initial_field, space.element.interpolation_points)

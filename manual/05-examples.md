@@ -152,3 +152,14 @@ dt = 0.125, 0.0625, 0.03125, 0.015625 s
 
 解析與 FEM 均得到 $q_x=318.302\ \mathrm{W/m^2}$，接觸層溫降
 $0.636605\ \mathrm K$；溫度最大誤差約 $2.66\times10^{-14}\ \mathrm K$，PASS。
+
+## 07 general 3D multi-region transient
+
+`test/07_3d_multiregion_transient`使用兩個fragmented cuboids、uniform IC與一個名為
+`heater_face`的fixed-temperature BC。另有`monitor_face`與`side_probe` semantic surfaces；
+test指定三者計算total heat flow，檢查兩個regions的temperature statistics、interface沒有
+重複座標DOFs，並完成`MESH_ID`/dump round trip。
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 test/07_3d_multiregion_transient/main.py"
+```

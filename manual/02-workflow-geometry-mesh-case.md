@@ -168,7 +168,7 @@ time:
 | `regions` | mapping | — | 至少一個；可 inline properties 或引用 named material |
 | `regions.<name>.material` | string | — | optional；`materials` 中的名稱，或 legacy `local` |
 | `k`, `rho`, `cp` property | number/mapping | SI | scalar 或 `constant/table/python` definition；transient 三者必要 |
-| `boundary_conditions` | mapping | — | **恰好兩個** entries |
+| `boundary_conditions` | mapping | — | 至少一個 fixed-temperature entry |
 | `boundary_conditions.<name>.type` | string | — | 只能是 `fixed_temperature` |
 | `boundary_conditions.<name>.value_K` | number | K | 必要 |
 | `time.dt_s` | positive number | s | transient 必要 |
@@ -176,6 +176,8 @@ time:
 | `time.initial_condition.split_x_m` | number | m | transient 必要 |
 | `time.initial_condition.left_T_K` | number | K | transient 必要 |
 | `time.initial_condition.right_T_K` | number | K | transient 必要 |
+| `time.initial_condition.type` | string | — | `uniform`或`split_x`；舊格式省略時為`split_x` |
+| `time.initial_condition.value_K` | number | K | `uniform`時必要 |
 | `contacts.<name>.type` | string | — | thin-layer contact 必須為 `thin_layer_resistance` |
 | `contacts.<name>.region` | string | — | 必須指向一個已設定且有 geometry tag 的薄層 region |
 | `contacts.<name>.resistance_m2K_W` | positive number | m² K/W | 面積比接觸熱阻 |

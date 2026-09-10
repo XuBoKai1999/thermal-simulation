@@ -1,5 +1,6 @@
 """Load and validate simulation cases."""
 
+import math
 from pathlib import Path
 
 import yaml
@@ -68,22 +69,39 @@ def load_case(path):
             if not isinstance(time.get(name), (int, float)) or time[name] <= 0:
                 raise ValueError(f"time.{name} must be positive")
         initial = time.get("initial_condition", {})
-        for name in ("split_x_m", "left_T_K", "right_T_K"):
-            if not isinstance(initial.get(name), (int, float)):
-                raise ValueError(f"time.initial_condition.{name} must be numeric")
+        initial_type = initial.get("type", "split_x")
+        fields = {
+            "uniform": ("value_K",),
+            "split_x": ("split_x_m", "left_T_K", "right_T_K"),
+        }.get(initial_type)
+        if fields is None:
+            raise ValueError(
+                f"Unsupported time.initial_condition.type {initial_type!r}; "
+                "expected 'uniform' or 'split_x'"
+            )
+        for name in fields:
+            value = initial.get(name)
+            if (not isinstance(value, (int, float))
+                    or not math.isfinite(value)):
+                raise ValueError(f"time.initial_condition.{name} must be finite numeric")
+        initial["type"] = initial_type
 
     conditions = data.get("boundary_conditions", {})
-    if len(conditions) != 2:
-        raise ValueError("Stage 2 requires exactly two boundary conditions")
+    if not isinstance(conditions, dict) or not conditions:
+        raise ValueError("boundary_conditions must contain at least one condition")
     for name, condition in conditions.items():
         if condition.get("type") != "fixed_temperature":
             raise ValueError(f"{name} must be a fixed_temperature condition")
-        if not isinstance(condition.get("value_K"), (int, float)):
-            raise ValueError(f"{name}.value_K must be numeric")
+        value = condition.get("value_K")
+        if not isinstance(value, (int, float)) or not math.isfinite(value):
+            raise ValueError(f"{name}.value_K must be finite numeric")
     temperatures = [condition["value_K"] for condition in conditions.values()]
     if model_type == "transient_conduction":
         initial = data["time"]["initial_condition"]
-        temperatures.extend((initial["left_T_K"], initial["right_T_K"]))
+        temperatures.extend(
+            (initial["value_K"],) if initial["type"] == "uniform"
+            else (initial["left_T_K"], initial["right_T_K"])
+        )
     for region_name, properties in data["_region_properties"].items():
         if properties is None:
             continue

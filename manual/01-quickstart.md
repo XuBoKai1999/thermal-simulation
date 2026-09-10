@@ -77,8 +77,8 @@ test/01_steady_bar/output/plots/heat_flux_magnitude.png
 
 不要直接修改 `lib/` 來建立新案例。先複製一個已驗證案例成新的 case directory，修改
 `geometry.py`、`case.yaml`，必要時才調整 `main.py` 的輸出與案例特定驗證。新 geometry
-必須仍符合目前框架的單一 semantic material region、兩個 fixed-temperature facet tags
-限制；一個 semantic region 可包含多個 Gmsh volume entities。
+可使用一個或多個 semantic material regions、一個以上 fixed-temperature facet tags；
+transient IC可選uniform或legacy split-x。一個 semantic region 可包含多個 Gmsh volume entities。
 
 溫度相依材料的最小範例是：
 

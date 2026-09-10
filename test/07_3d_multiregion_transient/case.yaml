@@ -1,0 +1,18 @@
+model:
+  type: transient_conduction
+
+materials:
+  left_material: {k: 10.0, rho: 1000.0, cp: 100.0}
+  right_material: {k: 20.0, rho: 1500.0, cp: 120.0}
+
+regions:
+  heated_block: {material: left_material}
+  passive_block: {material: right_material}
+
+boundary_conditions:
+  heater_face: {type: fixed_temperature, value_K: 4.0}
+
+time:
+  initial_condition: {type: uniform, value_K: 1.0}
+  dt_s: 1.0
+  end_s: 5.0

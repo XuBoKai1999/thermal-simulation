@@ -48,6 +48,7 @@ adr-thermal/
 │  ├─ dump.py
 │  ├─ dump_reader.py
 │  ├─ materials.py
+│  ├─ contact.py
 │  └─ plotting.py
 │
 ├─ postprocess/
@@ -85,13 +86,16 @@ adr-thermal/
       ├─ expected.yaml
       ├─ build/
       └─ output/
-   └─ 04_contact_resistance_bar/
+   ├─ 04_contact_resistance_bar/
       ├─ main.py
       ├─ geometry.py
       ├─ case.yaml
       ├─ expected.yaml
       ├─ build/
       └─ output/
+   ├─ 05_steady_nonlinear_contact_bar/
+   ├─ 06_material_properties/
+   └─ 07_3d_multiregion_transient/
 ```
 
 目前不要新增：
@@ -464,6 +468,10 @@ support_1_heatflow
 ```python
 ensure_mesh(...)
 ```
+
+目前 fingerprint 只包含 `geometry.py` bytes 與 caller 提供的 `cache_key`。若 geometry
+日後讀取外部 STEP/CAD 或 helper，caller 必須把外部檔案版本納入 `cache_key`，否則可能
+錯誤重用舊 mesh；目前不為尚未存在的 CAD workflow 建 dependency graph。
 
 邏輯：
 

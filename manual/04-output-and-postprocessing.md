@@ -3,7 +3,10 @@
 ## Analysis output
 
 ```python
-derived = analyze.analyze(temperature, mesh_data, case_data, semantic_tags)
+derived = analyze.analyze(
+    temperature, mesh_data, case_data, semantic_tags,
+    heatflow_surfaces=["plate_4K", "cold_stage"],
+)
 # local k(T): analyze.analyze(..., material=material)
 ```
 
@@ -12,7 +15,8 @@ derived = analyze.analyze(temperature, mesh_data, case_data, semantic_tags)
 - `cell_data`：`region_ID`, centroid `x/y/z`, `T`, `qx/qy/qz`, `qmag`。
 - `bounds`：3×2 array，domain x/y/z min/max，單位 m。
 - `summary`：全域 `T_min`, `T_max`, volume-average `T_avg`, volume-average vector
-  `q_avg`，以及 `Q_dot_hot_end`, `Q_dot_cold_end`。
+  `q_avg`、每個volume region的`T_min_K/T_max_K/T_avg_K`，以及所選surface的
+  `Q_dot_<semantic_name>`。
 
 Fourier heat flux：
 
@@ -24,7 +28,8 @@ constant multi-region/contact case 的 $k$ 是依 cell tags 建立的 DG0 conduc
 接觸層 cell 使用 `thickness_m / resistance_m2K_W`。
 
 `Q_dot_*` 是 $\int_\Gamma \mathbf q\cdot\mathbf n\,dA$，單位 W，符號採 outward normal。
-函式 hard-code semantic names `hot_end` 與 `cold_end`，不是任意 tagged-surface API。
+`heatflow_surfaces`由caller指定；省略時使用case中的fixed-temperature boundary names，
+因此既有`Q_dot_hot_end`/`Q_dot_cold_end`輸出保持相容。
 
 對 degree-0 initial state，`analyze` 將 heat flux 設為零。因此 Test 02 的 `0.dump` q fields
 為零，不能解讀為 discontinuous IC 的物理界面熱流。

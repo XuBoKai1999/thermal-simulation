@@ -93,7 +93,11 @@ with summary_path.open("w", encoding="utf-8", newline="") as output:
     writer = csv.writer(output)
     writer.writerow(("quantity", "value"))
     for name, value in summary.items():
-        if name == "q_avg":
+        if name == "regions":
+            for region, statistics in value.items():
+                for metric, result in statistics.items():
+                    writer.writerow((f"region.{region}.{metric}", result))
+        elif name == "q_avg":
             for axis, component in zip("xyz", value):
                 writer.writerow((f"q_avg_{axis}", component))
         else:

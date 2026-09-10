@@ -7,7 +7,10 @@ from petsc4py import PETSc
 import ufl
 
 
-def analyze(temperature, mesh_data, case_data, semantic_tags, material=None):
+def analyze(
+    temperature, mesh_data, case_data, semantic_tags, material=None,
+    heatflow_surfaces=None,
+):
     domain = mesh_data.mesh
     if material is None:
         from .materials import conductivity_field
@@ -43,13 +46,45 @@ def analyze(temperature, mesh_data, case_data, semantic_tags, material=None):
     ]
 
     ds = ufl.Measure("ds", domain=domain, subdomain_data=mesh_data.facet_tags)
+    dx = ufl.Measure("dx", domain=domain, subdomain_data=mesh_data.cell_tags)
     normal = ufl.FacetNormal(domain)
+    if heatflow_surfaces is None:
+        heatflow_surfaces = case_data["boundary_conditions"]
+    invalid_surfaces = [
+        name for name in heatflow_surfaces
+        if name not in semantic_tags
+        or semantic_tags[name]["dimension"] != domain.topology.dim - 1
+    ]
+    if invalid_surfaces:
+        raise ValueError(f"Invalid heat-flow surfaces: {invalid_surfaces}")
     surface_heat_flow = {
         name: global_integral(
             ufl.dot(heat_flux, normal) * ds(semantic_tags[name]["tag"])
         )
-        for name in ("hot_end", "cold_end")
+        for name in heatflow_surfaces
     }
+
+    region_statistics = {}
+    temperature_space = temperature.function_space
+    owned = temperature_space.dofmap.index_map.size_local
+    for name in case_data["regions"]:
+        tag = semantic_tags[name]["tag"]
+        region_volume = global_integral(1 * dx(tag))
+        cells = mesh_data.cell_tags.find(tag)
+        dofs = np.unique([
+            dof for cell in cells for dof in temperature_space.dofmap.cell_dofs(cell)
+            if dof < owned
+        ])
+        local = temperature.x.array[dofs]
+        region_statistics[name] = {
+            "T_min_K": domain.comm.allreduce(
+                local.min() if len(local) else np.inf, op=MPI.MIN
+            ),
+            "T_max_K": domain.comm.allreduce(
+                local.max() if len(local) else -np.inf, op=MPI.MAX
+            ),
+            "T_avg_K": global_integral(temperature * dx(tag)) / region_volume,
+        }
 
     cell_scalar = fem.functionspace(domain, ("DG", 0))
     cell_vector = fem.functionspace(
@@ -93,16 +128,15 @@ def analyze(temperature, mesh_data, case_data, semantic_tags, material=None):
         owned_tag_mask
     ]
 
-    owned = temperature.function_space.dofmap.index_map.size_local
     local_values = temperature.x.array[:owned]
     summary = {
         "T_min": domain.comm.allreduce(local_values.min(), op=MPI.MIN),
         "T_max": domain.comm.allreduce(local_values.max(), op=MPI.MAX),
         "T_avg": global_integral(temperature * ufl.dx) / volume,
         "q_avg": average_flux,
-        "Q_dot_hot_end": surface_heat_flow["hot_end"],
-        "Q_dot_cold_end": surface_heat_flow["cold_end"],
+        "regions": region_statistics,
     }
+    summary.update({f"Q_dot_{name}": value for name, value in surface_heat_flow.items()})
     return {
         "cell_data": {
             "region_ID": region_ids,

@@ -476,7 +476,7 @@ Test 05 分成三個彼此不可混稱的結果：
 1. 在 `geometry.py` 建立 geometry 與 semantic volume/facet tags。
 2. 在 `case.yaml` 將 regions 指派到 materials。
 3. 為各材料指定 `k`、`rho`、`cp` 的 constant、table/CSV 或 Python source。
-4. 指定目前支援的兩個 fixed-temperature BC 與 transient IC。
+4. 指定一個以上 fixed-temperature BC，以及 uniform 或 legacy split-x transient IC。
 5. 建立或重用 mesh。
 6. 依 relevant properties 選 linear model，或對 temperature-dependent steady/transient 選 nonlinear model/SNES。
 7. 做 analytic、mesh 與 time-step validation。

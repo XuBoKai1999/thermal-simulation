@@ -5,5 +5,8 @@ T_avg,2.4999999999999907
 q_avg_x,299.9999999999999
 q_avg_y,7.709078194886746e-14
 q_avg_z,-7.126773038499532e-14
+region.bar.T_min_K,1.0
+region.bar.T_max_K,4.0
+region.bar.T_avg_K,2.4999999999999907
 Q_dot_hot_end,-0.03000000000000082
 Q_dot_cold_end,0.029999999999999975

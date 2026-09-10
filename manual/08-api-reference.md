@@ -106,7 +106,7 @@ options prefix string。solver options 固定，沒有其他 arguments/defaults�
 
 ## `lib.analyze`
 
-### `analyze(temperature, mesh_data, case_data, semantic_tags, material=None)`
+### `analyze(temperature, mesh_data, case_data, semantic_tags, material=None, heatflow_surfaces=None)`
 
 四個 arguments 均 required。`temperature` 單位 K；material `k` 取自 case。回傳：
 
@@ -116,11 +116,14 @@ options prefix string。solver options 固定，沒有其他 arguments/defaults�
                   "T": ..., "qx": ..., "qy": ..., "qz": ..., "qmag": ...},
     "bounds": ...,
     "summary": {"T_min": ..., "T_max": ..., "T_avg": ..., "q_avg": ...,
-                "Q_dot_hot_end": ..., "Q_dot_cold_end": ...},
+                "regions": {"region_name": {"T_min_K": ..., "T_max_K": ...,
+                                                "T_avg_K": ...}},
+                "Q_dot_<surface_name>": ...},
 }
 ```
 
-需要 semantic tags `hot_end`、`cold_end`。summary 是全 domain，不是 per-region。
+`heatflow_surfaces`指定要積分的semantic facet names；省略時使用case BC names。
+summary同時包含whole-domain與per-region statistics。
 `material=None` 時使用case解析後的constant conductivity field或single-region `k(T)` property；
 legacy local-material case仍可傳入具有`k(T)`的module。
 
