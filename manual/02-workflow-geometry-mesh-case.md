@@ -69,6 +69,18 @@ gmsh.option.setNumber("Mesh.MeshSizeMax", MESH_SIZE)
 
 控制全域 mesh resolution。framework 沒有 YAML mesh setting，也沒有 local refinement helper。
 
+## Perfect contact 的 topology 規則
+
+兩個 solid 的 surfaces 座標重合，不代表 FEniCSx 中的 temperature DOFs 相連。若物理假設是
+perfect thermal contact，geometry 必須建立 **shared/conformal topology**，通常先用 Gmsh
+`occ.fragment` 分割相鄰 volumes，再同步、標記與 mesh。不得只建立兩個 coincident but
+disconnected surfaces；那會形成兩套獨立介面 nodes，且 generic conduction weak form 不會
+自動交換熱量。
+
+建立 mesh 後應像 Test 07 一樣驗證 interface coordinates 沒有重複的 coincident DOFs，並做
+heat-flow/temperature continuity sanity check。有限 contact resistance 可使用已支援的
+mesh-resolved thin layer；不要把 disconnected surfaces 誤稱為 3D zero-thickness contact。
+
 ### 外部 CAD
 
 Gmsh 本身可以匯入 CAD，但 repository 沒有已實作、已測試的 STEP/BREP loader workflow。
@@ -185,6 +197,23 @@ time:
 
 沒有 framework-level defaults；必要欄位均須明確提供。loader 對未知額外 key 不報錯，
 但 model 也不會因此實作它們，因此不要把未使用 key 當成有效功能。
+
+## 建立新 3D transient case 的完整 workflow
+
+以 Test 07 作 conceptual reference，不要照抄其尺寸或 tag names：
+
+1. 建 `run/<case>/geometry.py`，以 Gmsh 產生 3D volume、conformal interfaces、semantic tags
+   與適當 mesh size。
+2. 每個 material volume 建 dimension-3 physical group；需要 BC 或 heat-flow integral 的
+   surface 建 dimension-2 physical group。
+3. 建 `case.yaml`，使用 `transient_conduction`，定義每個 region 的 `k/rho/cp`、一個以上
+   fixed-temperature BC、uniform 或 split-x IC、`dt_s` 與 `end_s`。
+4. 建 `main.py`：`ensure_mesh` → 讀 tags/manifest → `load_mesh` → `load_case` → 選 linear 或
+   nonlinear transient builder → timestep loop。
+5. 每步成功後正確更新 `previous`；由 caller 決定 dump cadence。不要重寫 weak form。
+6. 用 `analyze(..., heatflow_surfaces=[...])` 取得 global/region temperatures 與指定 surface 熱流。
+7. 用 `map_cell_ids`、manifest `mesh_id` 與 `write_dump` 寫結果；完整流程目前採 serial。
+8. 先 smoke run，再做 mesh/time-step convergence、limiting case 與 energy balance validation。
 
 ### Material property sources
 

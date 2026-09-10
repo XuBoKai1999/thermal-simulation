@@ -8,19 +8,19 @@
 
 ADR01 的第一個可交付版本只做 3D transient heat conduction：
 
-\[
+$$
 \rho(T)c_p(T)\frac{\partial T}{\partial t}
 =
 \nabla\cdot\left(k(T)\nabla T\right)
-\]
+$$
 
-第一版允許先使用 constant properties，再逐步換成可信的 \(k(T)\)、\(c_p(T)\)。
+第一版允許先使用 constant properties，再逐步換成可信的 $k(T)$、$c_p(T)$。
 
 Baseline 暫定：
 
-- 初始溫度：整體 \(T_0=4\ \mathrm{K}\)
+- 初始溫度：整體 $T_0=4\ \mathrm{K}$
 - 4 K platform：fixed temperature
-- ADR cold boundary：fixed temperature，第一版可先設 \(1\ \mathrm{K}\)
+- ADR cold boundary：fixed temperature，第一版可先設 $1\ \mathrm{K}$
 - 多材料、多 region、3D geometry
 - 零體積熱源
 - 未指定外表面：adiabatic / zero normal heat flux
@@ -29,7 +29,7 @@ Baseline 暫定：
 第一版不處理：
 
 - contact resistance
-- heat switch \(G_{\rm on}/G_{\rm off}\)
+- heat switch $G_{\rm on}/G_{\rm off}$
 - radiation
 - convection
 - prescribed heat load / heat-flux BC
@@ -294,7 +294,7 @@ NIST published fit
 
 不要默默外插超過來源有效範圍。
 
-尤其 ADR 目標到 \(1\ \mathrm{K}\)；若 NIST property 只保證到 \(4\ \mathrm{K}\) 或更高，該材料必須標記為資料缺口，另找可靠的 1–4 K 來源。
+尤其 ADR 目標到 $1\ \mathrm{K}$；若 NIST property 只保證到 $4\ \mathrm{K}$ 或更高，該材料必須標記為資料缺口，另找可靠的 1–4 K 來源。
 
 ---
 
@@ -374,45 +374,45 @@ ADR01 至少必須檢查：
 
 至少做：
 
-\[
+$$
 dx\text{-convergence}
-\]
+$$
 
 與
 
-\[
+$$
 dt\text{-convergence}
-\]
+$$
 
 並觀察主要 region：
 
-\[
+$$
 T_{\min},\quad T_{\max},\quad T_{\rm avg}
-\]
+$$
 
 以及重要 surface：
 
-\[
+$$
 \dot Q=\int_S\mathbf q\cdot\mathbf n\,dA
-\]
+$$
 
 ### Energy sanity
 
 暫態應檢查：
 
-\[
+$$
 \Delta U
 \approx
 -\int\sum_S \dot Q_S\,dt
-\]
+$$
 
 constant property 時：
 
-\[
+$$
 U=\int_\Omega \rho c_p T\,dV
-\]
+$$
 
-temperature-dependent \(c_p(T)\) 時不可直接沿用 constant-\(c_p\) 形式，需使用一致的內能定義。
+temperature-dependent $c_p(T)$ 時不可直接沿用 constant-$c_p$ 形式，需使用一致的內能定義。
 
 ---
 
@@ -424,7 +424,7 @@ ADR01 baseline 完成必須同時滿足：
 2. region/material mapping 可追溯。
 3. mesh interface topology 正確。
 4. transient 4 K → 1 K simulation 可完整執行。
-5. \(T(\mathbf x,t)\) 與 \(\mathbf q(\mathbf x,t)\) 可輸出。
+5. $T(\mathbf x,t)$ 與 $\mathbf q(\mathbf x,t)$ 可輸出。
 6. region statistics 與重要 surface heat flow 可取得。
 7. mesh/time-step convergence 無明顯異常。
 8. energy balance 無明顯非物理失衡。

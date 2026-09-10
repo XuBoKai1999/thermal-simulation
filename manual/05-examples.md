@@ -150,8 +150,25 @@ dt = 0.125, 0.0625, 0.03125, 0.015625 s
 `slice_0p125_temperature_comparison.png` 與 `slice_0p125_heat_flux_comparison.png`
 分別把全部 16 組疊在同一張圖；`errors_vs_finest.csv` 保存相對 RMSE。
 
-解析與 FEM 均得到 $q_x=318.302\ \mathrm{W/m^2}$，接觸層溫降
-$0.636605\ \mathrm K$；溫度最大誤差約 $2.66\times10^{-14}\ \mathrm K$，PASS。
+注意：Test 05 的 `case.yaml` 是該獨立 benchmark 自己解析的 schema，包含
+`steady_nonlinear_contact_1d`、`contact` 與 `transient`；它不能交給 generic
+`lib.case.load_case`，也不是建立一般 3D case 的模板。
+
+## 06 material properties and nonlinear transient
+
+目的：驗證統一 material-property layer，而不是提供 shared material database。
+
+- `test_properties.py`：constant、CSV table、Python callable loader 與 validation。
+- `main.py`：兩個 conformal regions、named constant materials、linear transient、space/time
+  refinement 與 long-time analytic steady limit。
+- `nonlinear_transient.py`：兩個 regions 的 table $k(T)$、table $c_p(T)$、Python
+  $\rho(T)$，使用 nonlinear transient builder + SNES，並做 time refinement/steady check。
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 -m pytest test/06_material_properties/test_properties.py"
+.\scripts\wsl-run.ps1 "python3 test/06_material_properties/main.py"
+.\scripts\wsl-run.ps1 "python3 test/06_material_properties/nonlinear_transient.py"
+```
 
 ## 07 general 3D multi-region transient
 
@@ -163,3 +180,6 @@ test指定三者計算total heat flow，檢查兩個regions的temperature statis
 ```powershell
 .\scripts\wsl-run.ps1 "python3 test/07_3d_multiregion_transient/main.py"
 ```
+
+它是建立一般 3D transient case 的最佳 conceptual reference，但 regression 使用 temporary
+directory；real case 應改用自己的 persistent `build/` 與 `output/`。

@@ -17,8 +17,9 @@ $$
 其中 $k$ 為單一、正值、isotropic scalar constant，單位 W/(m K)。`model.build_model`
 雖建立值為 0 的 source constant，但 case 無 heat-source schema，使用者不能指定 $Q$。
 
-必要資料：至少一個由 semantic cell tags 完整覆蓋的 constant-$k$ region，以及兩個
-fixed-temperature boundaries。local $k(T)$ 使用下述獨立 nonlinear builder。
+必要資料：至少一個由 semantic cell tags 完整覆蓋的 material region，以及至少一個
+fixed-temperature boundary。多 region constant-$k$ 走 linear builder；single-region table/Python
+$k(T)$ 走 nonlinear builder。其餘未指定外表面自然為 zero-normal-flux。
 
 ## Transient conduction
 
@@ -150,4 +151,5 @@ multi-region使用SNES；Python expression必須可由UFL微分。
 FEniCSx mesh import、assembly、BC facet count 與 summaries 使用 `MPI.COMM_WORLD`，solve 本身
 可在 MPI communicator 上工作；但 dump 所需的 `mesh.map_cell_ids` 明確只支援
 `comm.size == 1`，否則丟出 `NotImplementedError`。因此現有 end-to-end examples 與 dump
-workflow 是 **serial only**。不要用 `mpirun -np 2` 跑這兩個完整案例。
+workflow 是 **serial only**。可以用 MPI 探索 assembly/solve，但只要 workflow 呼叫
+`map_cell_ids`/dump，就不要使用 `mpirun -np 2`。

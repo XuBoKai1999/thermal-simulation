@@ -213,29 +213,29 @@ NIST property 若只到 4 K、10 K 或 12 K：
 
 先明確寫死第一版假設：
 
-\[
+$$
 T(\mathbf x,0)=4\ \mathrm K
-\]
+$$
 
-\[
+$$
 T_{\rm platform}=4\ \mathrm K
-\]
+$$
 
-\[
+$$
 T_{\rm ADR}=1\ \mathrm K
-\]
+$$
 
 其餘外表面：
 
-\[
+$$
 \mathbf q\cdot\mathbf n=0
-\]
+$$
 
 region interface：
 
-\[
+$$
 R_c=0
-\]
+$$
 
 第一版不加入：
 
@@ -258,7 +258,7 @@ MCE
 
 **Run B — material-dependent baseline**
 
-換成已驗證的 \(k(T),c_p(T)\)。
+換成已驗證的 $k(T),c_p(T)$。
 
 若 1–4 K property 尚缺，不得假裝 NIST 資料已足夠；先補文獻資料。
 
@@ -308,7 +308,7 @@ run/01_ADR01/geometry.py
 - region → material
 - BC
 - initial temperature
-- initial \(\Delta t\)
+- initial $\Delta t$
 - initial end time
 
 Codex 寫入：
@@ -382,15 +382,15 @@ summary
 
 必須看到合理的：
 
-\[
+$$
 T(\mathbf x,t)
-\]
+$$
 
 與：
 
-\[
+$$
 \mathbf q(\mathbf x,t)
-\]
+$$
 
 若失敗，只修實際問題，不趁機重構。
 
@@ -429,9 +429,9 @@ fine
 
 比較主要 observables：
 
-- cold-stage \(T_{\rm avg}(t)\)
-- selected region \(T_{\rm avg}(t)\)
-- 主要 boundary \(\dot Q(t)\)
+- cold-stage $T_{\rm avg}(t)$
+- selected region $T_{\rm avg}(t)$
+- 主要 boundary $\dot Q(t)$
 
 不要求所有 cell field pointwise identical。
 
@@ -455,8 +455,8 @@ dt/4
 
 比較：
 
-- selected \(T(t)\)
-- selected \(\dot Q(t)\)
+- selected $T(t)$
+- selected $\dot Q(t)$
 - characteristic cooling time
 
 ### Gate
@@ -471,26 +471,26 @@ dt/4
 
 constant-property baseline：
 
-\[
+$$
 U=\int_\Omega \rho c_pT\,dV
-\]
+$$
 
 檢查：
 
-\[
+$$
 \Delta U
 \approx
 -\int_{t_n}^{t_{n+1}}
 \sum_S\dot Q_S\,dt
-\]
+$$
 
 允許離散誤差，但不能有量級上的不守恆。
 
-若使用 \(c_p(T)\)，先定義一致的：
+若使用 $c_p(T)$，先定義一致的：
 
-\[
+$$
 u(T)=\int c_p(T)\,dT
-\]
+$$
 
 再做 energy check。
 
@@ -506,7 +506,7 @@ u(T)=\int c_p(T)\,dT
 
 逐一檢查 ADR01 真正使用的材料：
 
-| Material | \(k\) 1–4 K | \(c_p\) 1–4 K | \(\rho\) | Status |
+| Material | $k$ 1–4 K | $c_p$ 1–4 K | $\rho$ | Status |
 |---|---|---|---|---|
 | ... | ... | ... | ... | OK / GAP |
 
@@ -529,13 +529,13 @@ NIST 不足的部分再查：
 
 **Owner：Codex 執行 / 我們判讀**
 
-把 constant \(k,\rho,c_p\) 換成 shared materials library 中可信的：
+把 constant $k,\rho,c_p$ 換成 shared materials library 中可信的：
 
-\[
+$$
 k(T),\quad c_p(T)
-\]
+$$
 
-\(\rho\) 若熱收縮效應可忽略，可先 constant。
+$\rho$ 若熱收縮效應可忽略，可先 constant。
 
 重新做：
 
@@ -583,10 +583,10 @@ baseline 完成後才依 sensitivity / 實際需求決定是否加入：
 1. contact resistance
 2. prescribed heat load
 3. time-dependent ADR boundary
-4. heat switch \(G_{\rm on}/G_{\rm off}\)
+4. heat switch $G_{\rm on}/G_{\rm off}$
 5. radiation
-6. anisotropic \(k\)
-7. MCE / \(C(T,B)\)
+6. anisotropic $k$
+7. MCE / $C(T,B)$
 
 每次只加入一個新物理，先建立可驗證的最小 test，再回 ADR。
 

@@ -36,6 +36,24 @@
 | anisotropic k | absent | scalar isotropic conductivity only |
 | Nonlinear solve | implemented, narrow | steady $k(T)$；fixed PETSc SNES/Newton options |
 
+## Contact capability matrix
+
+| Contact representation | Status | Meaning |
+|---|---|---|
+| Perfect shared-mesh contact | **SUPPORTED** | Conformal shared topology；continuous P1 temperature |
+| Mesh-resolved finite thin layer | **SUPPORTED** | 3D steady only；layer thickness must match geometry |
+| 1D zero-thickness contact solver | **REFERENCE ONLY** | `lib/contact.py` + Test 05；不是 generic model path |
+| General 3D zero-thickness contact | **NOT SUPPORTED** | 無 DG/Nitsche/mortar/interface-law implementation |
+| Transient contact resistance | **NOT SUPPORTED** | generic transient loader 明確拒絕 `contacts` |
+
+## Known limitations checklist
+
+目前不能在 `case.yaml` 中使用：prescribed heat flux/total heat、convection、radiation、
+volumetric heat generation、time-dependent BC、heat switch、anisotropic conductivity、任意
+coordinate/region initial field、general 3D zero-thickness contact 或 transient contact resistance。
+此外，沒有 automatic generic runner、shared material database、automatic external CAD/helper
+dependency tracking、topology-aware 3D postprocessor，且 MPI dump/cell-ID mapping 未實作。
+
 ## 舊文件與 source 的差異
 
 Source code 與七個 working cases 是本手冊依據。已確認下列差異：

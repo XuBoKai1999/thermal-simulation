@@ -1,11 +1,27 @@
 # thermal-simulation 使用者手冊
 
-本手冊描述 repository **目前程式碼實際提供**的功能。它不是未來設計藍圖，也不是
-通用熱傳套件的承諾。目前有六個已驗證入口：Test 01 constant-$k$ steady、Test 02
-transient、Test 03 CSV table $k(T)$ nonlinear solve、Test 04 multi-region
-thin-layer contact resistance，以及 Test 05 獨立 1D P1 zero-thickness nonlinear contact、
-長時間 transient 與固定 0.125 s 的 `dx × dt` numerical-reference benchmark；Test 06則驗證
-統一constant/table/Python property loader與multi-region constant-property transient。
+本手冊是 thermal-simulation 的 **repository operation manual + agent handoff manual**。
+它以目前 source 與 Test 01–07 為準，不是未來設計藍圖，也不是熱傳教科書。完全沒有
+專案前文的 Agent 應先讀本頁，再依下列順序閱讀整個 `manual/`；開始工作不需要先讀
+根目錄的舊 architecture 或 construction notes。
+
+## 30 秒理解 framework
+
+thermal-simulation 是 lightweight、case-driven、Python-based 的 3D thermal simulation
+framework，使用 Gmsh 建網格、FEniCSx 0.10 API 建立 FEM、PETSc 解線性或非線性系統，
+並輸出 LAMMPS-like cell dump。核心分工是：
+
+```text
+<case>/geometry.py  → 幾何、mesh size、semantic volume/surface tags
+<case>/case.yaml    → model、材料、initial condition、BC、time settings
+<case>/main.py      → 本 case 的 workflow、time loop、output 與 verification orchestration
+lib/                → 可重用的 FEM、material、analysis、mesh、dump implementation
+<case>/build/       → mesh topology、semantic tags、mesh identity/cache manifest
+<case>/output/      → dump 與 case-specific summaries/plots
+```
+
+`main.py` 是 case orchestration，不是放新 weak form 或複製 solver implementation 的地方。
+新 case 應先找最接近的 Test 01–07，重用 `lib/`，再只調整案例資料與 workflow。
 
 ## 建議閱讀順序
 
@@ -21,9 +37,43 @@ thin-layer contact resistance，以及 Test 05 獨立 1D P1 zero-thickness nonli
 ## 一句話定位
 
 目前版本是小型、case-driven 的 3D FEniCSx 熱傳框架：使用者以 Python/Gmsh 建立
-geometry，以 YAML 指定 region、material、`k/rho/cp` properties 與兩個固定溫度邊界，再由案例自己的 `main.py`
+geometry，以 YAML 指定 region、material、`k/rho/cp` properties 與一個以上固定溫度邊界，再由案例自己的 `main.py`
 串接 mesh、model、solve、analysis 與 dump。它不是具有統一 CLI、通用 case runner、
 材料資料庫或多物理 DSL 的成熟套件。
+
+## Environment 與執行邊界
+
+Codex 與開發 shell 位於 Windows PowerShell；所有 Python simulation、FEniCSx、Gmsh、
+PETSc 與 MPI 命令必須送進 WSL2 Ubuntu：
+
+```text
+Windows PowerShell → scripts/wsl-run.ps1 → WSL2 Ubuntu → Python/FEniCSx/PETSc/MPI/Gmsh
+```
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 test/01_steady_bar/main.py"
+.\scripts\wsl-run.ps1 "python3 -m pytest test/06_material_properties/test_properties.py"
+```
+
+若 execution policy 阻擋 helper，使用 `01-quickstart.md` 的 Bypass 形式。不要用 Windows
+Python 執行 simulation，也不要混用 Windows/WSL packages。code 使用 FEniCSx 0.10 API；
+repository 沒有 dependency lockfile，因此 Gmsh、PETSc、MPI 的確切 patch versions 不是契約。
+完整 end-to-end dump workflow 目前只支援 serial。
+
+## Repository layout
+
+```text
+lib/          generic mesh, case, material, FEM, solve, analysis and dump modules
+materials/    NOT PRESENT as a shared material database; case-local files are supported
+scripts/      Windows PowerShell → WSL helper
+postprocess/  simple dump plotting CLI
+test/         Test 01–07 verification cases
+run/          real project cases; framework manual 不收錄個別專案物理
+manual/       本 operation knowledge base
+```
+
+`lib/` 的 callable-level 責任與 signatures 見 `08-api-reference.md`。不要假設存在 generic
+runner、installed package、shared materials registry、external CAD dependency manager 或 CLI。
 
 ## 目前能做什麼
 
@@ -75,3 +125,28 @@ CSV 使用 linear interpolation，temperature欄必須唯一且資料 finite/pos
 evaluation 是 error。Python function 必須存在並回傳 finite、positive value；local Python
 是使用者主動提供的 extension code，不是 sandbox。`test/06_material_properties/case.yaml`
 是 multi-region constant transient 的可執行範例。
+
+## 如果你現在要開始一個新的 thermal case
+
+1. 讀完 `manual/`，從 Test 01–07 找最接近的 case；一般 3D transient 首選 Test 07。
+2. 在 `run/<case>/` 建 `geometry.py`、`case.yaml`、`main.py`；不要修改既有 test 當 real case。
+3. 建 semantic volume/surface tags，確認 perfect contact solids 是 shared/conformal topology。
+4. 在 YAML 定義 materials/regions、fixed-temperature BC，以及 transient IC 與 time settings。
+5. 從相近 test 複製 orchestration，重用 `lib/` 建 mesh、model、solve、analyze 與 dump。
+6. 透過 WSL helper 做 serial smoke run，檢查 tags、物性、solver 與輸出。
+7. 核對 region temperature、selected-surface heat flow、sign 與 energy balance。
+8. 做 coarse/medium/fine mesh 與 `dt`, `dt/2`, `dt/4` convergence，比較 observables。
+9. 若需要新 physics，先建立 minimal verification test，再改 generic `lib/` 並跑 regressions。
+
+## Rules for Agents
+
+1. 如無必要，勿增實體；先使用現有 module、case pattern 與文件結構。
+2. 優先 reuse `lib/`；`main.py` 是 orchestration，不是新的 solver。
+3. 不要把 test-specific geometry、tag name、BC 或 verification 假設放進 generic `lib/`。
+4. 新 physics 先做 minimal、可解析或可獨立核對的 test，再回 real case。
+5. 不要宣稱 planned、reference-only 或未支援功能已受 framework 支援。
+6. 材料 table 超出有效溫度範圍必須報錯；禁止 silent extrapolation。
+7. 幾何上看似接觸不等於 FEM topology 相連；perfect contact 必須驗證 shared/conformal topology。
+8. 修改 framework 後必須跑與風險相符的 Test 01–07 regressions。
+9. 行為、schema、output 或限制改變時，同步更新 `manual/`。
+10. ADR 等 real-case 需求留在各自 `run/` 文件；不要污染 framework manual。
