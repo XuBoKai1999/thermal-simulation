@@ -49,17 +49,12 @@ def load_case(path):
         missing = [name for name in required if name not in properties]
         if missing:
             raise ValueError(f"Region {region_name} requires {', '.join(missing)}")
-        if model_type == "transient_conduction" and any(
-            not properties[name].is_constant for name in required
-        ):
-            raise ValueError(
-                "temperature-dependent property in transient model is not yet supported"
-            )
     temperature_dependent_k = [
         name for name, properties in data["_region_properties"].items()
         if properties is not None and not properties["k"].is_constant
     ]
-    if temperature_dependent_k and (len(regions) != 1 or contacts):
+    if (model_type == "steady_conduction" and temperature_dependent_k
+            and (len(regions) != 1 or contacts)):
         raise ValueError(
             "Temperature-dependent conductivity supports one region and no contacts"
         )
@@ -67,9 +62,7 @@ def load_case(path):
         if contacts:
             raise ValueError("Transient conduction does not support contacts")
         if local_regions:
-            raise ValueError(
-                "temperature-dependent property in transient model is not yet supported"
-            )
+            raise ValueError("Transient conduction does not support local material modules")
         time = data.get("time", {})
         for name in ("dt_s", "end_s"):
             if not isinstance(time.get(name), (int, float)) or time[name] <= 0:

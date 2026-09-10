@@ -1,0 +1,25 @@
+model:
+  type: transient_conduction
+
+materials:
+  material_a:
+    k: {type: table, file: k.csv, x: T_K, y: k_W_mK}
+    rho: {type: python, file: rho.py, function: rho}
+    cp: {type: table, file: cp.csv, x: T_K, y: cp_J_kgK}
+  material_b:
+    k: {type: table, file: k.csv, x: T_K, y: k_W_mK}
+    rho: {type: python, file: rho.py, function: rho}
+    cp: {type: table, file: cp.csv, x: T_K, y: cp_J_kgK}
+
+regions:
+  material_a_region: {material: material_a}
+  material_b_region: {material: material_b}
+
+boundary_conditions:
+  hot_end: {type: fixed_temperature, value_K: 4.0}
+  cold_end: {type: fixed_temperature, value_K: 1.0}
+
+time:
+  initial_condition: {split_x_m: 0.05, left_T_K: 2.0, right_T_K: 2.0}
+  dt_s: 1.0
+  end_s: 10.0

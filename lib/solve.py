@@ -1,6 +1,5 @@
 """Solve finite-element problems."""
 
-from mpi4py import MPI
 from dolfinx.fem.petsc import LinearProblem, NonlinearProblem
 
 
@@ -40,14 +39,12 @@ def solve_nonlinear(residual, temperature, boundary_conditions, jacobian, prefix
         },
     )
     solution = problem.solve()
-    for name, (lower, upper) in getattr(solution, "_property_domains", []):
-        owned = solution.function_space.dofmap.index_map.size_local
-        local = solution.x.array[:owned]
-        minimum = solution.function_space.mesh.comm.allreduce(local.min(), op=MPI.MIN)
-        maximum = solution.function_space.mesh.comm.allreduce(local.max(), op=MPI.MAX)
-        if minimum < lower or maximum > upper:
-            raise ValueError(
-                f"{name} temperature is outside table domain [{lower}, {upper}] K"
-            )
+    owned = solution.function_space.dofmap.index_map.size_local
+    local = solution.x.array[:owned]
+    for name, prop, indices in getattr(solution, "_properties", []):
+        try:
+            prop.evaluate(local if indices is None else solution.x.array[indices])
+        except ValueError as error:
+            raise ValueError(f"Invalid {name} at solved temperature: {error}") from error
     solution.name = "temperature"
     return solution, problem.solver.getIterationNumber()

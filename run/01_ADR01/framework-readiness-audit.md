@@ -1,5 +1,10 @@
 # Thermal Simulation Framework Readiness Audit for ADR01
 
+> 更新（2026-09-10）：material-property extension 已完成。現在支援統一
+> constant/table/Python property representation，以及 multi-region constant-property
+> transient。本文件下列結論已同步到目前 implementation；temperature-dependent
+> transient 已由Test 06 nonlinear regression實作並驗證。
+
 ## 1. Executive summary
 
 目前 repository 是一個「case-driven、由案例自行編排 workflow」的精簡 thermal FEM framework，不是通用模擬器或統一 CLI。
@@ -9,7 +14,7 @@
 - Gmsh 建立與載入 3D mesh。
 - FEniCSx P1 穩態熱傳。
 - 穩態多 region、各 region 常數 isotropic `k`。
-- 單一 region、常數 `k`、`rho`、`cp` 的 transient Backward Euler。
+- 多 region、各 region 常數 `k`、`rho`、`cp` 的 transient Backward Euler。
 - 單一 region steady `k(T)` 與 PETSc SNES/Newton。
 - 3D mesh-resolved thin-layer contact resistance。
 - 獨立的 1D zero-thickness nonlinear contact benchmark。
@@ -17,7 +22,6 @@
 
 主要限制：
 
-- 通用 3D transient 只允許一個 material region。
 - 通用 transient 不支援 `k(T)`、`rho(T)`、`cp(T)`。
 - 只能設定恰好兩個固定溫度邊界。
 - Heat load、specified heat flux、convection、radiation、heat switch 都未實作。
@@ -25,7 +29,9 @@
 - Transient loop、輸出排程及 summary 寫出都由各案例 `main.py` 自行處理。
 - Dump cell-ID mapping 只支援 serial execution。
 
-因此可以開始 ADR01 的幾何、semantic tagging、材料輸入整理及「高度簡化」的首版 transient case，但目前不能直接表達一般多材料、有熱負載或複雜熱邊界的 ADR assembly。
+因此可以開始 ADR01 的幾何、semantic tagging、multi-region材料輸入整理及constant-property
+transient baseline，並可使用temperature-dependent `k/rho/cp`；但目前仍不能直接表達
+有熱負載或複雜熱邊界的 ADR assembly。
 
 稽核執行期間沒有修改 repository；所有會產生輸出的測試均在 WSL `/tmp` 隔離副本中執行。
 
@@ -71,8 +77,8 @@ case main.py
 |---|---|
 | `case.py` | 載入及狹義驗證 `case.yaml`；另有 Test 01 型式的 `expected.yaml` validator。 |
 | `mesh.py` | 依 geometry source hash/cache key 建立或重用 Gmsh mesh；載入 FEniCSx mesh；serial-only Gmsh/FEniCSx cell-ID 對應。 |
-| `materials.py` | 驗證 local material callable；依 cell tags 建立 DG0 constant conductivity field；薄層以 `k = thickness / resistance` 轉換。 |
-| `model.py` | 建立 steady linear、steady nonlinear `k(T)`、single-region transient weak form；建立兩個 fixed-T Dirichlet BC。 |
+| `materials.py` | 載入並統一 constant、CSV/table、Python callable property evaluator；依 cell tags 建立 `k/rho/cp` DG0 constant fields；薄層以 `k = thickness / resistance` 轉換。 |
+| `model.py` | 建立 steady linear、steady nonlinear `k(T)`、multi-region constant-property transient weak form；建立兩個 fixed-T Dirichlet BC。 |
 | `solve.py` | PETSc preonly/LU linear solve；固定選項的 SNES/Newton nonlinear solve。 |
 | `analyze.py` | 計算 cell-centroid `T`、`q = -k grad(T)`、全域 min/max/average、平均熱流及 hard-coded `hot_end`/`cold_end` surface heat flow。 |
 | `dump.py` | 驗證並序列化 caller 已準備好的 cell fields；建立 dump 目錄及 `<timestep>.dump`。 |
@@ -92,7 +98,7 @@ case.yaml
 
 視需求增加：
 
-- `material.py`：只用於 steady、單一 region 的 local `k(T)`。
+- CSV或Python property file：用於steady、單一region的`k(T)`；constant case不需要額外檔案。
 - `expected.yaml`、`validate.py`：驗證案例需要，實際 simulation case 非必要。
 - `build/`、`output/`：由 runner 執行時產生。
 
@@ -206,13 +212,13 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 | 能力 | 狀態 | 實際證據／限制 |
 |---|---|---|
 | 3D geometry | WORKING | `test/01-04/geometry.py` 均建立 3D box/tetrahedral mesh；`mesh.load_mesh(..., gdim=3)`。 |
-| Multiple material regions | LIMITED | Test 04 驗證 3D steady 三 region；`materials.conductivity_field()` 依 cell tags 指派。Transient loader 明確禁止多 region。 |
-| Transient conduction | LIMITED | `model.build_transient_model()`、Test 02 通過；Backward Euler，但單一 region、constant properties、loop 在 case runner。 |
-| `rho` | LIMITED | Test 02 transient 使用 constant positive scalar；只允許單一 region。 |
-| `cp` | LIMITED | 同上。 |
+| Multiple material regions | WORKING | Test 04驗證3D steady；Test 06驗證multi-region constant-property transient；property fields依cell tags指派。 |
+| Transient conduction | WORKING | Test 02及Test 06通過；Backward Euler支援multi-region constant與temperature-dependent properties，loop仍在case runner。 |
+| `rho` | LIMITED | Multi-region constant property已驗證；transient `rho(T)`未實作。 |
+| `cp` | LIMITED | Multi-region constant property已驗證；transient `cp(T)`未實作。 |
 | Constant `k` | WORKING | Test 01 steady、Test 02 transient、Test 04 multi-region 均通過。 |
 | Temperature-dependent `k(T)` | LIMITED | Test 03 steady 3D single-region SNES 通過；Test 05 1D solver也使用 `k(T)`。通用 transient 不支援。 |
-| Multiple temperature-dependent materials | NOT IMPLEMENTED | `case.load_case()` 要求 local material只能是唯一 region且不可有 contacts。 |
+| Multiple temperature-dependent materials | NOT IMPLEMENTED | Nonlinear temperature-dependent model仍限制單一region且不可有contacts。 |
 | Fixed-temperature BC | LIMITED | Test 01-04 通過；loader 強制恰好兩個 constant `fixed_temperature`。 |
 | Arbitrary initial temperature | LIMITED | 通用 transient只接受 x-direction split、左右兩個溫度；不是 callable、field file或 region mapping。 |
 | Contact resistance | LIMITED | 3D finite-thickness steady layer及獨立1D zero-thickness solver；沒有通用3D interface contact。 |
@@ -276,13 +282,13 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 - Geometry：
   - ADR solid parts 的 3D 尺寸或可重建的簡化幾何。
   - 各部件是否實際相接、重疊、留有間隙。
-  - 首版是否能簡化成單一等效 solid region。
+  - 首版需要保留哪些獨立material regions。
 - Semantic regions：
   - 每個 volume 的穩定名稱。
   - 固定溫度邊界對應的兩個 surface 名稱。
 - Material assignment：
   - 每個 volume 對應材料。
-  - 若要使用現有通用 transient，必須決定如何把 ADR 簡化成單一等效材料 region。
+  - 每個semantic region對應哪一個named material。
 - Constant properties：
   - `k` [W/(m K)]
   - `rho` [kg/m^3]
@@ -312,7 +318,7 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 - 初始溫度均勻。
 - 未指定的外表面為 adiabatic，即自然零法向熱流。
 - 所有連續相接 solid 具有 perfect thermal contact。
-- 暫時使用單一等效 material region。
+- 各region首版使用constant `k/rho/cp`，即使property資料來源已有table/Python版本。
 - 首版使用全域 mesh size，再做至少一輪 mesh/time-step sensitivity。
 - `dt` 可先由熱擴散率和最小特徵長度估算，再以時間收斂修正。
 
@@ -335,7 +341,6 @@ Cache fingerprint 只包含 geometry source bytes 加 caller 的 `cache_key`；�
 
 ### 4. Framework 目前不支援，ADR 真需要時才處理
 
-- 通用多-region transient。
 - Transient `k(T)`、`rho(T)`、`cp(T)`。
 - Multiple temperature-dependent materials。
 - Volumetric heat generation。
@@ -426,7 +431,7 @@ h_c = 1 / R_c
 對「可以開始整理 ADR01」沒有環境 blocker；對「建立具物理代表性的完整 ADR transient model」則有下列 blockers：
 
 1. 真實 ADR geometry、semantic part list及材料對應尚需輸入。
-2. 現行通用 transient只支援單一 region；真正 assembly通常是多材料。
+2. ADR material table必須涵蓋完整預期溫度範圍，否則nonlinear solve會因domain validation失敗。
 3. 只有兩個常數 fixed-temperature BC。
 4. 若 ADR 是由 internal heat load驅動，現行 framework無法表示。
 5. 若主要散熱機制是 convection/radiation，現行 framework無法表示。
@@ -440,8 +445,8 @@ h_c = 1 / R_c
 
 ```text
 3D geometry
-+ 單一等效 material
-+ constant k/rho/cp
++ 一個或多個material regions
++ 各region constant k/rho/cp
 + 兩個 constant fixed-temperature boundaries
 + 其餘表面 adiabatic
 + perfect internal thermal contact
@@ -464,11 +469,14 @@ h_c = 1 / R_c
 - 目標 transient duration及關注時間尺度。
 - 預期輸出時間與關注位置。
 
-接著先判斷「單一等效材料＋兩個 fixed-T BC＋adiabatic其餘表面」是否仍能回答第一版 ADR 問題：
+接著先判斷「multi-region constant properties＋兩個 fixed-T BC＋adiabatic其餘表面」是否仍能回答第一版 ADR 問題：
 
-- 若可以，直接以現有 Test 02 pattern建立最小 ADR01。
-- 若不可以，先只實作第一個真正必要的 framework gap。最可能是 multi-region transient 或 heat load；不要同時建立完整 config/material/contact infrastructure。
+- 若可以，直接以 Test 06 pattern建立最小 ADR01。
+- 若需要internal heat load或更複雜BC，再將第一個真正必要的物理缺口獨立處理；
+  不要同時加入contact或其他物理。
 
 **READY FOR ADR01: YES WITH LIMITATIONS**
 
-理由：環境、3D mesh、FEniCSx transient solver、dump pipeline及現有 regressions都正常，可開始一個高度簡化的 ADR01 baseline；但真正多材料、有熱負載、複雜邊界或3D contact的 ADR transient assembly 尚超出目前 framework 能力。
+理由：環境、3D mesh、multi-region constant-property transient、統一material properties、
+dump pipeline、temperature-dependent transient及現有regressions都正常；但有熱負載、
+複雜邊界或3D contact的 ADR assembly 尚超出目前framework能力。

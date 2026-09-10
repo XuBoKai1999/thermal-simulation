@@ -86,11 +86,12 @@ contact/interface law、heat switch。
 ## Materials 與熱物性限制
 
 - steady constant-property model 可有多個 region，conductivity 以 DG0 field 依 cell tag 指派。
-- transient 支援多個 constant-property regions，以 cell tags 建立 DG0 `k/rho/cp` fields。
+- transient 支援多個 regions；constant properties以cell tags建立DG0 fields，
+  temperature-dependent properties建立region-wise UFL expressions。
 - `k`、`rho`、`cp` 使用統一 constant/table/Python property representation。
 - steady 支援依 cell tags 指派多個 constant scalar $k$，以及單一 local $k(T)$ region；
   兩者目前不能組合。
-- 不支援 anisotropic tensor、transient $k(T)$、`rho(T)` 或 `cp(T)`。
+- 不支援 anisotropic tensor或`T`以外的state dependence。
 - CSV table使用piecewise-linear interpolation；Python callable是local extension code。
 - 沒有 materials registry或material database。
 
@@ -135,8 +136,8 @@ $$
 preonly/LU。固定設定為 `snes_rtol=1e-10`、`snes_atol=1e-12`、最多 50 iterations，且
 linear/nonlinear 不收斂都直接報錯。
 
-第一版不支援 YAML solver options、temperature-dependent multi-region或任何 transient
-`k(T)/rho(T)/cp(T)`。後者會在case validation明確拒絕。Python expression必須可由UFL微分。
+目前不支援 YAML solver options。Transient `k(T)/rho(T)/cp(T)`與temperature-dependent
+multi-region使用SNES；Python expression必須可由UFL微分。
 
 ## MPI 行為
 

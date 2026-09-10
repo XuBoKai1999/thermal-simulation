@@ -30,10 +30,11 @@ P1 temperature 對 straight constant-k bar 恰可表示線性解，不能用 Tes
 `material: local`，並由同目錄 `material.py` 提供。薄層 contact 則使用
 `type: thin_layer_resistance`，不是 named material。
 
-### `temperature-dependent property in transient model is not yet supported`
+### Nonlinear transient property failure
 
-第一版只驗證 steady $k(T)$。transient $k(T)$、$\rho(T)$、$c_p(T)$ 尚未形成已驗證的
-time-stepping contract，因此 validator 會明確拒絕。
+確認case runner使用`build_nonlinear_transient_model`與`solve_nonlinear`，並確認所有table
+domains涵蓋BC、IC及求解結果。Python callable必須對numeric與UFL temperature皆回傳
+finite、positive且可微分的結果。
 
 ### `Local material must define callable: k`
 
@@ -50,7 +51,7 @@ time-stepping contract，因此 validator 會明確拒絕。
 ### `regions must contain at least one material region`
 
 steady constant-property case 可有多個 regions，但每個 key 都必須對應 geometry 的 volume
-semantic tag。Transient可有多個regions，但每個都必須有constant `k/rho/cp`；
+semantic tag。Transient可有多個constant或temperature-dependent `k/rho/cp` regions；
 temperature-dependent steady仍限制單一region。
 
 ### `Every mesh cell must belong to a configured material region`

@@ -478,7 +478,7 @@ Test 05 分成三個彼此不可混稱的結果：
 3. 為各材料指定 `k`、`rho`、`cp` 的 constant、table/CSV 或 Python source。
 4. 指定目前支援的兩個 fixed-temperature BC 與 transient IC。
 5. 建立或重用 mesh。
-6. 依 relevant properties 選 linear model，或對 single-region `k(T)` 選 nonlinear model/SNES。
+6. 依 relevant properties 選 linear model，或對 temperature-dependent steady/transient 選 nonlinear model/SNES。
 7. 做 analytic、mesh 與 time-step validation。
 8. 由 case `main.py` 控制 analyze、dump 與 summary output。
 
@@ -495,8 +495,24 @@ k: {type: python, file: materials/copper.py, function: k}
 ```
 
 指定函式接受 `T` 並回傳 positive finite scalar或 UFL-compatible expression。不使用
-expression language。現行 multi-region transient只支援 constant `k/rho/cp`；任何
-temperature-dependent transient property 都會在 case validation 明確拒絕。
+expression language。Multi-region transient可使用constant或temperature-dependent
+`k/rho/cp`；後者必須使用nonlinear transient builder與SNES。
+
+## Completed extension — nonlinear temperature-dependent transient
+
+ADR 很可能需要 `k(T)`、`rho(T)` 或 `cp(T)`。目前 implementation 沿用
+現有`Property.evaluate(T)`與region assignment，為Backward Euler建立nonlinear residual及
+Jacobian，並在每個 timestep 以PETSc SNES求解：
+
+$$
+\int_\Omega \rho(T)c_p(T)\frac{T^{n+1}-T^n}{\Delta t}v\,d\Omega
++\int_\Omega k(T)\nabla T^{n+1}\cdot\nabla v\,d\Omega=0.
+$$
+
+All-constant properties仍走linear快速路徑。Test 06 nonlinear regression驗證multi-region
+table/Python `k/rho/cp`、time-step refinement、long-time Kirchhoff steady limit與table-domain
+validation。此能力不包含heat load、time-dependent BC、convection、radiation、heat switch
+或新contact model。
 
 ## 前提
 

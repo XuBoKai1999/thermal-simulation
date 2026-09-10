@@ -77,6 +77,11 @@ Dirichlet values。
 回傳 `(a, linear, boundary_conditions, space, previous)`。只建單一 Backward Euler step；
 constant `k/rho/cp`均由semantic cell tags建立DG0 fields，可有多個regions。
 
+### `build_nonlinear_transient_model(mesh_data, case_data, semantic_tags, previous=None)`
+
+建立multi-region `k(T)/rho(T)/cp(T)` Backward Euler residual、Jacobian、unknown與previous
+temperature。Caller於每步使用`solve_nonlinear`，成功後將solution複製回previous。
+
 ### `build_boundary_conditions(space, facet_tags, case_data, semantic_tags)`
 
 回傳 Dirichlet BC list。所有 case BC 均按 fixed `value_K` 建立；facet global count 為零時
@@ -141,6 +146,11 @@ legacy local-material case仍可傳入具有`k(T)`的module。
 ### `property_field(mesh_data, case_data, semantic_tags, name)`
 
 依semantic cell tags為constant property建立DG0 field；`name`目前可為`k/rho/cp`。
+
+### `property_expression(mesh_data, case_data, semantic_tags, name, temperature)`
+
+依semantic cell tags組合region-wise `Property.evaluate(temperature)` UFL expression，供
+nonlinear transient model與analysis使用。
 
 ### `conductivity_field(mesh_data, case_data, semantic_tags)`
 

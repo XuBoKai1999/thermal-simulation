@@ -100,7 +100,7 @@ class PropertyTests(unittest.TestCase):
                     directory, "cp",
                 )
 
-    def test_temperature_dependent_transient_is_rejected(self):
+    def test_temperature_dependent_transient_is_loaded(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "k.csv").write_text("T,k\n1,10\n4,20\n", encoding="utf-8")
@@ -123,11 +123,10 @@ time:
 """,
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(
-                ValueError,
-                "temperature-dependent property in transient model is not yet supported",
-            ):
-                load_case(root / "case.yaml")
+            loaded = load_case(root / "case.yaml")
+            self.assertFalse(
+                loaded["_region_properties"]["bar"]["k"].is_constant
+            )
 
 
 if __name__ == "__main__":

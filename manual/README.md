@@ -4,7 +4,8 @@
 通用熱傳套件的承諾。目前有六個已驗證入口：Test 01 constant-$k$ steady、Test 02
 transient、Test 03 CSV table $k(T)$ nonlinear solve、Test 04 multi-region
 thin-layer contact resistance，以及 Test 05 獨立 1D P1 zero-thickness nonlinear contact、
-長時間 transient 與固定 0.125 s 的 `dx × dt` numerical-reference benchmark。
+長時間 transient 與固定 0.125 s 的 `dx × dt` numerical-reference benchmark；Test 06則驗證
+統一constant/table/Python property loader與multi-region constant-property transient。
 
 ## 建議閱讀順序
 
@@ -30,7 +31,8 @@ geometry，以 YAML 指定 region、material、`k/rho/cp` properties 與兩個�
 - `k`、`rho`、`cp` 可來自 scalar/explicit constant、CSV table 或 local Python callable。
 - steady 可使用一個或多個 constant、isotropic-$k$ regions；single-region steady `k(T)`
   可使用 table 或 Python source。
-- 暫態可使用多個 regions，但所有 relevant `k/rho/cp` properties 必須是 constant。
+- 暫態可使用多個 regions；constant properties走linear solver，任一 relevant property
+  為table/Python `p(T)`時走nonlinear SNES solver。
 - 穩態、零體積熱源 conduction。
 - Backward Euler 暫態、零體積熱源 conduction。
 - 恰好兩個 fixed-temperature Dirichlet boundaries。
@@ -43,8 +45,8 @@ geometry，以 YAML 指定 region、material、`k/rho/cp` properties 與兩個�
   面積比接觸熱阻。
 
 重要限制請先看[功能盤點](07-feature-status.md)。尤其目前不支援 heat load、heat flux
-BC、零厚度 interface contact、heat switch、convection、radiation、temperature-dependent
-多個 temperature-dependent materials 或任何 temperature-dependent transient property。
+BC、零厚度 interface contact、heat switch、convection、radiation或temperature dependence
+於`T`以外的state variable。
 
 ## Material syntax
 

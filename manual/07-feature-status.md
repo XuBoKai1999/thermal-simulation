@@ -11,7 +11,7 @@
 | Case/config loading | implemented, narrow | `case.load_case`; steady multi-region；two fixed-T BC |
 | Materials/properties | implemented, narrow | unified constant/table/Python `k/rho/cp`; no registry/database |
 | Steady conduction | implemented | multi-region constant k 或 single-region table/Python k(T)；Q=0 |
-| Transient conduction | implemented, narrow | multi-region constant properties；Backward Euler；loop lives in case runner |
+| Transient conduction | implemented, narrow | multi-region constant或temperature-dependent properties；Backward Euler；loop lives in case runner |
 | Initial condition | partial | x-split two-value DG0 only |
 | Fixed-temperature BC | implemented | exactly two |
 | Heat-flux/adiabatic/total-heat loads | absent as configurable features | untagged natural zero flux only |
@@ -30,9 +30,10 @@
 | Mesh caching/reuse | implemented | geometry-file hash only |
 | CLI/package entry point | absent | execute case `main.py` through WSL wrapper |
 | External CAD | absent workflow | only mentioned as possible future path |
-| Multi-material / region-dependent k | implemented | steady/transient constant scalar properties by cell tags |
+| Multi-material / region-dependent k | implemented | steady constant與transient constant/table/Python properties by cell tags |
 | k(T) | implemented, narrow | steady single-region；table or local Python；UFL expression |
-| rho(T), cp(T), anisotropic k | absent | transient properties remain constants |
+| rho(T), cp(T) | implemented | multi-region nonlinear transient via table/Python evaluator and SNES |
+| anisotropic k | absent | scalar isotropic conductivity only |
 | Nonlinear solve | implemented, narrow | steady $k(T)$；fixed PETSc SNES/Newton options |
 
 ## 舊文件與 source 的差異
@@ -55,8 +56,8 @@ Source code 與六個 working cases 是本手冊依據。已確認下列差異�
 
 Test 03 現已驗證 CSV table與 steady $k(T)$；Test 04 已驗證 multi-region constant
 $k$ 與 thin-layer contact resistance；Test 05 驗證獨立 1D P1 nonlinear $k(T)$ 與
-zero-thickness contact。Test 06驗證property loader與multi-region constant transient。
-Temperature-dependent transient與通用3D zero-thickness contact仍不是現有功能。
+zero-thickness contact。Test 06驗證property loader、multi-region constant transient與
+temperature-dependent nonlinear transient。通用3D zero-thickness contact仍不是現有功能。
 
 ## 讓文件化困難的現行 API 問題
 

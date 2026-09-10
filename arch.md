@@ -331,7 +331,7 @@ case.yaml
   -> region -> material -> k/rho/cp definition
   -> load_property(constant | table | python)
   -> Property.evaluate(T)
-  -> constant DG0 region fields 或 single-region nonlinear k(T)
+  -> constant DG0 region fields 或 region-wise nonlinear p(T) expressions
   -> model -> solver
 ```
 
@@ -420,10 +420,10 @@ regions:
   upper_plate: {material: copper}
 ```
 
-目前 steady nonlinear 支援單一 region 的 table/Python `k(T)`；constant `k/rho/cp` 可建立
-multi-region transient DG0 fields。Temperature-dependent transient、temperature-dependent
-multi-region 與其他 state variables 均為 not implemented。沒有中央 material database、
-registry 或 plugin system。
+目前 steady nonlinear 支援單一 region 的 table/Python `k(T)`；transient 對全 constant
+properties 保留 linear DG0 field 路徑，並支援 multi-region table/Python
+`k(T)/rho(T)/cp(T)` 的 nonlinear SNES 路徑。其他 state variables 尚未實作。沒有中央
+material database、registry 或 plugin system。
 
 ---
 

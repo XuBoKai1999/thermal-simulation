@@ -200,3 +200,20 @@ def property_field(mesh_data, case_data, semantic_tags, name):
 
 def conductivity_field(mesh_data, case_data, semantic_tags):
     return property_field(mesh_data, case_data, semantic_tags, "k")
+
+
+def property_expression(mesh_data, case_data, semantic_tags, name, temperature):
+    """Build a region-wise property expression evaluated at temperature."""
+    domain = mesh_data.mesh
+    space = fem.functionspace(domain, ("DG", 0))
+    expression = 0
+    for region_name, properties in case_data["_region_properties"].items():
+        if properties is None or name not in properties:
+            continue
+        indicator = fem.Function(space)
+        tag = semantic_tags[region_name]["tag"]
+        for cell in mesh_data.cell_tags.find(tag):
+            indicator.x.array[space.dofmap.cell_dofs(cell)[0]] = 1.0
+        indicator.x.scatter_forward()
+        expression += indicator * properties[name].evaluate(temperature)
+    return expression

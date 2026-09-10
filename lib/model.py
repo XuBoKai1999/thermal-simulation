@@ -49,8 +49,8 @@ def build_nonlinear_model(mesh_data, case_data, semantic_tags, material=None):
         conductivity = properties["k"].evaluate(temperature)
     else:
         conductivity = material.k(temperature)
-    if material is None and properties["k"].domain is not None:
-        temperature._property_domains = [("k", properties["k"].domain)]
+    if material is None:
+        temperature._properties = [("k", properties["k"], None)]
     residual = ufl.inner(
         conductivity * ufl.grad(temperature), ufl.grad(test)
     ) * ufl.dx
@@ -106,3 +106,61 @@ def build_transient_model(mesh_data, case_data, semantic_tags, previous=None):
     )
     linear = rho_cp_over_dt * previous * test * ufl.dx
     return a, linear, boundary_conditions, space, previous
+
+
+def build_nonlinear_transient_model(
+    mesh_data, case_data, semantic_tags, previous=None
+):
+    """Build backward Euler conduction with region-wise properties p(T)."""
+    domain = mesh_data.mesh
+    space = fem.functionspace(domain, ("Lagrange", 1))
+    boundary_conditions = build_boundary_conditions(
+        space, mesh_data.facet_tags, case_data, semantic_tags
+    )
+    if previous is None:
+        initial_space = fem.functionspace(domain, ("DG", 0))
+        initial_field = fem.Function(initial_space)
+        initial = case_data["time"]["initial_condition"]
+        x = initial_space.tabulate_dof_coordinates()[:, 0]
+        initial_field.x.array[:] = np.where(
+            x < initial["split_x_m"], initial["left_T_K"], initial["right_T_K"]
+        )
+        initial_field.x.scatter_forward()
+        previous = fem.Function(space)
+        previous.interpolate(
+            fem.Expression(initial_field, space.element.interpolation_points)
+        )
+        fem.set_bc(previous.x.array, boundary_conditions)
+        previous.x.scatter_forward()
+
+    temperature = fem.Function(space)
+    temperature.x.array[:] = previous.x.array
+    fem.set_bc(temperature.x.array, boundary_conditions)
+    temperature.x.scatter_forward()
+    test = ufl.TestFunction(space)
+    coefficients = {
+        name: materials.property_expression(
+            mesh_data, case_data, semantic_tags, name, temperature
+        )
+        for name in ("k", "rho", "cp")
+    }
+    dt = case_data["time"]["dt_s"]
+    residual = (
+        coefficients["rho"] * coefficients["cp"]
+        * (temperature - previous) / dt * test * ufl.dx
+        + ufl.inner(
+            coefficients["k"] * ufl.grad(temperature), ufl.grad(test)
+        ) * ufl.dx
+    )
+    jacobian = ufl.derivative(residual, temperature)
+    temperature._properties = []
+    for region, properties in case_data["_region_properties"].items():
+        if properties is None:
+            continue
+        cells = mesh_data.cell_tags.find(semantic_tags[region]["tag"])
+        dofs = np.unique([
+            dof for cell in cells for dof in space.dofmap.cell_dofs(cell)
+        ])
+        for name, prop in properties.items():
+            temperature._properties.append((f"{region}.{name}", prop, dofs))
+    return residual, temperature, boundary_conditions, jacobian, previous

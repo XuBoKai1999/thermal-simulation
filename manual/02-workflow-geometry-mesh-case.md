@@ -167,7 +167,7 @@ time:
 | `materials` | mapping | — | optional；named material definitions |
 | `regions` | mapping | — | 至少一個；可 inline properties 或引用 named material |
 | `regions.<name>.material` | string | — | optional；`materials` 中的名稱，或 legacy `local` |
-| `k`, `rho`, `cp` property | number/mapping | SI | scalar 或 `constant/table/python` definition；transient 三者必要且必須 constant |
+| `k`, `rho`, `cp` property | number/mapping | SI | scalar 或 `constant/table/python` definition；transient 三者必要 |
 | `boundary_conditions` | mapping | — | **恰好兩個** entries |
 | `boundary_conditions.<name>.type` | string | — | 只能是 `fixed_temperature` |
 | `boundary_conditions.<name>.value_K` | number | K | 必要 |
@@ -206,13 +206,14 @@ k: {type: python, file: materials/sample.py, function: k}
 
 相對路徑以 `case.yaml` 所在目錄解析。Table採piecewise-linear interpolation，numeric
 domain外evaluation失敗；Python function必須存在且numeric回傳為finite、positive。
-Single-region steady table/Python `k(T)`走nonlinear builder。Temperature-dependent transient
-會被validator以明確訊息拒絕。Legacy `material: local`仍可由舊runner明確傳module。
+Single-region steady table/Python `k(T)`走nonlinear builder。Transient若任一 relevant
+property為table/Python，case runner必須選nonlinear transient builder與SNES。Legacy
+`material: local`仍可由舊runner明確傳module。
 
 ### 多 region 與薄層接觸熱阻
 
-steady或transient constant-property case 可定義多個 region。Transient各region還需
-constant `rho`、`cp`。非接觸層 region 各自提供 `k`；geometry
+steady或transient case 可定義多個 region。Transient各region還需`rho`、`cp`；三種
+property皆可為constant/table/Python。非接觸層 region 各自提供 `k`；geometry
 的 volume physical-group names 必須對應 region keys。面積比熱阻使用：
 
 ```yaml
