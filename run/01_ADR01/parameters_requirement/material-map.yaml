@@ -1,0 +1,103 @@
+meta:
+  status: research-draft
+  target_temperature_range_K: [1.0, 4.0]
+  design_rule: >
+    Every geometry component ID must map to exactly one thermal-parameter record with provenance.
+  density_policy: >
+    Density may be modeled as constant over 1-4 K unless a reliable low-temperature rho(T)
+    source is available. Do not invent temperature dependence.
+
+components:
+  hot_plate:
+    material_status: confirmed-from-schematic
+    material: OFHC copper
+    thermal_role: fixed_4K_reservoir
+    property_family: ofhc_copper
+    notes:
+      - Baseline may treat this as an ideal 4 K reservoir rather than a solved body.
+
+  cylinder_1:
+    material_status: unresolved
+    material: TBD
+    candidate_materials: [OFHC copper]
+    property_family: TBD
+    notes:
+      - Schematic does not explicitly label this part as copper.
+
+  heat_switch:
+    material_status: special-model
+    material: equivalent heat switch
+    thermal_model: equivalent_conductance_or_resistance
+    required_parameters: [G_on(T), G_off(T)]
+    property_family: heat_switch
+    notes:
+      - Do not force k(T), cp(T), rho onto this component if modeled as conductance.
+      - Do not double-count bulk conduction and interface conductance.
+
+  cylinder_2:
+    material_status: unresolved
+    material: TBD
+    candidate_materials: [OFHC copper]
+    property_family: TBD
+    notes:
+      - Schematic does not explicitly label this part as copper.
+
+  ggg:
+    material_status: confirmed
+    material: Gd3Ga5O12
+    material_name: gadolinium gallium garnet
+    baseline_field_T: 0.0
+    required_parameters: [k(T,H=0), cp(T,H=0), rho]
+    property_family: ggg_zero_field
+    notes:
+      - Heat capacity is magnetic-field dependent.
+      - Current post-demagnetization baseline should use zero-field data unless changed by human decision.
+
+  cylinder_3:
+    material_status: confirmed-from-schematic
+    material: OFHC copper
+    required_parameters: [k(T,RRR), cp(T), rho]
+    property_family: ofhc_copper
+
+  cold_stage:
+    material_status: confirmed-from-schematic
+    material: OFHC copper
+    required_parameters: [k(T,RRR), cp(T), rho]
+    property_family: ofhc_copper
+
+  sample:
+    material_status: confirmed-from-schematic
+    material: copper
+    preferred_material_interpretation: OFHC copper
+    required_parameters: [k(T,RRR), cp(T), rho]
+    property_family: ofhc_copper
+
+  support_1:
+    material_status: unresolved-choice
+    material: TBD
+    candidate_materials: [G-10/FR-4, G-10CR, PEEK]
+    required_parameters: [k(T), cp(T), rho]
+    property_family: low_k_support
+    notes:
+      - Preserve direction/orientation qualifiers for fiberglass composites.
+
+  support_2:
+    material_status: unresolved-choice
+    material: TBD
+    candidate_materials: [G-10/FR-4, G-10CR, PEEK]
+    required_parameters: [k(T), cp(T), rho]
+    property_family: low_k_support
+    notes:
+      - Use same support material as support_1 unless hardware information says otherwise.
+
+global_open_decisions:
+  ofhc_copper_RRR:
+    status: TBD
+    candidate_scenarios: [50, 100]
+  support_material:
+    status: TBD
+    candidate_scenarios: [G-10/FR-4, G-10CR, PEEK]
+  cylinder_1_material:
+    status: TBD
+  cylinder_2_material:
+    status: TBD
