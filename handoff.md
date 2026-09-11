@@ -2,9 +2,8 @@
 
 ## Current goal
 
-Prepare the repository for ADR01 without expanding the FEM framework prematurely. The immediate
-prerequisite is to connect an explicitly selected NIST property series to the existing `Property`
-system, then obtain the physical inventory needed for ADR01.
+Obtain human visual approval of the generated ADR01 Draft 0 geometry before any
+material work or thermal solve.
 
 ## Current implementation state
 
@@ -14,8 +13,12 @@ system, then obtain the physical inventory needed for ADR01.
   1 partially normalized material, 3 manual-required materials, and 129 derived CSV tables.
 - NIST data is not solver-integrated. Current `case.yaml` accepts inline/case-local constant,
   table, or Python `k/rho/cp`; it cannot select a `material.yaml` series.
-- ADR01 has planning documents only. No ADR geometry, case, material assignment, runner, or result
-  exists yet.
+- ADR01 Step 0 is human-approved and marked complete.
+- `run/01_ADR01/geometry.py` generates the 10-component conformal placeholder mesh.
+- Automated checks confirm all 11 declared contacts, no extra contacts, and coherent mesh output.
+- `run/01_ADR01/build/mesh.msh` and `tags.json` are ready for interactive Gmsh inspection.
+- Current revision places the five-part coaxial ADR chain at `(-5, 0) mm`, the sample near
+  `(+5, 0) mm`, and supports at `(0, ±9) mm`; all are placeholder positions.
 
 ## Active decisions
 
@@ -25,9 +28,9 @@ system, then obtain the physical inventory needed for ADR01.
 - Never infer among qualified series. OFHC copper requires an RRR choice; G-10 conductivity
   requires a direction choice.
 - Never silently extrapolate outside `equation_range_K`, especially for ADR01's intended 1–4 K.
-- ADR01 begins only after its geometry, semantic regions, materials, contacts, and BC locations are
-  known. The first baseline remains fixed-temperature boundaries, adiabatic remainder, perfect
-  internal contact, and no added physics unless required.
+- ADR01 geometry requirements remain soft human-readable inputs; no geometry DSL is introduced.
+- All current dimensions and derived contact areas are visualization placeholders.
+- Human approval of the interactive geometry is required before thermal work.
 
 ## Known gaps and risks
 
@@ -48,12 +51,11 @@ system, then obtain the physical inventory needed for ADR01.
    loader regression and documentation update.
 2. Decide sources for missing density and sub-4 K properties; do not present extrapolated NIST fits
    as validated data.
-3. Obtain the ADR01 physical inventory in `run/01_ADR01/ADR01_steps.md` Stage 3.
-4. After that gate, build and visually review geometry/tags before adding the ADR runner.
+3. Open `run/01_ADR01/build/mesh.msh` in Gmsh and complete the human visual review.
+4. Only after approval, populate thermal parameters and later create the ADR runner.
 
 ## Resume here
 
-Read `AGENTS.md`, this file, `steps.md`, and `arch.md`, then inspect `lib/materials.py`,
-`lib/case.py`, the four initial NIST candidate `material.yaml` files, `test/test_nist_materials.py`,
-and `run/01_ADR01/ADR01_steps.md`.
-
+Read `AGENTS.md`, this file, `steps.md`, `arch.md`, and
+`run/01_ADR01/geometry-report.md`. Resume at the human visual-inspection gate;
+do not run thermal physics before approval.

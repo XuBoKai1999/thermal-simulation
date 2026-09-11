@@ -1,0 +1,97 @@
+{
+  "cold_stage": {
+    "dimension": 3,
+    "tag": 7
+  },
+  "cylinder_1": {
+    "dimension": 3,
+    "tag": 2
+  },
+  "cylinder_2": {
+    "dimension": 3,
+    "tag": 4
+  },
+  "cylinder_3": {
+    "dimension": 3,
+    "tag": 6
+  },
+  "edge_cold_stage_sample": {
+    "area_m2": 3.6e-05,
+    "dimension": 2,
+    "tag": 17
+  },
+  "edge_cylinder_1_heat_switch": {
+    "area_m2": 1.9634954084936207e-05,
+    "dimension": 2,
+    "tag": 12
+  },
+  "edge_cylinder_2_ggg": {
+    "area_m2": 1.9634954084936207e-05,
+    "dimension": 2,
+    "tag": 14
+  },
+  "edge_cylinder_3_cold_stage": {
+    "area_m2": 1.9634954084936207e-05,
+    "dimension": 2,
+    "tag": 16
+  },
+  "edge_ggg_cylinder_3": {
+    "area_m2": 1.9634954084936207e-05,
+    "dimension": 2,
+    "tag": 15
+  },
+  "edge_heat_switch_cylinder_2": {
+    "area_m2": 1.9634954084936207e-05,
+    "dimension": 2,
+    "tag": 13
+  },
+  "edge_hot_cylinder_1": {
+    "area_m2": 1.9634954084936207e-05,
+    "dimension": 2,
+    "tag": 11
+  },
+  "edge_hot_support_1": {
+    "area_m2": 4.908738521234052e-06,
+    "dimension": 2,
+    "tag": 18
+  },
+  "edge_hot_support_2": {
+    "area_m2": 4.908738521234052e-06,
+    "dimension": 2,
+    "tag": 20
+  },
+  "edge_support_1_cold_stage": {
+    "area_m2": 4.908738521234052e-06,
+    "dimension": 2,
+    "tag": 19
+  },
+  "edge_support_2_cold_stage": {
+    "area_m2": 4.908738521234052e-06,
+    "dimension": 2,
+    "tag": 21
+  },
+  "ggg": {
+    "dimension": 3,
+    "tag": 5
+  },
+  "heat_switch": {
+    "dimension": 3,
+    "tag": 3
+  },
+  "hot_plate": {
+    "dimension": 3,
+    "tag": 1
+  },
+  "sample": {
+    "dimension": 3,
+    "tag": 10
+  },
+  "support_1": {
+    "dimension": 3,
+    "tag": 8
+  },
+  "support_2": {
+    "dimension": 3,
+    "tag": 9
+  }
+}

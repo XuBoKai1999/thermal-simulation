@@ -57,7 +57,7 @@ adr-thermal/
 ├─ materials/
 │  └─ nist/             # source-preserving data; not yet solver-integrated
 ├─ run/
-│  └─ 01_ADR01/         # planning documents only; simulation files not yet created
+│  └─ 01_ADR01/         # approved Draft 0 requirements + tagged inspection geometry
 │
 └─ test/
    ├─ 01_steady_bar/

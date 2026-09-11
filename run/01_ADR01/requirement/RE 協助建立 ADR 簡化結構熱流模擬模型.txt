@@ -1,0 +1,62 @@
+寄件者:	葛順康
+寄件日期:	2026年9月1日星期二 下午 3:45
+收件者:	許博凱
+副本:	蘇于倫; 陳士芳; 許俊明
+主旨:	RE: 協助建立 ADR 簡化結構熱流模擬模型
+附件:	Research Progress of High Efficiency Magnetic Refrigeration Technology 
+and Magnetic Materials-ocr.pdf
+
+熱流模擬的公式可以參考這篇文章的section 3  (p.8)。 
+ 
+謝謝
+ 
+寄件者: 葛順康 
+寄件日期: 2026年8月31日 下午 04:37:38 
+收件者: 許博凱 
+副本: 蘇于倫; 陳士芳; 許俊明 
+主旨: 協助建立 ADR 簡化結構熱流模擬模型 
+ 
+Hi 博凱， 
+ 
+上週有和你討論，想請你幫忙做ADR熱流模擬的部分，很感謝你有意願加入! 
+先講時程，這前瞻提案計劃10/17要到院部報告，
+所以我們先在9/21針對你作模擬這塊進行初步結果討論 
+有任何問題，歡迎隨時討論，集思廣益! 
+可以參考附件中的圖，要麻煩你幫忙部分是： 
+ 
+1. 找合適的模擬軟體 
+2. 依照圖中的結構先建立一個簡單的 3D 熱傳模型，作為後續 ADR 結構與熱流分析
+的基礎。
+3. 可以用視覺呈現，看到各部件的溫度分布、熱流方向及主要寄生熱漏路徑。(熱
+流模擬的分析重點，也可以研究一下)
+
+模型可先包含：
+*	4 K hot plate：作為固定溫度邊界，T 
+= 4 K 
+*	Superconducting magnet：先視為熱錨定於 4 K stage，並可預留後續加入 
+magnet heat loss 的設定 
+*	Heat switch：先以等效熱導方式處理，可設定Gon/GoffG_{off} 
+*	GGG / magnetic refrigerant：第一版先使用等效材料或 placeholder 
+*	Cu thermal bus 與 cold stage 
+*	PEEK / G10 low-k supports 
+*	Dummy sample：可先設定固定冷端溫度，或給定 heat load Qload  
+Q_{load} 
+第一版主要希望得到：
+1.	3D temperature distribution 
+2.	Heat flux distribution 
+3.	各主要熱傳路徑的 heat leak 
+4.	Cold stage temperature 
+5.	Magnet 與 4 K stage 之間的 thermal compatibility 
+軟體不限定 COMSOL，如果有合適的免費／開源 FEM的工具都可以。
+
+附件簡報部分為這次提案內容，可以參考一下。
+再麻煩您協助，謝謝。
+Best,
+葛順康 / Koh, Shung-Kang 研究員 / Researcher 
+工業技術研究院 量測中心 / Center for Measurement Standards, ITRI 
+電話：+886-3-582-0100 #43721 
+手機：0920-468-627
+Email：skkoh@itri.org.tw
+地址：300044 新竹市東區光復路二段321號 321, No. 321, Sec. 2, Guangfu Rd., East 
+Dist., Hsinchu City 300044, Taiwan (R.O.C.)
+

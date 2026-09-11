@@ -1,5 +1,13 @@
 # Thermal Simulation Roadmap
 
+## Current ADR01 geometry status (2026-09-11)
+
+- [x] Human-approved Step 0 decisions recorded in `run/01_ADR01/steps.md`.
+- [x] Draft 0 translated directly to case-local Gmsh geometry without a new DSL.
+- [x] Ten component groups and eleven connection groups generated and automatically validated.
+- [ ] Human interactive inspection and approval of `run/01_ADR01/build/mesh.msh`.
+- [ ] Material parameters and thermal solve remain gated after geometry approval.
+
 > 原則：如無必要勿增實體。一次完成並驗證一個真正需要的能力。
 
 ## 已完成
@@ -36,4 +44,3 @@
 依實際 sensitivity 一次加入一項：contact resistance、prescribed heat load、time-dependent
 boundary、heat switch、radiation、anisotropic conductivity 或 MCE/`C(T,B)`。每項先做最小
 獨立 regression，再整合到 ADR01。
-

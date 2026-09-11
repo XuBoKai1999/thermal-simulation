@@ -1,0 +1,153 @@
+# ADR01 rough geometry for the first Codex 3D interpretation.
+# Units: mm
+# WARNING: placeholder dimensions, not measured hardware dimensions.
+
+meta:
+  status: draft-placeholder
+  units: mm
+  coordinate_system: right-handed-cartesian
+  nominal_total_height: 100.0
+  nominal_disk_diameter: 25.4
+  source_scale_warning: >
+    The schematic is not treated as a scale drawing. Dimensions below preserve topology and
+    approximate visual proportions while fitting the known ~25.4 mm disk / ~100 mm height envelope.
+
+assembly_constraints:
+  - id: adr_chain_coaxial
+    components: [cylinder_1, heat_switch, cylinder_2, ggg, cylinder_3]
+    rule: >
+      These five components form one coaxial ADR chain. Their center_xy positions must remain
+      identical and any lateral relocation must move all five together.
+    placeholder_center_xy: [-5.0, 0.0]
+
+components:
+
+  - id: hot_plate
+    shape: cylinder
+    geometry:
+      center_xy: [0.0, 0.0]
+      z_min: 96.0
+      z_max: 100.0
+      diameter: 25.4
+    material_hint: copper
+    thermal_role_hint: fixed_4K_reservoir
+    parameter_ref: ../parameters-requirement/components/hot_plate.yaml
+    confidence: placeholder
+
+  - id: cylinder_1
+    shape: cylinder
+    geometry:
+      center_xy: [-5.0, 0.0]
+      z_min: 64.5
+      z_max: 96.0
+      diameter: 5.0
+    material_hint: TBD
+    thermal_role_hint: central_thermal_path
+    parameter_ref: ../parameters-requirement/components/cylinder_1.yaml
+    confidence: placeholder
+
+  - id: heat_switch
+    shape: cylinder
+    geometry:
+      center_xy: [-5.0, 0.0]
+      z_min: 64.0
+      z_max: 64.5
+      diameter: 6.0
+    material_hint: equivalent_heat_switch
+    thermal_role_hint: thin_placeholder_for_switchable_conductance
+    parameter_ref: ../parameters-requirement/components/heat_switch.yaml
+    confidence: placeholder
+    notes:
+      - Keep visually thin in the first geometry.
+      - Thermal model may later be converted to Gon/Goff instead of bulk material conduction.
+
+  - id: cylinder_2
+    shape: cylinder
+    geometry:
+      center_xy: [-5.0, 0.0]
+      z_min: 54.0
+      z_max: 64.0
+      diameter: 5.0
+    material_hint: TBD
+    thermal_role_hint: central_thermal_path
+    parameter_ref: ../parameters-requirement/components/cylinder_2.yaml
+    confidence: placeholder
+
+  - id: ggg
+    shape: cylinder
+    geometry:
+      center_xy: [-5.0, 0.0]
+      z_min: 34.0
+      z_max: 54.0
+      diameter: 9.0
+    material_hint: GGG
+    thermal_role_hint: magnetic_refrigerant
+    parameter_ref: ../parameters-requirement/components/ggg.yaml
+    confidence: placeholder
+
+  - id: cylinder_3
+    shape: cylinder
+    geometry:
+      center_xy: [-5.0, 0.0]
+      z_min: 4.0
+      z_max: 34.0
+      diameter: 5.0
+    material_hint: OFHC_copper_candidate
+    thermal_role_hint: thermal_bus
+    parameter_ref: ../parameters-requirement/components/cylinder_3.yaml
+    confidence: placeholder
+
+  - id: cold_stage
+    shape: cylinder
+    geometry:
+      center_xy: [0.0, 0.0]
+      z_min: 0.0
+      z_max: 4.0
+      diameter: 25.4
+    material_hint: copper
+    thermal_role_hint: cold_stage
+    parameter_ref: ../parameters-requirement/components/cold_stage.yaml
+    confidence: placeholder
+    notes:
+      - The 25.4 mm diameter is used as the current nominal one-inch disk reference.
+      - Confirm later which physical disk the one-inch statement refers to.
+
+  - id: sample
+    shape: box
+    geometry:
+      x_min: 2.0
+      x_max: 8.0
+      y_min: -3.0
+      y_max: 3.0
+      z_min: 4.0
+      z_max: 10.0
+    material_hint: copper_dummy_sample
+    thermal_role_hint: dummy_sample
+    parameter_ref: ../parameters-requirement/components/sample.yaml
+    confidence: placeholder
+    notes:
+      - Placed opposite the laterally offset ADR chain so both share the cold-stage area.
+
+  - id: support_1
+    shape: cylinder
+    geometry:
+      center_xy: [0.0, -9.0]
+      z_min: 4.0
+      z_max: 96.0
+      diameter: 2.5
+    material_hint: PEEK_or_G10
+    thermal_role_hint: low_k_parasitic_support
+    parameter_ref: ../parameters-requirement/components/support_1.yaml
+    confidence: placeholder
+
+  - id: support_2
+    shape: cylinder
+    geometry:
+      center_xy: [0.0, 9.0]
+      z_min: 4.0
+      z_max: 96.0
+      diameter: 2.5
+    material_hint: PEEK_or_G10
+    thermal_role_hint: low_k_parasitic_support
+    parameter_ref: ../parameters-requirement/components/support_2.yaml
+    confidence: placeholder
