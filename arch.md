@@ -11,7 +11,7 @@
 
 ```text
 lib/              = simulation engine
-runs/<name>/      = 一次實際模擬
+run/<name>/       = 一次實際模擬
 test/<name>/      = 一次驗證模擬
 ```
 
@@ -54,13 +54,10 @@ adr-thermal/
 ├─ postprocess/
 │  └─ plot_dump.py
 │
-├─ runs/
-│  └─ baseline/
-│     ├─ main.py
-│     ├─ geometry.py
-│     ├─ case.yaml
-│     ├─ build/
-│     └─ output/
+├─ materials/
+│  └─ nist/             # source-preserving data; not yet solver-integrated
+├─ run/
+│  └─ 01_ADR01/         # planning documents only; simulation files not yet created
 │
 └─ test/
    ├─ 01_steady_bar/
@@ -427,7 +424,12 @@ regions:
 目前 steady nonlinear 支援單一 region 的 table/Python `k(T)`；transient 對全 constant
 properties 保留 linear DG0 field 路徑，並支援 multi-region table/Python
 `k(T)/rho(T)/cp(T)` 的 nonlinear SNES 路徑。其他 state variables 尚未實作。沒有中央
-material database、registry 或 plugin system。
+material registry 或 plugin system。
+
+Repository 另有 `materials/nist/`：保存 NIST 原始頁面、provenance、normalized
+`material.yaml`、equation representation 與限制在 equation range 內的 derived CSV。
+目前 solver 不會直接讀取或選擇其中的 series；使用者必須明確處理 RRR、direction 等
+qualifiers，且不得將 equation range 外的外插視為可信資料。
 
 ---
 

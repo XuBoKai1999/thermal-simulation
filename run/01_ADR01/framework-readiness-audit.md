@@ -409,16 +409,11 @@ h_c = 1 / R_c
 
 最佳資料是同類材料、表面處理、溫度和 preload 下的實測值；其次才是有相同條件的文獻範圍。
 
-## 7. `run/` vs `runs/` finding
+## 7. `run/` directory decision
 
-- `arch.md` 和 `steps.md` 的正式架構主要使用 `runs/<name>/`，並提到未來 `runs/baseline/`。
-- 本機實際存在 `run/01_ADR01/`。
-- Repository root 沒有 `runs/`。
-- `lib/` 沒有對 `run/` 或 `runs/` 的 hard-coded dependency。
-- Case path全部由各案例 `main.py` 的 `Path(__file__).resolve().parent` 決定，因此任一名稱技術上都可運作。
-- 文件內「run/test」有時是一般語意，不是固定目錄 API。
-
-結論：這是 documentation/layout 命名差異，不是現有 runtime blocker。本輪不應 rename。
+- 實際 real-case 目錄採 `run/<name>/`；目前只有 `run/01_ADR01/` planning documents。
+- `arch.md`、`steps.md` 與 manual 已同步採用 `run/`。
+- `lib/` 沒有對該目錄名稱的 hard-coded dependency；case path仍由各案例 `main.py` 決定。
 
 ## 8. Blocking issues before ADR01
 

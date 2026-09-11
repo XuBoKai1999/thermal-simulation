@@ -39,7 +39,8 @@ lib/                → 可重用的 FEM、material、analysis、mesh、dump imp
 目前版本是小型、case-driven 的 3D FEniCSx 熱傳框架：使用者以 Python/Gmsh 建立
 geometry，以 YAML 指定 region、material、`k/rho/cp` properties 與一個以上固定溫度邊界，再由案例自己的 `main.py`
 串接 mesh、model、solve、analysis 與 dump。它不是具有統一 CLI、通用 case runner、
-材料資料庫或多物理 DSL 的成熟套件。
+自動選材 registry 或多物理 DSL 的成熟套件。Repository 雖保存 NIST cryogenic material
+database，但目前不能由 `case.yaml` 直接引用。
 
 ## Environment 與執行邊界
 
@@ -76,6 +77,15 @@ manual/       本 operation knowledge base
 runner、installed package、external CAD dependency manager 或 material-selection CLI for cases。
 `materials/nist/` database 已存在，但 `case.yaml` external material reference 與 solver
 integration 尚未實作；不得把 database series ID 直接當成目前有效的 case material syntax。
+可用下列 metadata-only CLI 盤點資料；它不會啟動 FEniCSx，也不代表資料已可直接求解：
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 scripts/list-materials.py copper --property k"
+```
+
+每個 `material.yaml` 可能有多條 property series。必須明確檢查 `conditions`（例如 copper
+RRR、G-10 direction）、`equation_range_K` 與 `derived_table`；資料庫不包含 density，也不
+允許把有效範圍外的值默認外插。
 
 ## 目前能做什麼
 

@@ -6,6 +6,14 @@
 > `Codex` = 實作、修改 repository、執行 regression。  
 > `共同` = 我們先定義需求，再交 Codex 實作並回來 review。
 
+## Current status
+
+ADR implementation has not begun. No ADR geometry, materials assignment, or
+simulation has started. The current work is the remaining shared-material
+integration prerequisite: inspect the normalized NIST `material.yaml` schemas,
+then design the minimum `case.yaml -> NIST property series -> existing Property
+system` integration.
+
 ## Stage 0 — Repository gate
 
 **Owner：Codex / review**

@@ -9,7 +9,7 @@
 | Region/cell tags | implemented | Gmsh volume physical groups + `cell_tags`/`tags.json` |
 | Facet/boundary tags | implemented | Gmsh surface physical groups + `facet_tags` |
 | Case/config loading | implemented, narrow | `case.load_case`; multi-region；one or more fixed-T BCs |
-| Materials/properties | implemented, narrow | case-local constant/table/Python `k/rho/cp`; shared NIST database exists but is not solver-integrated |
+| Materials/properties | implemented, narrow | case-local constant/table/Python `k/rho/cp`; source-preserving NIST database與listing CLI已完成，但尚未solver-integrated |
 | Steady conduction | implemented | multi-region constant k 或 single-region table/Python k(T)；Q=0 |
 | Transient conduction | implemented, narrow | multi-region constant或temperature-dependent properties；Backward Euler；loop lives in case runner |
 | Initial condition | partial | uniform或backward-compatible x-split DG0 |
@@ -55,13 +55,18 @@ coordinate/region initial field、general 3D zero-thickness contact 或 transien
 external CAD/helper dependency tracking、topology-aware 3D postprocessor，且 MPI dump/cell-ID
 mapping 未實作。
 
+NIST ingestion 現況：43 個index entries（42 material pages + 1 regenerator dataset）、
+38 fully normalized、1 partially normalized、3 manual-required、129 derived CSVs。Derived
+tables只覆蓋各series的`equation_range_K`；資料庫沒有補入外部density，也不替使用者在
+RRR、direction等variants間自動選擇。
+
 ## 舊文件與 source 的差異
 
 Source code 與七個 working cases 是本手冊依據。已確認下列差異：
 
 - `arch.md` 的 `loads`、`heat_switch` YAML 仍是示意/未來設計；`contacts` 目前只有
   `thin_layer_resistance` 已實作。
-- `steps.md` Stage 7 baseline 與 `runs/baseline` 尚不存在。
+- `steps.md` 的 ADR01 baseline 尚未開始；實際 planning directory 是 `run/01_ADR01/`。
 - `arch.md`/`dump-format.md` 談真正 3D topology postprocess merge；現有 reader/plotter沒有
   讀 `mesh.msh` 或核對 `build.json`，只支援 dump centroid scatter。
 - `arch.md` 提到 external STEP/BREP 可作方向，但沒有 repository API/case 證據。
