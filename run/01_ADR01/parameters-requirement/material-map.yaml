@@ -1,5 +1,5 @@
 meta:
-  status: baseline-v1-derived
+  status: frozen
   canonical_spec: ADR01_material_parameters_baseline_v1.md
   target_temperature_range_K: [1.0, 4.0]
   rule: Component IDs match geometry IDs; this file never overrides the canonical spec.
@@ -7,6 +7,7 @@ meta:
 components:
   hot_plate:
     model: ideal_fixed_temperature_reservoir
+    temperature_K: 4.0
     solved_material_region: false
 
   cylinder_1: {material: OFHC_Cu_RRR100}
@@ -17,6 +18,7 @@ components:
 
   heat_switch:
     model: ideal_open
+    G_off_W_K: 0.0
     bulk_material: null
 
   ggg:
@@ -30,5 +32,6 @@ components:
 ordinary_contacts:
   model: perfect_contact
 
-sensitivity_records:
-  copper_purity: OFHC_Cu_RRR50
+sensitivity:
+  copper:
+    alternate_RRR: 50

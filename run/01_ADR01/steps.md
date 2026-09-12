@@ -1,33 +1,71 @@
 # ADR01 Workflow and Status
 
-## Completed
+## Step 0 — Freeze modeling scope
 
-- [x] Baseline scope frozen: post-demagnetization 3D transient solid conduction,
-  zero volumetric heating, and no added physics.
-- [x] Ten-component placeholder geometry and 11 stable connection IDs defined.
-- [x] Conformal Gmsh geometry generated and automated contact/coherence checks passed.
-- [x] Material/property research completed and frozen in
-  `parameters-requirement/ADR01_material_parameters_baseline_v1.md`.
-- [x] Obsolete parameter research notes and task prompts retired.
+STATUS: COMPLETE
 
-## Current gates
+Post-demagnetization 3D transient solid conduction with zero volumetric heating.
+Magnetocaloric dynamics, radiation, convection, electromagnetic physics, and
+non-ideal ordinary contacts are outside Baseline v1.
 
-- [ ] Record human interactive approval of the current generated geometry.
-- [ ] Resolve the complete initial temperature field (`TBD`).
-- [ ] Resolve all boundary conditions other than the approved ideal fixed-4 K
-  hot reservoir (`TBD`); no fixed 1 K cold boundary is currently established.
+## Steps 1–4 — Geometry
 
-## Next implementation work
+STATUS: GENERATED; HUMAN VISUAL APPROVAL PENDING
 
-1. Translate the canonical constant/function/table/conductance representations
-   into the existing framework-readable case files without changing the baseline.
-2. Run property-level range, unit, positivity, checkpoint, and interpolation checks.
-3. Verify how the ideal-OFF heat-switch path is represented without assigning it
-   fake bulk properties or double-counting resistance.
-4. After all gates above are approved, assemble and verify the first ADR01
-   transient baseline.
+The ten-component placeholder geometry and 11 stable connection IDs are defined.
+The conformal Gmsh mesh passes automated contact and coherence checks. Human
+interactive approval of the current mesh is still required before thermal solving.
 
-Material research is closed for Baseline v1. Radiation, convection, non-ideal
-contact resistance, finite-field/magnetocaloric behavior, real heat-switch
-hardware, and additional material families remain deferred unless separately
-approved.
+## Step 5 — Freeze baseline thermal parameters
+
+STATUS: COMPLETE
+
+The sole canonical specification is:
+
+`parameters-requirement/ADR01_material_parameters_baseline_v1.md`
+
+Material/property research is closed for Baseline v1. Do not restart it or copy
+its formulas, tables, or bibliography into roadmap files.
+
+## Step 6 — Freeze initial and boundary conditions
+
+STATUS: INCOMPLETE
+
+Approved:
+
+- `hot_plate` represents an ideal fixed-temperature reservoir at 4 K.
+
+Unresolved (`TBD`):
+
+- initial temperatures of all solved regions, including GGG;
+- all non-hot-side boundary conditions;
+- simulation duration and timestep;
+- output and observation cadence.
+
+No fixed 1 K cold boundary or 1 K GGG initial condition is currently approved.
+
+## Step 7 — Implement solver-facing properties
+
+STATUS: NOT STARTED
+
+Translate the canonical constant, Python-function, table, and conductance
+representations into the existing framework. Do not change the frozen baseline or
+assign fake bulk properties to the ideal-OFF heat switch.
+
+## Step 8 — Property sanity checks
+
+STATUS: NOT STARTED
+
+Check the 1–4 K domains, units, positivity, canonical checkpoints,
+interpolation behavior, and out-of-range failure for every implemented property.
+
+## Step 9 — ADR01 transient baseline
+
+STATUS: BLOCKED BY STEPS 2–4, 6–8
+
+After geometry approval and IC/BC decisions, run the transient smoke case and
+then perform mesh/timestep convergence, thermal-path review, and energy checks.
+
+Further materials, finite-field or magnetocaloric behavior, real heat-switch
+hardware, radiation, heat loads, and non-ideal contacts remain deferred unless
+separately approved.

@@ -1,46 +1,37 @@
 # Thermal Simulation Roadmap
 
-## Current ADR01 geometry status (2026-09-11)
-
-- [x] Human-approved Step 0 decisions recorded in `run/01_ADR01/steps.md`.
-- [x] Draft 0 translated directly to case-local Gmsh geometry without a new DSL.
-- [x] Ten component groups and eleven connection groups generated and automatically validated.
-- [ ] Human interactive inspection and approval of `run/01_ADR01/build/mesh.msh`.
-- [ ] Material parameters and thermal solve remain gated after geometry approval.
-
 > 原則：如無必要勿增實體。一次完成並驗證一個真正需要的能力。
 
-## 已完成
+## Framework status
 
-- [x] Test 01–07：steady/transient、temperature-dependent properties、multi-region、窄範圍
-  contact models、analysis、dump 與 convergence regressions。
-- [x] 使用者手冊與 framework readiness audit。
-- [x] Source-preserving NIST cryogenic materials mirror、derived tables、listing CLI 與 database
-  regressions。
+- [x] Test 01–07 cover steady/transient conduction, temperature-dependent
+  properties, multi-region models, narrow contact models, analysis, dump I/O,
+  and convergence regressions.
+- [x] User manual and framework-readiness review completed.
+- [x] Source-preserving NIST material mirror, derived tables, listing CLI, and
+  database regressions completed.
 
-## 現在：ADR01 前置工作
+## ADR01 current status
 
-1. [ ] 讓 `case.yaml` 明確引用一個 NIST `material.yaml` property series，沿用既有
-   `Property`/table loader；保留 inline syntax，不建立 registry/database abstraction。
-2. [ ] 以 focused regression 驗證 external file resolution、series selection、range failure，
-   並同步 manual/architecture。
-3. [ ] 決定 NIST 未提供的 density 與 1–4 K data 來源；禁止 silent extrapolation。
-4. [ ] 完成 ADR01 physical inventory：必要 geometry、semantic regions、材料、contact 假設、
-   fixed-temperature surfaces、initial condition、simulation time 與 observables。
+- [x] Modeling scope and ten-component placeholder geometry defined.
+- [x] Tagged conformal geometry generated; automated contact/coherence checks pass.
+- [ ] Human interactive approval of `run/01_ADR01/build/mesh.msh`.
+- [x] Material/property research completed and Baseline v1 frozen in
+  `run/01_ADR01/parameters-requirement/ADR01_material_parameters_baseline_v1.md`.
+- [ ] Initial temperatures and remaining boundary conditions frozen; only the
+  ideal fixed-4 K hot reservoir is currently approved.
 
-## ADR01 baseline
+## Next ADR01 gates
 
-依 `run/01_ADR01/ADR01_steps.md` 的 gates 順序執行：
+1. Record human approval of the current geometry.
+2. Resolve the initial-condition field, non-hot-side boundary conditions,
+   simulation duration/timestep, and output cadence.
+3. Translate Baseline v1 properties into existing framework-readable constant,
+   function, table, and conductance forms.
+4. Run property-level domain, unit, checkpoint, interpolation, positivity, and
+   out-of-range checks.
+5. Assemble the ADR01 transient smoke run, then perform mesh/timestep convergence,
+   thermal-path review, and energy sanity checks.
 
-1. [ ] 建立並目視檢查最小 geometry、tags 與 conformal interfaces；先不 solve。
-2. [ ] 建立 solver-valid `case.yaml`，確認所有 property domains 覆蓋目標溫度。
-3. [ ] 從 Test 07 重用最小 transient workflow，產生 dump、region statistics 與 boundary
-   heat flows；不建立 generic runner。
-4. [ ] 完成 smoke run、thermal-path review、mesh/time-step convergence 與 energy sanity check。
-5. [ ] 換入可信的 temperature-dependent properties，重跑驗證並形成 baseline report。
-
-## Baseline 後才評估
-
-依實際 sensitivity 一次加入一項：contact resistance、prescribed heat load、time-dependent
-boundary、heat switch、radiation、anisotropic conductivity 或 MCE/`C(T,B)`。每項先做最小
-獨立 regression，再整合到 ADR01。
+Do not restart material research or add new physics before an approved requirement.
+Detailed case progress is maintained in `run/01_ADR01/steps.md`.
