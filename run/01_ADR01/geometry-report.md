@@ -1,10 +1,12 @@
-# ADR01 Draft 0 Geometry Validation — Lateral-Offset Revision
+# ADR01 Draft 0 Geometry Validation — Approved Lateral-Offset Revision
 
 ## Result
 
 The placeholder geometry was generated successfully as one conformal 3D assembly.
 All 10 component IDs are dimension-3 physical groups. All 11 declared edge IDs are
 dimension-2 physical groups on surfaces shared by exactly the declared component pair.
+
+Human visual inspection approved this lateral-offset draft on 2026-09-12.
 
 - Missing declared contacts: none
 - Additional component contacts: none
@@ -57,4 +59,4 @@ From repository root in Windows PowerShell:
 
 In Gmsh, use the physical groups to show/hide the 10 components and 11 interfaces,
 then rotate, zoom, and inspect the left-offset chain, opposite-side sample, and two supports.
-Human visual approval remains required before thermal work.
+This geometry gate is complete. Later dimensional changes require renewed review.

@@ -10,11 +10,11 @@ non-ideal ordinary contacts are outside Baseline v1.
 
 ## Steps 1–4 — Geometry
 
-STATUS: GENERATED; HUMAN VISUAL APPROVAL PENDING
+STATUS: COMPLETE
 
 The ten-component placeholder geometry and 11 stable connection IDs are defined.
-The conformal Gmsh mesh passes automated contact and coherence checks. Human
-interactive approval of the current mesh is still required before thermal solving.
+The conformal Gmsh mesh passes automated contact and coherence checks. The current
+lateral-offset geometry received human visual approval on 2026-09-12.
 
 ## Step 5 — Freeze baseline thermal parameters
 
@@ -67,10 +67,10 @@ the generated thickness and shared contact area.
 
 ## Step 9 — ADR01 transient baseline
 
-STATUS: BLOCKED BY STEPS 2–4, 6–8
+STATUS: BLOCKED BY STEPS 6–8
 
-After geometry approval and IC/BC decisions, run the transient smoke case and
-then perform mesh/timestep convergence, thermal-path review, and energy checks.
+After IC/BC decisions and property verification, run the transient smoke case
+and then perform mesh/timestep convergence, thermal-path review, and energy checks.
 
 Further materials, finite-field or magnetocaloric behavior, heat-switch ON state
 or switching logic, hardware-specific switch data, radiation, heat loads, and

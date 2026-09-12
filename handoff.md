@@ -2,61 +2,62 @@
 
 ## Current goal
 
-Prepare ADR01 for solver-facing property implementation while retaining the
-geometry-approval and IC/BC gates.
+Convert the frozen ADR01 Baseline v1 parameters and approved heat-switch proxy
+into the existing solver-facing property forms, after the remaining IC/BC and
+runtime decisions are supplied.
 
-## Current implementation state
+## Current state
 
-- Test 01–07 cover steady/transient conduction, temperature-dependent properties, multi-region
-  models, narrow contact models, analysis, and dump I/O.
-- `materials/nist/` contains 43 index entries, 42 material pages, 38 fully normalized materials,
-  1 partially normalized material, 3 manual-required materials, and 129 derived CSV tables.
-- NIST data is not solver-integrated. Current `case.yaml` accepts inline/case-local constant,
-  table, or Python `k/rho/cp`; it cannot select a `material.yaml` series.
-- ADR01 Step 0 is human-approved and marked complete.
-- `run/01_ADR01/geometry.py` generates the 10-component conformal placeholder mesh.
-- Automated checks confirm all 11 declared contacts, no extra contacts, and coherent mesh output.
-- `run/01_ADR01/build/mesh.msh` and `tags.json` are ready for interactive Gmsh inspection.
-- Current revision places the five-part coaxial ADR chain at `(-5, 0) mm`, the sample near
-  `(+5, 0) mm`, and supports at `(0, ±9) mm`; all are placeholder positions.
+- Parent Tests 01–07 already cover the required steady/transient,
+  temperature-dependent, multi-region, contact, analysis, and dump foundations.
+- ADR01 has moved from geometry definition to parameterization / baseline-run
+  preparation.
+- The ten-component lateral-offset geometry and all 11 contacts pass automated
+  checks and received human visual approval on 2026-09-12.
 - Material/property research is complete. The frozen canonical specification is
   `run/01_ADR01/parameters-requirement/ADR01_material_parameters_baseline_v1.md`.
+- `run/01_ADR01/parameters-requirement/material-map.yaml` is the concise current
+  solver-facing mapping.
+- Solver-facing property files, `case.yaml`, and the ADR01 runner do not yet exist.
 
 ## Active decisions
 
-- Keep case runners explicit; do not add a generic runner, registry, plugin, or material manager.
-- Reuse `lib.materials.Property` and the existing case-local constant/function/table forms.
-- Baseline v1 fixes nominal copper RRR and the G-10 axial-effective interpretation; do not reopen
-  those material decisions during implementation.
-- Never silently extrapolate outside `equation_range_K`, especially for ADR01's intended 1–4 K.
-- ADR01 geometry requirements remain soft human-readable inputs; no geometry DSL is introduced.
-- All current dimensions and derived contact areas are visualization placeholders.
-- Human approval of the interactive geometry is required before thermal work.
-- Baseline v1 preserves a conceptual ideal-open OFF heat switch. The approved first solver
-  approximation is the existing 0.5 mm switch volume with finite-leakage effective bulk
-  `k_off = 1.527887e-3 W/(m K)`, calibrated to `G_off = 60 µW/K` using the generated
-  `19.634954 mm²` shared contact area. It is not hardware-specific; ON is not modeled.
+- Reuse `lib.materials.Property` and existing constant/function/table support.
+  Keep the ADR runner explicit; add no manager, registry, plugin, or generic runner.
+- Target range is 1–4 K. Preserve canonical provenance and qualifiers, and fail
+  rather than silently extrapolate outside supported ranges.
+- Baseline v1 fixes the component/material mapping, nominal copper RRR=100,
+  RRR=50 sensitivity, GGG H=0 data, and G-10 axial-effective support model.
+- Baseline v1 records a conceptual ideal-open OFF heat switch. The approved first
+  numerical approximation retains the 0.5 mm switch volume and assigns finite
+  effective bulk `k_off = 1.527887e-3 W/(m K)`, calibrated to
+  `G_off = 60 µW/K` through the generated `19.634954 mm²` contact area.
+  This is not hardware-specific. ON state and switching logic are not modeled.
+- Ordinary contacts remain perfect. Radiation, convection, heat loads,
+  magnetocaloric/finite-field behavior, and non-ideal contacts remain excluded.
 
-## Known gaps and risks
+## Unresolved implementation inputs
 
-- Heat loads/fluxes, time-dependent BCs, convection, radiation, heat switches, anisotropic
-  conductivity, transient contact resistance, and general 3D zero-thickness contact are absent.
-- Initial temperatures, non-hot-side boundary conditions, duration/timestep, and output cadence
-  remain unresolved. No fixed 1 K cold boundary or GGG initial temperature is approved.
-- Dump cell-ID mapping is serial-only. Mesh cache fingerprints only the geometry file plus caller
-  `cache_key`.
-- Preserve the existing user changes to `AGENTS.md` and `run/01_ADR01/ADR01_steps.md`.
+- Initial temperatures of all solved regions, including GGG.
+- All non-hot-side boundary conditions; no fixed 1 K cold boundary is approved.
+- Simulation duration and timestep.
+- Output and observation cadence.
 
-## Immediate next actions
+Do not infer these values from general ADR behavior.
 
-1. Open `run/01_ADR01/build/mesh.msh` in Gmsh and complete the human visual review.
-2. Freeze the unresolved IC/BC and runtime/output decisions.
-3. Translate Baseline v1 properties and the approved switch proxy into existing solver-facing
-   forms, then run property-level sanity checks.
-4. Only after the gates above, create and verify the ADR transient baseline.
+## Next actions
+
+1. Obtain explicit decisions for the unresolved IC/BC and runtime/output inputs.
+2. Translate the frozen property representations and switch proxy into the
+   existing framework-readable forms.
+3. Run property-level checks for units, range, positivity, canonical checkpoints,
+   interpolation, out-of-range failure, and switch-proxy conductance.
+4. Build the explicit ADR01 case/runner and perform the transient smoke run,
+   followed by convergence, thermal-path, and energy checks.
 
 ## Resume here
 
-Read `AGENTS.md`, this file, `steps.md`, `arch.md`, and
-`run/01_ADR01/geometry-report.md`. Resume at the human visual-inspection gate;
-do not run thermal physics before approval.
+Read `AGENTS.md`, this file, `steps.md`, `arch.md`, then
+`run/01_ADR01/AGENTS.md`, `run/01_ADR01/steps.md`, and the frozen Baseline v1.
+Inspect only the existing property/case interfaces needed for implementation;
+do not rescan material literature or redo geometry work.
