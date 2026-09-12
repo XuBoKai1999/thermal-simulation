@@ -1,0 +1,67 @@
+2026-09-12 17:45:20	=== [1/11] Thermal conductivity of aluminum, copper, iron, and tungsten for temperatures from 1 K to the melting point ===
+2026-09-12 17:45:20	CANDIDATES 1
+2026-09-12 17:45:20	TRY 1/1
+2026-09-12 17:45:20	GET    https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nbsir84-3007.pdf
+2026-09-12 17:45:24	OK     01_Hust_Lankford_1984_NBSIR84-3007.pdf <= https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nbsir84-3007.pdf
+2026-09-12 17:45:24	=== [2/11] Heat Capacity of Reference Materials: Cu and W ===
+2026-09-12 17:45:27	CANDIDATES 3
+2026-09-12 17:45:27	TRY 1/3
+2026-09-12 17:45:27	GET    https://pubs.aip.org/jpr/article-pdf/13/4/1251/12647720/1251_1_online.pdf
+2026-09-12 17:45:27	FAILED https://pubs.aip.org/jpr/article-pdf/13/4/1251/12647720/1251_1_online.pdf -> not PDF; content-type='text/html; charset=UTF-8'; bytes=4042; final=https://WSV20K4.itri.org.tw:15871/cgi-bin/blockpage.cgi?ws-session=620793748
+2026-09-12 17:45:27	TRY 2/3
+2026-09-12 17:45:27	GET    https://srd.nist.gov/jpcrdreprint/1.555728.pdf
+2026-09-12 17:45:28	FAILED https://srd.nist.gov/jpcrdreprint/1.555728.pdf -> HTTP 503; final=https://srd.nist.gov/jpcrdreprint/1.555728.pdf
+2026-09-12 17:45:28	TRY 3/3
+2026-09-12 17:45:28	GET    https://pubs.aip.org/aip/jpr/article-pdf/13/4/1251/9766222/1251_1_online.pdf
+2026-09-12 17:45:29	FAILED https://pubs.aip.org/aip/jpr/article-pdf/13/4/1251/9766222/1251_1_online.pdf -> not PDF; content-type='text/html; charset=UTF-8'; bytes=4050; final=https://WSV20K4.itri.org.tw:15871/cgi-bin/blockpage.cgi?ws-session=18446744072283525014
+2026-09-12 17:45:29	=== [3/11] Properties of Copper and Copper Alloys at Cryogenic Temperatures ===
+2026-09-12 17:45:29	CANDIDATES 1
+2026-09-12 17:45:29	TRY 1/1
+2026-09-12 17:45:29	GET    https://nvlpubs.nist.gov/nistpubs/Legacy/MONO/nistmonograph177.pdf
+2026-09-12 17:45:34	OK     03_Simon_Drexler_Reed_1992_NIST_Monograph177.pdf <= https://nvlpubs.nist.gov/nistpubs/Legacy/MONO/nistmonograph177.pdf
+2026-09-12 17:45:34	=== [4/11] Thermal Conductivity of Thermally-Isolating Polymeric and Composite Structural Support Materials Between 0.3 and 4 K ===
+2026-09-12 17:45:36	CANDIDATES 2
+2026-09-12 17:45:36	TRY 1/2
+2026-09-12 17:45:36	GET    https://arxiv.org/pdf/0806.1921
+2026-09-12 17:45:37	OK     04_Runyan_Jones_2008_lowT_support_materials.pdf <= https://arxiv.org/pdf/0806.1921
+2026-09-12 17:45:37	=== [5/11] Heat switches for ADRs ===
+2026-09-12 17:45:38	CANDIDATES 4
+2026-09-12 17:45:38	TRY 1/4
+2026-09-12 17:45:38	GET    https://ntrs.nasa.gov/api/citations/20150008253/downloads/20150008253.pdf
+2026-09-12 17:45:40	OK     05_DiPirro_Shirron_2014_heat_switches_for_ADRs.pdf <= https://ntrs.nasa.gov/api/citations/20150008253/downloads/20150008253.pdf
+2026-09-12 17:45:40	=== [6/11] Magnetothermodynamics of gadolinium gallium garnet. I. Heat capacity, entropy, magnetic moment from 0.5 to 4.2 K, with fields to 90 kG along the [100] axis ===
+2026-09-12 17:45:42	CANDIDATES 2
+2026-09-12 17:45:42	TRY 1/2
+2026-09-12 17:45:42	GET    https://pubs.aip.org/jcp/article-pdf/59/9/4652/18876141/4652_1_online.pdf
+2026-09-12 17:45:42	FAILED https://pubs.aip.org/jcp/article-pdf/59/9/4652/18876141/4652_1_online.pdf -> not PDF; content-type='text/html; charset=UTF-8'; bytes=4046; final=https://WSV20K4.itri.org.tw:15871/cgi-bin/blockpage.cgi?ws-session=1979748254
+2026-09-12 17:45:42	TRY 2/2
+2026-09-12 17:45:42	GET    https://pubs.aip.org/aip/jcp/article-pdf/59/9/4652/18887934/4652_1_online.pdf
+2026-09-12 17:45:42	FAILED https://pubs.aip.org/aip/jcp/article-pdf/59/9/4652/18887934/4652_1_online.pdf -> not PDF; content-type='text/html; charset=UTF-8'; bytes=4042; final=https://WSV20K4.itri.org.tw:15871/cgi-bin/blockpage.cgi?ws-session=285249440
+2026-09-12 17:45:42	=== [7/11] Thermodynamic properties of the gadolinium gallium garnet, Gd3Ga5O12, between 0.05 and 25 K ===
+2026-09-12 17:45:44	CANDIDATES 1
+2026-09-12 17:45:44	TRY 1/1
+2026-09-12 17:45:44	GET    https://www.sciencedirect.com/science/article/pii/0304885382900920/pdfft
+2026-09-12 17:45:44	FAILED https://www.sciencedirect.com/science/article/pii/0304885382900920/pdfft -> HTTP 403; final=https://www.sciencedirect.com/science/article/pii/0304885382900920/pdfft
+2026-09-12 17:45:44	=== [8/11] Thermal Conductivity of Garnets and Phonon Scattering by Rare-Earth Ions ===
+2026-09-12 17:45:46	CANDIDATES 1
+2026-09-12 17:45:46	TRY 1/1
+2026-09-12 17:45:46	GET    https://journals.aps.org/prb/pdf/10.1103/PhysRevB.4.592
+2026-09-12 17:45:46	FAILED https://journals.aps.org/prb/pdf/10.1103/PhysRevB.4.592 -> HTTP 403; final=https://journals.aps.org/prb/pdf/10.1103/PhysRevB.4.592
+2026-09-12 17:45:46	=== [9/11] Thermal conductivity and specific heat of a glass-epoxy composite at temperatures below 4 K ===
+2026-09-12 17:45:47	CANDIDATES 2
+2026-09-12 17:45:47	TRY 1/2
+2026-09-12 17:45:47	GET    https://pubs.aip.org/rsi/article-pdf/52/3/471/19288335/471_1_online.pdf
+2026-09-12 17:45:47	FAILED https://pubs.aip.org/rsi/article-pdf/52/3/471/19288335/471_1_online.pdf -> not PDF; content-type='text/html; charset=UTF-8'; bytes=4050; final=https://WSV20K4.itri.org.tw:15871/cgi-bin/blockpage.cgi?ws-session=18446744072400965544
+2026-09-12 17:45:47	TRY 2/2
+2026-09-12 17:45:47	GET    https://pubs.aip.org/aip/rsi/article-pdf/52/3/471/19145635/471_1_online.pdf
+2026-09-12 17:45:47	FAILED https://pubs.aip.org/aip/rsi/article-pdf/52/3/471/19145635/471_1_online.pdf -> not PDF; content-type='text/html; charset=UTF-8'; bytes=4050; final=https://WSV20K4.itri.org.tw:15871/cgi-bin/blockpage.cgi?ws-session=18446744071964757930
+2026-09-12 17:45:47	=== [10/11] 3He gas gap heat switch ===
+2026-09-12 17:45:49	CANDIDATES 1
+2026-09-12 17:45:49	TRY 1/1
+2026-09-12 17:45:49	GET    https://www.sciencedirect.com/science/article/pii/S0011227510002018/pdfft
+2026-09-12 17:45:49	FAILED https://www.sciencedirect.com/science/article/pii/S0011227510002018/pdfft -> HTTP 403; final=https://www.sciencedirect.com/science/article/pii/S0011227510002018/pdfft
+2026-09-12 17:45:49	=== [11/11] Transition to a virtually incompressible oxide phase at a shock pressure of 120 GPa (1.2 Mbar): Gd3Ga5O12 ===
+2026-09-12 17:45:50	CANDIDATES 1
+2026-09-12 17:45:50	TRY 1/1
+2026-09-12 17:45:50	GET    https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.96.105504
+2026-09-12 17:45:50	FAILED https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.96.105504 -> HTTP 403; final=https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.96.105504
