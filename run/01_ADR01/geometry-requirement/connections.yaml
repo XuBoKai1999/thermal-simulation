@@ -7,67 +7,56 @@ edges:
     a: hot_plate
     b: cylinder_1
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_hot_cylinder_1
 
   - edge_id: edge_cylinder_1_heat_switch
     a: cylinder_1
     b: heat_switch
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_cylinder_1_heat_switch
 
   - edge_id: edge_heat_switch_cylinder_2
     a: heat_switch
     b: cylinder_2
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_heat_switch_cylinder_2
 
   - edge_id: edge_cylinder_2_ggg
     a: cylinder_2
     b: ggg
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_cylinder_2_ggg
 
   - edge_id: edge_ggg_cylinder_3
     a: ggg
     b: cylinder_3
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_ggg_cylinder_3
 
   - edge_id: edge_cylinder_3_cold_stage
     a: cylinder_3
     b: cold_stage
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_cylinder_3_cold_stage
 
   - edge_id: edge_cold_stage_sample
     a: cold_stage
     b: sample
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_cold_stage_sample
 
   - edge_id: edge_hot_support_1
     a: hot_plate
     b: support_1
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_hot_support_1
 
   - edge_id: edge_support_1_cold_stage
     a: support_1
     b: cold_stage
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_support_1_cold_stage
 
   - edge_id: edge_hot_support_2
     a: hot_plate
     b: support_2
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_hot_support_2
 
   - edge_id: edge_support_2_cold_stage
     a: support_2
     b: cold_stage
     intended_contact: true
-    parameter_ref: ../parameters-requirement/interfaces.yaml#edge_support_2_cold_stage
 
 baseline_interface_policy:
   ordinary_contacts: perfect_contact

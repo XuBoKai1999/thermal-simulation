@@ -93,19 +93,9 @@ parameters-requirement:
     valid temperature range
 ```
 
-For ordinary solid regions, the later parameter search should target thermal-property data valid
-over **1 K to 4 K**.
-
-The same rule applies to every region.
-
-Exceptions are allowed when the physics itself is different:
-
-- `hot_plate`: primarily a fixed-temperature boundary/reservoir in the baseline;
-- `heat_switch`: may ultimately be represented by $G_{\rm on}/G_{\rm off}$ or an equivalent
-  resistance/conductance rather than by an intrinsic material $k(T)$.
-
-Do not force an inappropriate `$k,c_p,\rho$` model onto a component whose thermal model is
-explicitly an interface/conductance model.
+The canonical material/property assignment for those same IDs is maintained only in
+`../parameters-requirement/ADR01_material_parameters_baseline_v1.md`. Geometry files do not carry
+material candidates or duplicate parameter decisions.
 
 ---
 
@@ -113,7 +103,7 @@ explicitly an interface/conductance model.
 
 Every physical connection has a stable `edge_id` in `connections.yaml`.
 
-Later, the thermal interface requirement must refer to the same `edge_id`.
+Any solver-facing interface representation must refer to the same `edge_id`.
 
 Conceptually:
 
@@ -129,9 +119,7 @@ parameter/interface definition
     source / citation / assumption
 ```
 
-The first baseline uses **perfect contact** for ordinary contacts.
-
-Non-ideal contact resistance is a later stage.
+Baseline v1 interface decisions are defined only in the canonical parameter specification.
 
 ---
 
@@ -142,13 +130,8 @@ topology is visually obvious.
 
 This is only a geometric placeholder.
 
-Later thermal modeling may replace it with an equivalent connection using:
-
-- $G_{\rm on}$;
-- $G_{\rm off}$;
-- or an equivalent thermal resistance.
-
-Do not simultaneously count both a bulk heat-switch resistance and an additional edge resistance.
+Its thermal interpretation is defined only by the canonical Baseline v1 parameter specification;
+the geometry requirement does not assign bulk or interface properties.
 
 ---
 

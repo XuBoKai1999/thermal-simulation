@@ -29,9 +29,7 @@ components:
       z_min: 96.0
       z_max: 100.0
       diameter: 25.4
-    material_hint: copper
     thermal_role_hint: fixed_4K_reservoir
-    parameter_ref: ../parameters-requirement/components/hot_plate.yaml
     confidence: placeholder
 
   - id: cylinder_1
@@ -41,9 +39,7 @@ components:
       z_min: 64.5
       z_max: 96.0
       diameter: 5.0
-    material_hint: TBD
     thermal_role_hint: central_thermal_path
-    parameter_ref: ../parameters-requirement/components/cylinder_1.yaml
     confidence: placeholder
 
   - id: heat_switch
@@ -53,9 +49,7 @@ components:
       z_min: 64.0
       z_max: 64.5
       diameter: 6.0
-    material_hint: equivalent_heat_switch
     thermal_role_hint: thin_placeholder_for_switchable_conductance
-    parameter_ref: ../parameters-requirement/components/heat_switch.yaml
     confidence: placeholder
     notes:
       - Keep visually thin in the first geometry.
@@ -68,9 +62,7 @@ components:
       z_min: 54.0
       z_max: 64.0
       diameter: 5.0
-    material_hint: TBD
     thermal_role_hint: central_thermal_path
-    parameter_ref: ../parameters-requirement/components/cylinder_2.yaml
     confidence: placeholder
 
   - id: ggg
@@ -80,9 +72,7 @@ components:
       z_min: 34.0
       z_max: 54.0
       diameter: 9.0
-    material_hint: GGG
     thermal_role_hint: magnetic_refrigerant
-    parameter_ref: ../parameters-requirement/components/ggg.yaml
     confidence: placeholder
 
   - id: cylinder_3
@@ -92,9 +82,7 @@ components:
       z_min: 4.0
       z_max: 34.0
       diameter: 5.0
-    material_hint: OFHC_copper_candidate
     thermal_role_hint: thermal_bus
-    parameter_ref: ../parameters-requirement/components/cylinder_3.yaml
     confidence: placeholder
 
   - id: cold_stage
@@ -104,9 +92,7 @@ components:
       z_min: 0.0
       z_max: 4.0
       diameter: 25.4
-    material_hint: copper
     thermal_role_hint: cold_stage
-    parameter_ref: ../parameters-requirement/components/cold_stage.yaml
     confidence: placeholder
     notes:
       - The 25.4 mm diameter is used as the current nominal one-inch disk reference.
@@ -121,9 +107,7 @@ components:
       y_max: 3.0
       z_min: 4.0
       z_max: 10.0
-    material_hint: copper_dummy_sample
     thermal_role_hint: dummy_sample
-    parameter_ref: ../parameters-requirement/components/sample.yaml
     confidence: placeholder
     notes:
       - Placed opposite the laterally offset ADR chain so both share the cold-stage area.
@@ -135,9 +119,7 @@ components:
       z_min: 4.0
       z_max: 96.0
       diameter: 2.5
-    material_hint: PEEK_or_G10
     thermal_role_hint: low_k_parasitic_support
-    parameter_ref: ../parameters-requirement/components/support_1.yaml
     confidence: placeholder
 
   - id: support_2
@@ -147,7 +129,5 @@ components:
       z_min: 4.0
       z_max: 96.0
       diameter: 2.5
-    material_hint: PEEK_or_G10
     thermal_role_hint: low_k_parasitic_support
-    parameter_ref: ../parameters-requirement/components/support_2.yaml
     confidence: placeholder

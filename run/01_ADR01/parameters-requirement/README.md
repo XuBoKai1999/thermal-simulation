@@ -1,16 +1,11 @@
-# ADR01 parameters requirement
+# ADR01 parameter requirements
 
-This directory maps each ADR01 geometry component to its thermal model and source-backed material parameters.
+This directory holds ADR01 thermal-material and interface requirements.
 
-Core rule:
+`ADR01_material_parameters_baseline_v1.md` is the sole canonical human-readable
+Baseline v1 specification. `material-map.yaml` is only its concise
+machine-readable derivative and must never override it.
 
-`geometry component ID` == `parameter component ID`
-
-Target range for this research pass: **1–4 K**.
-
-Files:
-- `material-map.yaml`: component → material / property requirement mapping.
-- `research-sources.md`: first-pass vetted source list and coverage notes.
-- `CODEX_TASK.md`: ingestion / cleaning task for Codex.
-
-Unknowns remain unknown. Do not convert unresolved material identity, RRR, orientation, magnetic field, or switch technology into silent numerical defaults.
+Research notes, working sheets, and one-off task prompts do not belong here after
+a baseline is frozen. `ADR01_papers_v4/` is the read-only evidence archive; do not
+modify, move, rename, or delete it or its contents.
