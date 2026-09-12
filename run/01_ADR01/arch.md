@@ -45,10 +45,31 @@ The geometry contains `hot_plate`, the five-part coaxial ADR chain
 material or special model for each identical component ID.
 
 `hot_plate` is visualization/attachment geometry representing an ideal fixed
-4 K reservoir rather than a solved material region. `heat_switch` is geometry
-but Baseline v1 treats its thermal path as ideal OFF, not as a bulk solid.
-Ordinary declared contacts use perfect contact. Detailed formulas, tables,
-citations, and qualifiers remain only in the canonical baseline document.
+4 K reservoir rather than a solved material region. Ordinary declared contacts
+use perfect contact. Detailed material formulas, tables, citations, and
+qualifiers remain only in the canonical baseline document.
+
+### Heat-switch implementation approximation
+
+Baseline v1 preserves the conceptual ideal-open OFF switch. The current framework
+does not yet provide a separate heat-switch/interface-conductance model, while the
+geometry already contains a 0.5 mm-thick `heat_switch` volume. The first numerical
+implementation will therefore use that volume as a finite-leakage effective bulk
+proxy, calibrated by
+
+$$
+G=\frac{kA}{L},\qquad k_{\rm off}=\frac{G_{\rm off,target}L}{A_{\rm effective}}.
+$$
+
+The generated shared contact area is
+$A_{\rm effective}=1.9634954085\times10^{-5}\ \mathrm{m^2}$ and the target
+$G_{\rm off}=6.0\times10^{-5}\ \mathrm{W/K}$ gives
+$k_{\rm off}=1.527887\times10^{-3}\ \mathrm{W/(m\,K)}$. This target is only a
+literature-scale numerical proxy, not an ADR01 hardware measurement or
+specification. It leaks finite heat and is not mathematical isolation. The ON
+state and switching logic are not modeled; the cited roughly 96–100 mW/K ON
+conductance remains context only. Replace the proxy when hardware-specific
+$G_{\rm off}(T)$ or a supported interface model becomes available.
 
 ## Geometry and interfaces
 

@@ -7,9 +7,11 @@ and the relevant canonical requirement before changing the case.
 ## Sources of truth
 
 - Geometry: `geometry-requirement/`.
-- Baseline v1 materials, property representations, region mapping, interfaces,
-  and heat-switch decision:
+- Baseline v1 conceptual materials, property representations, region mapping,
+  interfaces, and heat-switch decision:
   `parameters-requirement/ADR01_material_parameters_baseline_v1.md`.
+- Current solver-facing approximations: `arch.md` and
+  `parameters-requirement/material-map.yaml`.
 - Workflow and unresolved gates: `steps.md`.
 - Architecture and ownership: `arch.md`.
 - `requirement/` and every paper/literature directory are evidence or research
@@ -27,6 +29,9 @@ with or silently override it.
 - Do not modify, move, rename, or delete evidence files or paper directories.
 - Do not edit the canonical Baseline v1 parameter document unless a human
   explicitly replaces that decision.
+- Do not change the approved heat-switch implementation approximation; use the
+  current `arch.md` and `material-map.yaml` without inferring other values or
+  presenting the proxy as hardware data.
 - Reuse the parent geometry, mesh, material, solver, analysis, and output
   interfaces. Do not create parallel frameworks or speculative abstractions.
 - Do not add radiation, convection, contact resistance, magnetocaloric dynamics,

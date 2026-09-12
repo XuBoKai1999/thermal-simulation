@@ -130,8 +130,10 @@ topology is visually obvious.
 
 This is only a geometric placeholder.
 
-Its thermal interpretation is defined only by the canonical Baseline v1 parameter specification;
-the geometry requirement does not assign bulk or interface properties.
+Its conceptual thermal interpretation is preserved by the canonical Baseline v1 parameter
+specification. The current solver approximation is recorded in `../arch.md` and
+`../parameters-requirement/material-map.yaml`; this geometry requirement does not assign thermal
+properties.
 
 ---
 

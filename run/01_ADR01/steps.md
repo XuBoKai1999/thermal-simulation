@@ -48,9 +48,13 @@ No fixed 1 K cold boundary or 1 K GGG initial condition is currently approved.
 
 STATUS: NOT STARTED
 
-Translate the canonical constant, Python-function, table, and conductance
-representations into the existing framework. Do not change the frozen baseline or
-assign fake bulk properties to the ideal-OFF heat switch.
+Translate the canonical constant, Python-function, and table representations into
+the existing framework. Implement the approved heat-switch approximation as the
+existing thin volume with geometry-calibrated
+$k_{\rm off}=1.527887\times10^{-3}\ \mathrm{W/(m\,K)}$, targeting finite
+$G_{\rm off}=60\ \mu\mathrm{W/K}$. This is a pending numerical proxy for the
+conceptual ideal-open baseline, not a new material measurement. Do not implement
+the ON state or switching logic.
 
 ## Step 8 — Property sanity checks
 
@@ -58,6 +62,8 @@ STATUS: NOT STARTED
 
 Check the 1–4 K domains, units, positivity, canonical checkpoints,
 interpolation behavior, and out-of-range failure for every implemented property.
+Also verify that the bulk switch proxy reproduces its target conductance using
+the generated thickness and shared contact area.
 
 ## Step 9 — ADR01 transient baseline
 
@@ -66,6 +72,6 @@ STATUS: BLOCKED BY STEPS 2–4, 6–8
 After geometry approval and IC/BC decisions, run the transient smoke case and
 then perform mesh/timestep convergence, thermal-path review, and energy checks.
 
-Further materials, finite-field or magnetocaloric behavior, real heat-switch
-hardware, radiation, heat loads, and non-ideal contacts remain deferred unless
-separately approved.
+Further materials, finite-field or magnetocaloric behavior, heat-switch ON state
+or switching logic, hardware-specific switch data, radiation, heat loads, and
+non-ideal contacts remain deferred unless separately approved.

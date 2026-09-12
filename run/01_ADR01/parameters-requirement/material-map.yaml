@@ -17,9 +17,18 @@ components:
   sample: {material: OFHC_Cu_RRR100}
 
   heat_switch:
-    model: ideal_open
-    G_off_W_K: 0.0
-    bulk_material: null
+    conceptual_model: ideal_open
+    solver_model: effective_bulk_off_proxy
+    implementation_status: pending
+    target_conductance_W_per_K: 6.0e-5
+    geometry:
+      thickness_m: 5.0e-4
+      effective_contact_area_m2: 1.9634954084936207e-5
+    effective_conductivity_W_per_m_K: 1.5278874536821952e-3
+    derivation: k = G*L/A
+    hardware_specific: false
+    on_state:
+      implemented: false
 
   ggg:
     material: GGG_H0

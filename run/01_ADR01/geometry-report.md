@@ -40,7 +40,10 @@ engineering data.
 - The sample is centred at approximately `(+5, 0) mm`; its placeholder footprint is `6 × 6 mm`.
 - The two supports use `(0, -9) mm` and `(0, +9) mm`, avoiding the offset chain and sample while remaining on both plates.
 - Exact shared boundary area is treated as geometric contact; touching solids are OCC-fragmented to create conformal topology.
-- The 0.5 mm `heat_switch` remains a volumetric visual placeholder only.
+- The 0.5 mm `heat_switch` volume was introduced for visualization and is now
+  retained for the approved finite-leakage bulk OFF proxy. Thermal calibration is
+  owned by `arch.md` and `parameters-requirement/material-map.yaml`, not this
+  geometry report.
 - All dimensions and derived areas are visualization placeholders, not measured hardware values.
 - No missing physical fact was inferred, and no superconducting magnet was added.
 

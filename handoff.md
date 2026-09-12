@@ -2,8 +2,8 @@
 
 ## Current goal
 
-Obtain human visual approval of the generated ADR01 Draft 0 geometry before any
-material work or thermal solve.
+Prepare ADR01 for solver-facing property implementation while retaining the
+geometry-approval and IC/BC gates.
 
 ## Current implementation state
 
@@ -19,40 +19,41 @@ material work or thermal solve.
 - `run/01_ADR01/build/mesh.msh` and `tags.json` are ready for interactive Gmsh inspection.
 - Current revision places the five-part coaxial ADR chain at `(-5, 0) mm`, the sample near
   `(+5, 0) mm`, and supports at `(0, ±9) mm`; all are placeholder positions.
+- Material/property research is complete. The frozen canonical specification is
+  `run/01_ADR01/parameters-requirement/ADR01_material_parameters_baseline_v1.md`.
 
 ## Active decisions
 
 - Keep case runners explicit; do not add a generic runner, registry, plugin, or material manager.
-- Reuse `lib.materials.Property`. External material integration should resolve one explicit series
-  and its derived CSV relative to the material file, while preserving existing inline syntax.
-- Never infer among qualified series. OFHC copper requires an RRR choice; G-10 conductivity
-  requires a direction choice.
+- Reuse `lib.materials.Property` and the existing case-local constant/function/table forms.
+- Baseline v1 fixes nominal copper RRR and the G-10 axial-effective interpretation; do not reopen
+  those material decisions during implementation.
 - Never silently extrapolate outside `equation_range_K`, especially for ADR01's intended 1–4 K.
 - ADR01 geometry requirements remain soft human-readable inputs; no geometry DSL is introduced.
 - All current dimensions and derived contact areas are visualization placeholders.
 - Human approval of the interactive geometry is required before thermal work.
+- Baseline v1 preserves a conceptual ideal-open OFF heat switch. The approved first solver
+  approximation is the existing 0.5 mm switch volume with finite-leakage effective bulk
+  `k_off = 1.527887e-3 W/(m K)`, calibrated to `G_off = 60 µW/K` using the generated
+  `19.634954 mm²` shared contact area. It is not hardware-specific; ON is not modeled.
 
 ## Known gaps and risks
 
-- The initial NIST candidates do not provide a complete 1–4 K solver-ready set:
-  - OFHC copper `k/cp` start at 4 K, `k` has RRR variants, and density is absent.
-  - G-10 `k` starts at 10 K (normal) or 12 K (warp), `cp` starts at 4 K, and density is absent.
-  - Aluminum 6061-T6 `k` covers 1–300 K, `cp` starts at 4 K, and density is absent.
-  - Stainless Steel 304 `k/cp` start at 4 K and density is absent.
 - Heat loads/fluxes, time-dependent BCs, convection, radiation, heat switches, anisotropic
   conductivity, transient contact resistance, and general 3D zero-thickness contact are absent.
+- Initial temperatures, non-hot-side boundary conditions, duration/timestep, and output cadence
+  remain unresolved. No fixed 1 K cold boundary or GGG initial temperature is approved.
 - Dump cell-ID mapping is serial-only. Mesh cache fingerprints only the geometry file plus caller
   `cache_key`.
 - Preserve the existing user changes to `AGENTS.md` and `run/01_ADR01/ADR01_steps.md`.
 
 ## Immediate next actions
 
-1. Implement the smallest explicit NIST-series reference accepted by `case.yaml`, with a focused
-   loader regression and documentation update.
-2. Decide sources for missing density and sub-4 K properties; do not present extrapolated NIST fits
-   as validated data.
-3. Open `run/01_ADR01/build/mesh.msh` in Gmsh and complete the human visual review.
-4. Only after approval, populate thermal parameters and later create the ADR runner.
+1. Open `run/01_ADR01/build/mesh.msh` in Gmsh and complete the human visual review.
+2. Freeze the unresolved IC/BC and runtime/output decisions.
+3. Translate Baseline v1 properties and the approved switch proxy into existing solver-facing
+   forms, then run property-level sanity checks.
+4. Only after the gates above, create and verify the ADR transient baseline.
 
 ## Resume here
 

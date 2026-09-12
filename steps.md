@@ -27,7 +27,8 @@
 2. Resolve the initial-condition field, non-hot-side boundary conditions,
    simulation duration/timestep, and output cadence.
 3. Translate Baseline v1 properties into existing framework-readable constant,
-   function, table, and conductance forms.
+   function, and table forms; implement the approved geometry-calibrated finite-
+   leakage bulk OFF proxy for the heat-switch volume.
 4. Run property-level domain, unit, checkpoint, interpolation, positivity, and
    out-of-range checks.
 5. Assemble the ADR01 transient smoke run, then perform mesh/timestep convergence,
