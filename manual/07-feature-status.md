@@ -25,6 +25,7 @@
 | Heat flux calculation | implemented | cell $-k\nabla T$; DG0 IC special-cased zero |
 | Dump writing/reading | implemented | v2 cell dump with v1 reader compatibility; serial ID mapping |
 | Plotting/postprocessing | partial | x scatter CLI; low-level pcolormesh helper |
+| ParaView output | implemented, narrow | ADR01 native VTK/PVD time series with P1 temperature and DG0 heat flux/region ID |
 | Validation utilities | examples only | Test 01 inline；Test 02 與 Test 05 case-specific validators |
 | MPI | partial | assembly/solve aware; dump mapping serial only |
 | Mesh caching/reuse | implemented | geometry-file hash only |

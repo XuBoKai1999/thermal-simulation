@@ -58,6 +58,11 @@ with tempfile.TemporaryDirectory() as directory:
         temperature, mesh_data, case_data, tags, heatflow_surfaces=surfaces
     )
     summary = derived["summary"]
+    functions = derived["field_functions"]
+    if ({name: field.name for name, field in functions.items()}
+            != {"temperature": "temperature", "heat_flux": "heat_flux",
+                "region_ID": "region_ID"}):
+        raise AssertionError("ParaView field functions are missing or misnamed")
     if set(summary["regions"]) != set(case_data["regions"]):
         raise AssertionError("Missing per-region statistics")
     for values in summary["regions"].values():

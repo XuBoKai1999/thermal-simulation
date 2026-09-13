@@ -27,3 +27,8 @@ times map to the nearest actual solver step without temporal interpolation.
 Each run writes the initial field as `0.dump` before solving. Before regeneration,
 the runner removes only old `dump/*.dump` and `summary.json` in that run's own
 `output/dt_<dt>/` directory so cadence changes cannot mix stale snapshots.
+
+For ParaView, open `output/dt_<dt>/visualization/fields.pvd`. The time series
+contains the actual P1 `temperature` field plus DG0 cell `heat_flux` and
+`region_ID`; ParaView can use them directly for color maps, Clip, Slice, animation,
+and vector glyphs.

@@ -123,6 +123,17 @@ Reader 將 scalar metadata（含 `TIME`, `TIMESTEP`, `NUMBER OF CELLS`）保留�
 `BOUNDS` 是 float ndarray、`REGIONS` 是 `{int: str}`、所有 field arrays 是 float ndarray
 （因此 ID arrays 也會是 float）。series 依 `float(TIME)` 排序並要求單一 `MESH_ID`。
 
+## ParaView-native VTK time series
+
+ADR01 writes `output/dt_<dt>/visualization/fields.pvd` with FEniCSx's native
+`VTKFile`. Open `fields.pvd` directly in ParaView; its time slider follows the
+stored physical times. `temperature` is the actual continuous P1 FEM field in
+point data. DG0 `heat_flux` vector and `region_ID` are cell data, supporting Clip,
+Slice, coloring, and flux glyph workflows without reconstructing dump centroids.
+
+The lightweight text dump remains the scripting/reproducibility path; VTK/PVD is
+the interactive FEM visualization path.
+
 ## Plotting
 
 現有 CLI：

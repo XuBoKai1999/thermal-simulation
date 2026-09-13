@@ -247,7 +247,7 @@ cell 的 element type、vertex coordinates 與 connectivity 由對應的 `mesh.m
 
 完整 header、欄位定義、單位與檔名規則以 [`dump-format.md`](dump-format.md) 為唯一規格。
 
-`summary.csv` 只保存區域統計與總熱流等彙總量，不取代逐 cell dump。第一版由 `main.py` 使用 Python 標準庫 `csv` 將 `analyze.py` 回傳的 summary data 寫出，不為此新增另一層 abstraction。XDMF/HDF5 可作為選配輸出，不是 dump 的必要部分。
+`summary.csv` 只保存區域統計與總熱流等彙總量，不取代逐 cell dump。第一版由 `main.py` 使用 Python 標準庫 `csv` 將 `analyze.py` 回傳的 summary data 寫出，不為此新增另一層 abstraction。ADR01另以FEniCSx native VTK/PVD輸出actual P1 temperature與DG0 heat-flux/region fields；它是interactive FEM visualization path，不取代dump。
 
 ---
 

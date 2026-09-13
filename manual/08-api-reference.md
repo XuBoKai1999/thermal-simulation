@@ -128,6 +128,7 @@ mode is not yet part of this API.
                   "T": ..., "qx": ..., "qy": ..., "qz": ..., "qmag": ...},
     "bounds": ...,
     "characteristic_cell_size": ...,
+    "field_functions": {"temperature": ..., "heat_flux": ..., "region_ID": ...},
     "summary": {"T_min": ..., "T_max": ..., "T_avg": ..., "q_avg": ...,
                 "regions": {"region_name": {"T_min_K": ..., "T_max_K": ...,
                                                 "T_avg_K": ...}},

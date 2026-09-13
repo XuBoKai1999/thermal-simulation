@@ -33,10 +33,18 @@ support flows=69.223/77.701 uW. Heat-flow positive means toward decreasing z
 (hot to cold); GGG/cylinder_3 flow is -2.46543 mW, so heat enters GGG as expected.
 Outputs are under `run/01_ADR01/output/dt_*/`.
 
-## Remaining work
+## Current roadmap state
 
-Before engineering interpretation: mesh convergence and an explicit energy-balance
+Root `steps2.md` Steps 1–4 are complete. Step 4 added a ParaView-native VTK/PVD
+time series, separate from the ADR text dumps. ADR01 writes the actual continuous
+P1 `temperature` as point data and DG0 `heat_flux` and `region_ID` as cell data.
+The verified short-run entry point is
+`run/01_ADR01/output/dt_0.00015/visualization/fields.pvd`; ParaView reads frames at
+`t = 0` and `t = 0.0003` with all three fields.
+
+Before engineering interpretation: complete the planned visualization review,
+initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Resume with `AGENTS.md`, this file, root `steps.md`, then scoped ADR01 docs.
+Next exact action: execute `steps2.md` Step 5 only after the user says next.

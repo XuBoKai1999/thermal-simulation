@@ -11,6 +11,7 @@ def analyze(
     temperature, mesh_data, case_data, semantic_tags, material=None,
     heatflow_surfaces=None,
 ):
+    temperature.name = "temperature"
     domain = mesh_data.mesh
     if material is None:
         from .materials import conductivity_field
@@ -95,6 +96,7 @@ def analyze(
         fem.Expression(temperature, cell_scalar.element.interpolation_points)
     )
     cell_heat_flux = fem.Function(cell_vector)
+    cell_heat_flux.name = "heat_flux"
     cell_heat_flux.interpolate(
         fem.Expression(heat_flux, cell_vector.element.interpolation_points)
     )
@@ -132,6 +134,11 @@ def analyze(
     region_ids[mesh_data.cell_tags.indices[owned_tag_mask]] = mesh_data.cell_tags.values[
         owned_tag_mask
     ]
+    cell_region = fem.Function(cell_scalar)
+    cell_region.name = "region_ID"
+    for cell, region_id in enumerate(region_ids):
+        cell_region.x.array[cell_scalar.dofmap.cell_dofs(cell)[0]] = region_id
+    cell_region.x.scatter_forward()
 
     local_cell_sizes = cell_measure.x.array[:cell_count] ** (1 / domain.topology.dim)
     characteristic_cell_size = float(np.median(np.concatenate(
@@ -166,5 +173,10 @@ def analyze(
             domain.comm.allreduce(local_high, op=MPI.MAX),
         )),
         "characteristic_cell_size": characteristic_cell_size,
+        "field_functions": {
+            "temperature": temperature,
+            "heat_flux": cell_heat_flux,
+            "region_ID": cell_region,
+        },
         "summary": summary,
     }

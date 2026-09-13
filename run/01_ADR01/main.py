@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 import numpy as np
-from dolfinx import fem
+from dolfinx import fem, io
 from mpi4py import MPI
 import ufl
 
@@ -62,6 +62,12 @@ def run(dt, end_time=0.05, output_every=None):
             old_dump.unlink()
     summary_path = output_dir / "summary.json"
     summary_path.unlink(missing_ok=True)
+    visualization_dir = output_dir / "visualization"
+    if visualization_dir.exists():
+        for old_output in visualization_dir.glob("fields*"):
+            if old_output.suffix in {".pvd", ".pvtu", ".vtu"}:
+                old_output.unlink()
+    visualization_dir.mkdir(parents=True, exist_ok=True)
 
     cell_ids, _ = mesh.map_cell_ids(mesh_path, mesh_data.mesh)
     region_names = {
@@ -69,7 +75,10 @@ def run(dt, end_time=0.05, output_every=None):
         if details["dimension"] == mesh_data.mesh.topology.dim
     }
 
+    vtk = io.VTKFile(mesh_data.mesh.comm, visualization_dir / "fields.pvd", "w")
+
     def write_snapshot(state, step, time):
+        state.name = "temperature"
         derived = analyze.analyze(
             state, mesh_data, case_data, tags, heatflow_surfaces=()
         )
@@ -95,6 +104,10 @@ def run(dt, end_time=0.05, output_every=None):
             timestep=step, time=time, solver_dt=dt,
             characteristic_cell_size=derived["characteristic_cell_size"],
         )
+        fields = derived["field_functions"]
+        vtk.write_function(
+            [fields["temperature"], fields["heat_flux"], fields["region_ID"]], time
+        )
 
     write_snapshot(previous, 0, 0.0)
 
@@ -109,6 +122,7 @@ def run(dt, end_time=0.05, output_every=None):
             continue
         time = step * dt
         write_snapshot(temperature, step, time)
+    vtk.close()
 
     result = {
         "dt_s": dt,

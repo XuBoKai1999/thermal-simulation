@@ -269,6 +269,8 @@ Update `chat/`, report the exact output-cadence behavior, then STOP.
 
 # Step 4 — Add ParaView-native time-series output
 
+STATUS: COMPLETE
+
 ## Goal
 
 Provide a high-fidelity visualization path in addition to the lightweight dump path.
