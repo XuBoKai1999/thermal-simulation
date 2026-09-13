@@ -83,7 +83,8 @@ Source code 與七個 working cases 是本手冊依據。已確認下列差異�
 
 - `arch.md` 的 `loads`、`heat_switch` YAML 仍是示意/未來設計；`contacts` 目前只有
   `thin_layer_resistance` 已實作。
-- `steps.md` 的 ADR01 baseline 尚未開始；實際 planning directory 是 `run/01_ADR01/`。
+- ADR01 Baseline v1 early-transient smoke run已完成；後續visualization與numerical
+  validation roadmap位於root `steps2.md`。
 - `arch.md`/`dump-format.md` 談真正 3D topology postprocess merge；現有 reader/plotter沒有
   讀 `mesh.msh` 或核對 `build.json`，只支援 dump centroid scatter。
 - `arch.md` 提到 external STEP/BREP 可作方向，但沒有 repository API/case 證據。
@@ -98,7 +99,7 @@ Test 03 現已驗證 CSV table與 steady $k(T)$；Test 04 已驗證 multi-region
 $k$ 與 thin-layer contact resistance；Test 05 驗證獨立 1D P1 nonlinear $k(T)$ 與
 zero-thickness contact。Test 06驗證property loader、multi-region constant transient與
 temperature-dependent nonlinear transient。Test 07驗證一般3D multi-region transient、
-uniform IC、semantic surfaces、region statistics與conformal interface。通用3D
+uniform與semantic `by_region` IC、semantic surfaces、region statistics與conformal interface。通用3D
 zero-thickness contact仍不是現有功能。
 
 ## 讓文件化困難的現行 API 問題

@@ -529,7 +529,7 @@ Update `chat/`, show one validation report, then STOP.
 
 ---
 
-## Validation gate — Initial-condition representation audit
+## Step 8A — Initial-condition representation baseline audit
 
 Before final energy-balance or engineering interpretation, quantify how an
 intended discontinuous semantic `by_region` initial condition is represented in
@@ -538,14 +538,12 @@ intended to start at 1 K while its touching copper cylinder starts at 4 K.
 
 The audit must check:
 
-1. intended region-wise IC versus the actual FE field at `t = 0`;
+1. intended semantic `by_region` IC versus the actual FE field at `t = 0`;
 2. per-region Tmin, Tmax, and average at `t = 0`;
-3. initial stored-energy difference caused by the FE representation;
+3. ideal textual IC versus actual FE initial stored-energy difference;
 4. initial interface heat-flux magnitude;
-5. behavior under mesh refinement;
-6. whether the discrepancy decreases as `h` is refined;
-7. whether energy-balance calculations use the actual solver initial field rather
-   than the idealized textual IC.
+5. whether subsequent energy-balance calculations use the actual solver `t = 0`
+   field rather than the idealized textual IC.
 
 Do not interpret the `t = 0` interface heat flux as a mesh-independent engineering
 heat leak. Resolve or quantify this numerical representation issue before final
@@ -729,6 +727,14 @@ For every mesh record:
 Use the same accepted timestep and quadrature degree.
 
 Compare the same observables as Step 12.
+
+The initial-condition representation audit must also compare across mesh levels:
+
+- the actual `t = 0` per-region Tmin, Tmax, and average;
+- the ideal-textual versus actual-FE initial stored-energy discrepancy;
+- the initial interface heat-flux magnitude;
+- whether these representation discrepancies decrease as measured `h_char` is
+  refined.
 
 ## Finish
 
