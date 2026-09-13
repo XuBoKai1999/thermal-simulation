@@ -16,5 +16,7 @@ Current sources of truth:
   they are not active specifications and must not be edited as part of model implementation.
 
 Generated geometry and validation artifacts are described in
-`geometry-report.md`. Solver-facing parameter files and the transient case have
-not yet been implemented.
+`geometry-report.md`. Solver-facing material properties, region-wise initial
+conditions, and the transient case are implemented. The first 0.05 s
+early-transient smoke run is complete; numerical validation and production-time
+studies continue under the repository-level `steps2.md` roadmap.

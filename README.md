@@ -28,7 +28,7 @@ constant property；新案例也可用 `type: constant`、CSV `type: table` 或�
 - Steady nonlinear：單一 region 的 table/Python `k(T)`，使用 SNES/Newton。
 - Transient linear：一個或多個 regions，且 relevant `k/rho/cp` 全為 constant。
 - Transient nonlinear：一個或多個 regions 的 table/Python `k(T)`、`rho(T)`、`cp(T)`，使用 SNES/Newton。
-- Initial condition：`uniform`，或 backward-compatible `split_x`。
+- Initial condition：`uniform`、backward-compatible `split_x`，或 semantic `by_region`。
 - 一個以上 fixed-temperature semantic surfaces；analysis 可指定任意 tagged surfaces 並回傳 per-region temperature statistics。
 
 執行範例：

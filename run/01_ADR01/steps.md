@@ -52,7 +52,7 @@ Translate the canonical constant, Python-function, and table representations int
 the existing framework. Implement the approved heat-switch approximation as the
 existing thin volume with geometry-calibrated
 $k_{\rm off}=1.527887\times10^{-3}\ \mathrm{W/(m\,K)}$, targeting finite
-$G_{\rm off}=60\ \mu\mathrm{W/K}$. This is a pending numerical proxy for the
+$G_{\rm off}=60\ \mu\mathrm{W/K}$. This implemented numerical proxy represents the
 conceptual ideal-open baseline, not a new material measurement. Do not implement
 the ON state or switching logic.
 
@@ -79,3 +79,12 @@ validation remain future work.
 Further materials, finite-field or magnetocaloric behavior, heat-switch ON state
 or switching logic, hardware-specific switch data, radiation, heat loads, and
 non-ideal contacts remain deferred unless separately approved.
+
+Ordinary interfaces currently use perfect thermal contact. For future finite
+contact resistance, prefer an interface-law / contact-conductance implementation
+over inserting many ultra-thin volumetric layers, unless a later study specifically
+requires thin-layer proxies.
+
+The superconducting magnet is omitted from the active Baseline v1 simplified
+geometry/model. A future extension may add a 4 K-anchored magnet and an optional
+magnet heat load.

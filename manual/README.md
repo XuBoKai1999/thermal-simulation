@@ -98,18 +98,21 @@ RRR、G-10 direction）、`equation_range_K` 與 `derived_table`；資料庫不�
 - 穩態、零體積熱源 conduction。
 - Backward Euler 暫態、零體積熱源 conduction。
 - 一個以上 fixed-temperature Dirichlet boundaries。
-- Uniform或legacy split-x兩值暫態 initial condition。
+- Uniform、legacy split-x兩值或semantic `by_region`暫態 initial condition。
 - P1 temperature、cell-centroid temperature/heat-flux dump、全域 summary 與兩端總熱流。
 - Per-region temperature min/max/average與caller-selected tagged-surface total heat flow。
 - 讀取單一 dump 或同 mesh dump series，以及簡單的 x-profile 圖。
 - steady case 可由 table 或案例自己的 Python file 提供 UFL-compatible $k(T)$，並以
   PETSc SNES/Newton 求解。
+- Nonlinear transient table-property domains可提供PETSc VI solution bounds；這是數值
+  safeguard，不代表物理驗證。
 - steady case 可使用多個 constant-$k$ regions，並以 mesh-resolved thin layer 表示
   面積比接觸熱阻。
 
 重要限制請先看[功能盤點](07-feature-status.md)。尤其目前不支援 heat load、heat flux
-BC、零厚度 interface contact、heat switch、convection、radiation或temperature dependence
-於`T`以外的state variable。
+BC、generic零厚度 interface contact、generic heat-switch model、convection、radiation或
+temperature dependence於`T`以外的state variable。ADR01目前以已核准的finite-leakage
+thin bulk proxy表示heat-switch OFF state。
 
 ## Material syntax
 
@@ -126,14 +129,16 @@ Named materials 可混用 explicit constant、table 與 Python：
 materials:
   copper:
     rho: {type: constant, value: 8960}
-    cp: {type: table, file: materials/copper_cp.csv, x: T_K, y: cp_J_kgK}
+    cp: {type: table, file: materials/copper_cp.csv, x: T_K, y: cp_J_kgK,
+         scale: 1.0, domain_K: [1.0, 4.0]}
     k: {type: python, file: materials/copper.py, function: k}
 regions:
   upper_plate: {material: copper}
   cold_stage: {material: copper}
 ```
 
-CSV 使用 linear interpolation，temperature欄必須唯一且資料 finite/positive；domain 外
+CSV 使用 linear interpolation，temperature欄必須唯一且資料 finite/positive；optional
+positive `scale`縮放property values，optional `domain_K`限制CSV內的可用區間，domain 外
 evaluation 是 error。Python function 必須存在並回傳 finite、positive value；local Python
 是使用者主動提供的 extension code，不是 sandbox。`test/06_material_properties/case.yaml`
 是 multi-region constant transient 的可執行範例。

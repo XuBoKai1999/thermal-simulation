@@ -12,12 +12,12 @@
 | Materials/properties | implemented, narrow | case-local constant/table/Python `k/rho/cp`; source-preserving NIST database與listing CLI已完成，但尚未solver-integrated |
 | Steady conduction | implemented | multi-region constant k 或 single-region table/Python k(T)；Q=0 |
 | Transient conduction | implemented, narrow | multi-region constant或temperature-dependent properties；Backward Euler；loop lives in case runner |
-| Initial condition | partial | uniform或backward-compatible x-split DG0 |
+| Initial condition | implemented, narrow | `uniform`, backward-compatible `split_x`, or semantic `by_region` |
 | Fixed-temperature BC | implemented | one or more semantic surfaces |
 | Heat-flux/adiabatic/total-heat loads | absent as configurable features | untagged natural zero flux only |
 | Volumetric heat source | absent | model source is hard-coded zero |
-| Contact resistance | implemented, narrow | 3D mesh-resolved thin layer；Test 05 獨立 1D zero-thickness contact |
-| Heat switch | absent | old docs only |
+| Contact resistance | reference/proxy paths only | mesh-resolved thin layer and Test 05's independent 1D solver; no generic 3D interface law |
+| Heat switch | implemented as case proxy | ADR01 OFF state uses an approved finite-leakage thin bulk proxy; no generic switch model or ON state |
 | Time stepping | partial | single-step model + case-specific loop |
 | Solver configuration | partial | fixed PETSc preonly/LU; only prefix argument |
 | Analysis | implemented | global T/q + caller-selected tagged-surface total heat |
@@ -34,7 +34,7 @@
 | k(T) | implemented, narrow | steady single-region；table or local Python；UFL expression |
 | rho(T), cp(T) | implemented | multi-region nonlinear transient via table/Python evaluator and SNES |
 | anisotropic k | absent | scalar isotropic conductivity only |
-| Nonlinear solve | implemented, narrow | steady $k(T)$；fixed PETSc SNES/Newton options |
+| Nonlinear solve | implemented, narrow | steady/transient temperature-dependent properties; PETSc SNES/Newton and table-domain-derived VI bounds |
 
 ## Contact capability matrix
 

@@ -101,6 +101,11 @@ options prefix string。solver options 固定，沒有其他 arguments/defaults�
 
 ### `solve_nonlinear(residual, temperature, boundary_conditions, jacobian, prefix)`
 
+When the model attaches common table-property bounds to `temperature`, this
+function switches to PETSc VI solving and applies those bounds. This is a
+numerical safeguard, not physical validation; an explicit unbounded diagnostic
+mode is not yet part of this API.
+
 建立並執行 FEniCSx `NonlinearProblem`，使用固定 SNES/Newton + LU options。回傳
 `(solution, newton_iterations)`；SNES/KSP 未收斂時直接 raise PETSc error。
 
@@ -130,6 +135,11 @@ legacy local-material case仍可傳入具有`k(T)`的module。
 ## `lib.materials`
 
 ### `load_property(definition, base_dir, name="property")`
+
+For `type: table`, optional positive `scale` multiplies all tabulated property
+values. Optional `domain_K: [lo, hi]` restricts the usable interpolation domain
+to a subrange of the CSV table; evaluation outside it fails rather than
+extrapolating.
 
 將scalar或`type: constant/table/python`mapping載入為`Property`。`Property.evaluate(T, **state)`
 驗證numeric result finite且positive；table的`domain`明確保存上下界，domain外numeric evaluation

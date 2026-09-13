@@ -20,8 +20,8 @@ ordinary contacts.
 ```text
 requirement evidence (read-only history)
     -> canonical geometry + Baseline v1 parameter specifications
-    -> case-local geometry.py / future solver-facing parameter files
-    -> future case.yaml and main.py using parent lib/
+    -> case-local geometry.py / material-map.yaml / case.yaml
+    -> main.py using parent lib/
     -> build/ and output/
 ```
 
@@ -33,7 +33,7 @@ requirement evidence (read-only history)
 - `parameters-requirement/material-map.yaml` is only a concise machine-readable
   derivative of that baseline.
 - `geometry.py` translates the soft geometry requirement into the existing Gmsh
-  workflow. Future `case.yaml` and `main.py` must use existing parent interfaces.
+  workflow. `case.yaml` and `main.py` use the existing parent interfaces.
 - `requirement/` and paper directories preserve research evidence and do not
   define active solver behavior.
 
@@ -53,11 +53,9 @@ document.
 
 ### Heat-switch implementation approximation
 
-Baseline v1 preserves the conceptual ideal-open OFF switch. The current framework
-does not yet provide a separate heat-switch/interface-conductance model, while the
-geometry already contains a 0.5 mm-thick `heat_switch` volume. The first numerical
-implementation will therefore use that volume as a finite-leakage effective bulk
-proxy, calibrated by
+Baseline v1 uses the geometry's 0.5 mm-thick `heat_switch` volume as the approved
+finite-leakage effective bulk proxy because the framework does not provide a
+separate heat-switch/interface-conductance model. It is calibrated by
 
 $$
 G=\frac{kA}{L},\qquad k_{\rm off}=\frac{G_{\rm off,target}L}{A_{\rm effective}}.
@@ -93,3 +91,18 @@ Temperature-dependent transient forms use explicit degree-2 quadrature and deriv
 SNES variable bounds from tabulated property domains, preventing prohibited
 extrapolation and discrete undershoot. ADR01 internal-contact heat flows are
 integrated in the case runner with positive sign toward decreasing z.
+
+The bounded nonlinear solve is a numerical option used by the current smoke case;
+staying within bounds is not evidence of physical validity. Property validity
+domains and physical solution bounds remain distinct concepts.
+
+## Deferred physics
+
+Ordinary solid-solid interfaces currently use perfect thermal contact. Finite
+contact resistance is not implemented in ADR01 Baseline v1. Prefer a future
+interface-law / contact-conductance implementation over inserting many ultra-thin
+volumetric layers, unless a later study specifically requires thin-layer proxies.
+
+The superconducting magnet is omitted from the active simplified geometry/model.
+A future extension may add a magnet thermally anchored to the 4 K stage, with an
+optional magnet heat load if later required.
