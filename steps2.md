@@ -529,6 +529,31 @@ Update `chat/`, show one validation report, then STOP.
 
 ---
 
+## Validation gate — Initial-condition representation audit
+
+Before final energy-balance or engineering interpretation, quantify how an
+intended discontinuous semantic `by_region` initial condition is represented in
+the current continuous P1 temperature field. ADR01 is the known case: GGG is
+intended to start at 1 K while its touching copper cylinder starts at 4 K.
+
+The audit must check:
+
+1. intended region-wise IC versus the actual FE field at `t = 0`;
+2. per-region Tmin, Tmax, and average at `t = 0`;
+3. initial stored-energy difference caused by the FE representation;
+4. initial interface heat-flux magnitude;
+5. behavior under mesh refinement;
+6. whether the discrepancy decreases as `h` is refined;
+7. whether energy-balance calculations use the actual solver initial field rather
+   than the idealized textual IC.
+
+Do not interpret the `t = 0` interface heat flux as a mesh-independent engineering
+heat leak. Resolve or quantify this numerical representation issue before final
+energy-balance or engineering interpretation. This gate records required evidence;
+it does not prescribe DG, projection, smoothing, or another solution.
+
+---
+
 # Step 9 — Energy-balance audit
 
 ## Goal

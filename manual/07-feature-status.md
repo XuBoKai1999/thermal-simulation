@@ -57,6 +57,21 @@ ADR01另有case-specific finite-leakage bulk proxy表示heat-switch OFF state。
 external CAD/helper dependency tracking、topology-aware 3D postprocessor，且 MPI dump/cell-ID
 mapping 未實作。
 
+### Region-wise initial-condition representation
+
+Semantic constant `by_region` initial conditions are supported. However, the
+transient temperature solution currently uses a continuous P1 space, so a
+piecewise-discontinuous temperature jump between touching regions cannot be
+represented exactly on a conformal shared interface. The shared-interface values
+must belong to one continuous FE field. Consequently, a discontinuous `by_region`
+IC may show interface smoothing and mesh-dependent initial gradients or heat-flux
+diagnostics.
+
+This is a numerical representation limitation, not material or contact physics,
+and does not mean that `by_region` or ordinary perfect-contact transient solving
+is broken. The final treatment has not been selected; possible approaches require
+future numerical investigation rather than being prescribed here.
+
 NIST ingestion 現況：43 個index entries（42 material pages + 1 regenerator dataset）、
 38 fully normalized、1 partially normalized、3 manual-required、129 derived CSVs。Derived
 tables只覆蓋各series的`equation_range_K`；資料庫沒有補入外部density，也不替使用者在
