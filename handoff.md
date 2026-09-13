@@ -35,16 +35,22 @@ Outputs are under `run/01_ADR01/output/dt_*/`.
 
 ## Current roadmap state
 
-Root `steps2.md` Steps 1–4 are complete. Step 4 added a ParaView-native VTK/PVD
+Root `steps2.md` Steps 1–5 are complete. Step 4 added a ParaView-native VTK/PVD
 time series, separate from the ADR text dumps. ADR01 writes the actual continuous
 P1 `temperature` as point data and DG0 `heat_flux` and `region_ID` as cell data.
 The verified short-run entry point is
 `run/01_ADR01/output/dt_0.00015/visualization/fields.pvd`; ParaView reads frames at
-`t = 0` and `t = 0.0003` with all three fields.
+`t = 0` and `t = 0.0003` with all three fields. Step 5 then ran the validated
+`dt=0.00025 s`, `end=0.05 s` baseline with 21 uniformly spaced states. The first
+spatial review found no isolated cells, checkerboard pattern, unexpected
+perfect-contact discontinuity, or implausible global heat-flow direction. The
+largest support-pair average-temperature difference was about `0.00206 K`.
+Known t=0 P1 IC smoothing and local thin-switch blockiness remain documented for
+the planned IC audit and mesh convergence.
 
 Before engineering interpretation: complete the planned visualization review,
 initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: execute `steps2.md` Step 5 only after the user says next.
+Next exact action: execute `steps2.md` Step 6 only after the user says next.

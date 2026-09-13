@@ -332,6 +332,8 @@ Update `chat/`, state the generated files and how to open them, then STOP.
 
 # Step 5 — First visualization review
 
+**STATUS: COMPLETE**
+
 ## Goal
 
 Use the new visualization path to inspect the already-working ADR01 physics before adding more numerical machinery.
