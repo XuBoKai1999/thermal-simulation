@@ -68,6 +68,11 @@ ITEM: FIELDS ...
 tetrahedra即median $V_K^{1/3}$。`SOLVER_DT`在caller知道時記錄數值，否則為`unknown`。
 Reader仍接受v1的`BOUNDS`，並為新舊名稱提供metadata alias。
 
+Transient cases may set `output.every_time_s` independently from `time.dt_s`.
+`case.output_timesteps` maps each uniform requested physical time to the nearest
+actual solver step, resolves half-step ties toward the later step, and removes
+duplicates. Dumps record the actual step time; the solver does not interpolate.
+
 | field | type | unit | meaning / sampling |
 |---|---|---|---|
 | `cell_ID` | integer | — | 對應 `mesh.msh` 的 Gmsh volume element tag；writer 必要，排序 key |

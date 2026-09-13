@@ -20,3 +20,7 @@ Generated geometry and validation artifacts are described in
 conditions, and the transient case are implemented. The first 0.05 s
 early-transient smoke run is complete; numerical validation and production-time
 studies continue under the repository-level `steps2.md` roadmap.
+
+The visualization smoke configuration uses the validated solver
+`dt_s=0.00025 s` with independent uniform output every `0.0025 s`; requested
+times map to the nearest actual solver step without temporal interpolation.

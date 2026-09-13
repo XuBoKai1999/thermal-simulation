@@ -234,7 +234,8 @@ ITEM: FIELDS cell_ID region_ID x y z T qx qy qz qmag
 - 穩態只寫一份 `0.dump`；暫態依輸出頻率寫 `{timestep}.dump`。
 - timestep是整數步數；physical time與solver dt分別寫入header，不要求reader自行相乘推導。
 - actual mesh `BOX BOUNDS`與approximate `characteristic_cell_size`使dump可獨立判讀空間尺度；後者不是global `dx`。
-- dump 目錄、輸出頻率與欄位由各 run/test 的 `main.py` 設定，不放入 physics `case.yaml`。
+- dump目錄與欄位仍由各run/test的`main.py`設定；transient uniform physical-time cadence
+  可由`output.every_time_s`設定，與solver `time.dt_s`分離。
 
 第一版只支援 cell dump。座標為 cell centroid，`T` 在 centroid 評估，熱流由 `analyze.py` 在 cell 上計算。nodes 等出現明確需求後再加入。
 

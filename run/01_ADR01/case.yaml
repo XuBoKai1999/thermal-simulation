@@ -46,3 +46,6 @@ time:
     regions: {ggg: 1.0}
   dt_s: 5.0e-4
   end_s: 5.0e-2
+
+output:
+  every_time_s: 2.5e-3

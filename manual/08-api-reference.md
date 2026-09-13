@@ -24,6 +24,13 @@ case_data = case.load_case(case_dir / "case.yaml")
 `heat_flux_W_m2`, `total_heat_W` 且皆為正數。回傳 dict。這是 verification helper，不是
 simulation case 必要 API。
 
+### `output_timesteps(case_data)`
+
+For optional positive `output.every_time_s`, return sorted solver-step indices
+nearest to the requested uniform physical times through `time.end_s`. Half-step
+ties select the later step, duplicate mapped steps are removed, and no temporal
+interpolation is performed. Returns an empty list when the option is absent.
+
 ## `lib.mesh`
 
 ### `ensure_mesh(build_dir, geometry_file, build_geometry)`

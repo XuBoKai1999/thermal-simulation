@@ -20,6 +20,10 @@ case_dir = Path(__file__).resolve().parent
 case_data = case.load_case(case_dir / "case.yaml")
 surfaces = ("heater_face", "monitor_face", "side_probe")
 
+cadence_case = dict(case_data, output={"every_time_s": 1.6})
+if case.output_timesteps(cadence_case) != [2, 3, 5]:
+    raise AssertionError("Uniform physical-time output cadence is incorrect")
+
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
     mesh_path = mesh.ensure_mesh(root / "build", geometry.__file__, geometry.build_geometry)

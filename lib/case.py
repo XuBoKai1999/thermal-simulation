@@ -8,6 +8,21 @@ import yaml
 from . import materials
 
 
+def output_timesteps(case_data):
+    """Return solver steps nearest to uniform requested output times."""
+    every = case_data.get("output", {}).get("every_time_s")
+    if every is None:
+        return []
+    dt = case_data["time"]["dt_s"]
+    end = case_data["time"]["end_s"]
+    final_step = round(end / dt)
+    request_count = math.floor(end / every + 1.0e-12)
+    return sorted({
+        max(1, min(final_step, math.floor(index * every / dt + 0.5)))
+        for index in range(1, request_count + 1)
+    })
+
+
 def load_case(path):
     path = Path(path)
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -98,6 +113,14 @@ def load_case(path):
                         f"time.initial_condition.regions.{name} must be finite numeric"
                     )
         initial["type"] = initial_type
+        output = data.get("output", {})
+        if not isinstance(output, dict):
+            raise ValueError("output must be a mapping")
+        every_time = output.get("every_time_s")
+        if (every_time is not None
+                and (not isinstance(every_time, (int, float))
+                     or not math.isfinite(every_time) or every_time <= 0)):
+            raise ValueError("output.every_time_s must be finite and positive")
 
     conditions = data.get("boundary_conditions", {})
     if not isinstance(conditions, dict) or not conditions:

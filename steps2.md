@@ -215,6 +215,8 @@ Update `chat/`, show one representative header, then STOP.
 
 # Step 3 — Separate solver timestep from output cadence
 
+STATUS: COMPLETE
+
 ## Goal
 
 Do not tie saved snapshots to the solver timestep and do not hard-code only three observation times.

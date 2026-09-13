@@ -21,7 +21,6 @@ import geometry
 
 
 CASE_DIR = Path(__file__).resolve().parent
-OBSERVATIONS = (0.01, 0.02, 0.05)
 def internal_axial_flow(temperature, mesh_data, case_data, tags, surface):
     """Return heat flow toward decreasing z across a horizontal internal facet."""
     conductivity = materials.property_expression(
@@ -51,7 +50,7 @@ def run(dt, end_time=0.05):
     )
     observations = []
     total_iterations = 0
-    wanted_steps = {round(time / dt): time for time in OBSERVATIONS if time <= end_time}
+    wanted_steps = set(case.output_timesteps(case_data))
     output_dir = CASE_DIR / "output" / f"dt_{dt:.8g}"
     cell_ids = region_names = None
 
@@ -64,7 +63,7 @@ def run(dt, end_time=0.05):
         previous.x.scatter_forward()
         if step not in wanted_steps:
             continue
-        time = wanted_steps[step]
+        time = step * dt
         derived = analyze.analyze(
             temperature, mesh_data, case_data, tags, heatflow_surfaces=()
         )
@@ -101,6 +100,8 @@ def run(dt, end_time=0.05):
     result = {
         "dt_s": dt,
         "end_s": end_time,
+        "output_every_s": case_data.get("output", {}).get("every_time_s"),
+        "output_steps": sorted(wanted_steps),
         "steps": step_count,
         "total_newton_iterations": total_iterations,
         "heat_flow_sign": "positive toward decreasing z (hot side toward cold side)",

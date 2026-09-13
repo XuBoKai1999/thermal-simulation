@@ -171,6 +171,9 @@ time:
     right_T_K: 1.0
   dt_s: 1.0
   end_s: 500.0
+
+output:
+  every_time_s: 10.0
 ```
 
 | path | type | SI unit | requirement |
@@ -185,6 +188,7 @@ time:
 | `boundary_conditions.<name>.value_K` | number | K | 必要 |
 | `time.dt_s` | positive number | s | transient 必要 |
 | `time.end_s` | positive number | s | transient 必要；整除檢查在案例 runner |
+| `output.every_time_s` | positive number | s | optional uniform physical-time output interval |
 | `time.initial_condition.split_x_m` | number | m | transient 必要 |
 | `time.initial_condition.left_T_K` | number | K | transient 必要 |
 | `time.initial_condition.right_T_K` | number | K | transient 必要 |
