@@ -29,8 +29,9 @@ with tempfile.TemporaryDirectory() as directory:
     a, linear, bcs, space, previous = model.build_transient_model(
         mesh_data, case_data, tags
     )
-    if not np.allclose(previous.x.array, 1.0):
-        raise AssertionError("Uniform initial condition was not applied")
+    initial_values = set(np.round(previous.x.array, 12))
+    if initial_values != {1.0, 2.0}:
+        raise AssertionError(f"Region-wise initial condition was not applied: {initial_values}")
     problem = solve.make_solver(a, linear, bcs, "general_3d_transient_")
     temperature = None
     for step in range(5):
@@ -80,7 +81,7 @@ with tempfile.TemporaryDirectory() as directory:
 
 print("General 3D multi-region transient: PASS")
 print("interface shared topology: PASS")
-print("uniform IC, three semantic surfaces, region statistics, heat flow, dump: PASS")
+print("region-wise IC, three semantic surfaces, region statistics, heat flow, dump: PASS")
 for name, values in summary["regions"].items():
     print(name, ", ".join(f"{key}={value:.6g}" for key, value in values.items()))
 for name in surfaces:

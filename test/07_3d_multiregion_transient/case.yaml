@@ -13,6 +13,9 @@ boundary_conditions:
   heater_face: {type: fixed_temperature, value_K: 4.0}
 
 time:
-  initial_condition: {type: uniform, value_K: 1.0}
+  initial_condition:
+    type: by_region
+    default_K: 1.0
+    regions: {heated_block: 2.0}
   dt_s: 1.0
   end_s: 5.0

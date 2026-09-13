@@ -44,10 +44,12 @@ The geometry contains `hot_plate`, the five-part coaxial ADR chain
 `sample`, and two supports. The canonical parameter baseline assigns the thermal
 material or special model for each identical component ID.
 
-`hot_plate` is visualization/attachment geometry representing an ideal fixed
-4 K reservoir rather than a solved material region. Ordinary declared contacts
-use perfect contact. Detailed material formulas, tables, citations, and
-qualifiers remain only in the canonical baseline document.
+`hot_plate` represents an ideal fixed 4 K reservoir at its thermal contacts. If
+the full-mesh solver requires it to be solved, it may use the nominal copper
+material and a 4 K initial value as bookkeeping while the contact temperature
+remains fixed. Ordinary declared contacts use perfect contact. Detailed material
+formulas, tables, citations, and qualifiers remain only in the canonical baseline
+document.
 
 ### Heat-switch implementation approximation
 
@@ -79,9 +81,15 @@ dimension-3 physical groups; the 11 stable connection IDs are dimension-2 groups
 Contact area is derived from geometry. `geometry-report.md` records validation and
 the interactive inspection command.
 
-## Unresolved solver inputs
+## Initial and boundary conditions
 
-Baseline v1 does not define the complete initial temperature field or all
-non-hot-side boundary conditions. In particular, no fixed 1 K cold boundary or
-GGG initial temperature is currently approved. These remain `TBD` until a human
-decision is recorded. No thermal solve may infer them.
+For the approved post-demagnetization smoke transient, `ggg` starts at 1 K and
+all other solved solids start at 4 K. GGG remains a finite-heat-capacity body and
+is not a fixed 1 K boundary. Hot-reservoir contacts remain fixed at 4 K; every
+other exposed outer surface uses the natural zero-normal-flux condition.
+
+The case uses the parent framework's semantic `by_region` initial condition.
+Temperature-dependent transient forms use explicit degree-2 quadrature and derive
+SNES variable bounds from tabulated property domains, preventing prohibited
+extrapolation and discrete undershoot. ADR01 internal-contact heat flows are
+integrated in the case runner with positive sign toward decreasing z.

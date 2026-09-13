@@ -19,7 +19,7 @@ components:
   heat_switch:
     conceptual_model: ideal_open
     solver_model: effective_bulk_off_proxy
-    implementation_status: pending
+    implementation_status: implemented_in_case_yaml
     target_conductance_W_per_K: 6.0e-5
     geometry:
       thickness_m: 5.0e-4

@@ -40,6 +40,14 @@ class PropertyTests(unittest.TestCase):
             for value in (0.9, 4.1, np.nan):
                 with self.assertRaises(ValueError):
                     prop.evaluate(value)
+            scaled = load_property({**definition, "scale": 0.5}, root, "k")
+            self.assertEqual(scaled.evaluate(3.0), 15.0)
+            limited = load_property(
+                {**definition, "domain_K": [1.5, 3.5]}, root, "k"
+            )
+            self.assertEqual(limited.evaluate(1.5), 15.0)
+            with self.assertRaises(ValueError):
+                limited.evaluate(1.49)
 
     def test_invalid_table_data(self):
         cases = {
@@ -161,6 +169,34 @@ time:
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "Unsupported.*initial_condition"):
+                load_case(root / "case.yaml")
+
+    def test_by_region_initial_condition_validation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            template = """model: {type: transient_conduction}
+regions:
+  warm: {k: 10, rho: 1000, cp: 100}
+  cold: {k: 10, rho: 1000, cp: 100}
+boundary_conditions:
+  fixed_surface: {type: fixed_temperature, value_K: 4}
+time:
+  initial_condition:
+    type: by_region
+    default_K: 4
+    regions: OVERRIDES
+  dt_s: 1
+  end_s: 2
+"""
+            (root / "case.yaml").write_text(
+                template.replace("OVERRIDES", "{cold: 1}"), encoding="utf-8"
+            )
+            loaded = load_case(root / "case.yaml")
+            self.assertEqual(loaded["time"]["initial_condition"]["regions"], {"cold": 1})
+            (root / "case.yaml").write_text(
+                template.replace("OVERRIDES", "{missing: 1}"), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "Unknown initial-condition regions"):
                 load_case(root / "case.yaml")
 
 

@@ -9,14 +9,19 @@ import ufl
 from . import materials
 
 
-def _set_initial_values(function, initial):
+def _set_initial_values(function, initial, cell_tags=None, semantic_tags=None):
     if initial["type"] == "uniform":
         function.x.array[:] = initial["value_K"]
-    else:
+    elif initial["type"] == "split_x":
         x = function.function_space.tabulate_dof_coordinates()[:, 0]
         function.x.array[:] = np.where(
             x < initial["split_x_m"], initial["left_T_K"], initial["right_T_K"]
         )
+    else:
+        function.x.array[:] = initial["default_K"]
+        for name, value in initial["regions"].items():
+            for cell in cell_tags.find(semantic_tags[name]["tag"]):
+                function.x.array[function.function_space.dofmap.cell_dofs(cell)] = value
     function.x.scatter_forward()
 
 
@@ -97,7 +102,10 @@ def build_transient_model(mesh_data, case_data, semantic_tags, previous=None):
     if previous is None:
         initial_space = fem.functionspace(domain, ("DG", 0))
         previous = fem.Function(initial_space)
-        _set_initial_values(previous, case_data["time"]["initial_condition"])
+        _set_initial_values(
+            previous, case_data["time"]["initial_condition"],
+            mesh_data.cell_tags, semantic_tags,
+        )
 
     dt = case_data["time"]["dt_s"]
     density = materials.property_field(mesh_data, case_data, semantic_tags, "rho")
@@ -124,7 +132,10 @@ def build_nonlinear_transient_model(
     if previous is None:
         initial_space = fem.functionspace(domain, ("DG", 0))
         initial_field = fem.Function(initial_space)
-        _set_initial_values(initial_field, case_data["time"]["initial_condition"])
+        _set_initial_values(
+            initial_field, case_data["time"]["initial_condition"],
+            mesh_data.cell_tags, semantic_tags,
+        )
         previous = fem.Function(space)
         previous.interpolate(
             fem.Expression(initial_field, space.element.interpolation_points)
@@ -144,15 +155,17 @@ def build_nonlinear_transient_model(
         for name in ("k", "rho", "cp")
     }
     dt = case_data["time"]["dt_s"]
+    dx = ufl.Measure("dx", domain=domain, metadata={"quadrature_degree": 2})
     residual = (
         coefficients["rho"] * coefficients["cp"]
-        * (temperature - previous) / dt * test * ufl.dx
+        * (temperature - previous) / dt * test * dx
         + ufl.inner(
             coefficients["k"] * ufl.grad(temperature), ufl.grad(test)
-        ) * ufl.dx
+        ) * dx
     )
     jacobian = ufl.derivative(residual, temperature)
     temperature._properties = []
+    domains = []
     for region, properties in case_data["_region_properties"].items():
         if properties is None:
             continue
@@ -162,4 +175,11 @@ def build_nonlinear_transient_model(
         ])
         for name, prop in properties.items():
             temperature._properties.append((f"{region}.{name}", prop, dofs))
+            if prop.domain is not None:
+                domains.append(prop.domain)
+    if domains:
+        temperature._bounds = (
+            max(domain[0] for domain in domains),
+            min(domain[1] for domain in domains),
+        )
     return residual, temperature, boundary_conditions, jacobian, previous

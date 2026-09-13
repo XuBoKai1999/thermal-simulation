@@ -38,13 +38,25 @@ def solve_nonlinear(residual, temperature, boundary_conditions, jacobian, prefix
             "ksp_error_if_not_converged": True,
         },
     )
+    bounds = getattr(temperature, "_bounds", None)
+    if bounds is not None:
+        problem.solver.setType("vinewtonrsls")
+        lower = temperature.x.petsc_vec.duplicate()
+        upper = temperature.x.petsc_vec.duplicate()
+        lower.set(bounds[0])
+        upper.set(bounds[1])
+        problem.solver.setVariableBounds(lower, upper)
     solution = problem.solve()
     owned = solution.function_space.dofmap.index_map.size_local
     local = solution.x.array[:owned]
     for name, prop, indices in getattr(solution, "_properties", []):
         try:
-            prop.evaluate(local if indices is None else solution.x.array[indices])
+            values = local if indices is None else solution.x.array[indices]
+            prop.evaluate(values)
         except ValueError as error:
-            raise ValueError(f"Invalid {name} at solved temperature: {error}") from error
+            raise ValueError(
+                f"Invalid {name} at solved temperature range "
+                f"[{values.min()}, {values.max()}] K: {error}"
+            ) from error
     solution.name = "temperature"
     return solution, problem.solver.getIterationNumber()

@@ -1,0 +1,48 @@
+model: {type: transient_conduction}
+
+materials:
+  OFHC_Cu_RRR100:
+    rho: 8960.0
+    k: {type: python, file: properties.py, function: copper_k_rrr100}
+    cp: {type: python, file: properties.py, function: copper_cp}
+  GGG_H0:
+    rho: 7100.0
+    k: {type: table, file: ggg_k.csv, x: T_K, y: k_W_mK}
+    cp: {type: table, file: ggg_cp.csv, x: T_K, y: cp_J_kgK}
+  G10_FR4_axial_effective:
+    rho: 1910.0
+    k: {type: python, file: properties.py, function: g10_k}
+    cp:
+      type: table
+      file: g10_cp.csv
+      x: T_K
+      y: cp_J_kgK
+  Heat_switch_OFF_proxy:
+    rho: 1.0
+    cp: 1.0
+    k: 1.5278874536821952e-3
+
+regions:
+  hot_plate: {material: OFHC_Cu_RRR100}
+  cylinder_1: {material: OFHC_Cu_RRR100}
+  heat_switch: {material: Heat_switch_OFF_proxy}
+  cylinder_2: {material: OFHC_Cu_RRR100}
+  ggg: {material: GGG_H0}
+  cylinder_3: {material: OFHC_Cu_RRR100}
+  cold_stage: {material: OFHC_Cu_RRR100}
+  sample: {material: OFHC_Cu_RRR100}
+  support_1: {material: G10_FR4_axial_effective}
+  support_2: {material: G10_FR4_axial_effective}
+
+boundary_conditions:
+  edge_hot_cylinder_1: {type: fixed_temperature, value_K: 4.0}
+  edge_hot_support_1: {type: fixed_temperature, value_K: 4.0}
+  edge_hot_support_2: {type: fixed_temperature, value_K: 4.0}
+
+time:
+  initial_condition:
+    type: by_region
+    default_K: 4.0
+    regions: {ggg: 1.0}
+  dt_s: 5.0e-4
+  end_s: 5.0e-2

@@ -14,7 +14,8 @@ STATUS: COMPLETE
 
 The ten-component placeholder geometry and 11 stable connection IDs are defined.
 The conformal Gmsh mesh passes automated contact and coherence checks. The current
-lateral-offset geometry received human visual approval on 2026-09-12.
+lateral-offset placeholder geometry is human-approved for the Baseline v1 numerical
+smoke run. This approval does not verify actual hardware dimensions.
 
 ## Step 5 — Freeze baseline thermal parameters
 
@@ -29,24 +30,23 @@ its formulas, tables, or bibliography into roadmap files.
 
 ## Step 6 — Freeze initial and boundary conditions
 
-STATUS: INCOMPLETE
+STATUS: COMPLETE
 
-Approved:
+Approved for the first post-demagnetization smoke transient:
 
-- `hot_plate` represents an ideal fixed-temperature reservoir at 4 K.
+- initial temperature is 1 K in `ggg` and 4 K in every other solved solid;
+- `ggg` is a finite-heat-capacity body, not a fixed-temperature boundary;
+- `hot_plate` is an ideal fixed-temperature reservoir at 4 K, applied at its
+  thermal contacts;
+- all other exposed outer surfaces use the natural zero-normal-flux condition;
+- ordinary solid-solid contacts remain perfect.
 
-Unresolved (`TBD`):
-
-- initial temperatures of all solved regions, including GGG;
-- all non-hot-side boundary conditions;
-- simulation duration and timestep;
-- output and observation cadence.
-
-No fixed 1 K cold boundary or 1 K GGG initial condition is currently approved.
+Timestep selection and output cadence are implementation/validation choices for
+the approved 0.05 s early-transient smoke run.
 
 ## Step 7 — Implement solver-facing properties
 
-STATUS: NOT STARTED
+STATUS: COMPLETE
 
 Translate the canonical constant, Python-function, and table representations into
 the existing framework. Implement the approved heat-switch approximation as the
@@ -58,7 +58,7 @@ the ON state or switching logic.
 
 ## Step 8 — Property sanity checks
 
-STATUS: NOT STARTED
+STATUS: COMPLETE
 
 Check the 1–4 K domains, units, positivity, canonical checkpoints,
 interpolation behavior, and out-of-range failure for every implemented property.
@@ -67,10 +67,14 @@ the generated thickness and shared contact area.
 
 ## Step 9 — ADR01 transient baseline
 
-STATUS: BLOCKED BY STEPS 6–8
+STATUS: COMPLETE FOR EARLY-TRANSIENT SMOKE RUN
 
-After IC/BC decisions and property verification, run the transient smoke case
-and then perform mesh/timestep convergence, thermal-path review, and energy checks.
+After solver-facing implementation and property verification, compare the approved
+smoke-run timesteps, run the transient case, and review thermal paths and energy.
+
+The 0.05 s runs at 1.0, 0.5, and 0.25 ms completed. The 0.25 ms result is the
+selected smoke timestep; production-duration, mesh-convergence, and engineering
+validation remain future work.
 
 Further materials, finite-field or magnetocaloric behavior, heat-switch ON state
 or switching logic, hardware-specific switch data, radiation, heat loads, and

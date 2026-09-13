@@ -139,12 +139,15 @@ k=k(T),\qquad \nabla\cdot(k(T)\nabla T)=0.
 $$
 
 `model.build_nonlinear_model` 建立 residual 與 automatic Jacobian；
-`solve.solve_nonlinear` 使用 PETSc SNES `newtonls`，每個 Newton linearization 仍用
+`solve.solve_nonlinear` 預設使用 PETSc SNES `newtonls`，每個 Newton linearization 仍用
 preonly/LU。固定設定為 `snes_rtol=1e-10`、`snes_atol=1e-12`、最多 50 iterations，且
 linear/nonlinear 不收斂都直接報錯。
 
 目前不支援 YAML solver options。Transient `k(T)/rho(T)/cp(T)`與temperature-dependent
 multi-region使用SNES；Python expression必須可由UFL微分。
+Temperature-dependent transient form 使用 degree-2 quadrature；若 table properties
+共有有效 domain，solver 會自動改用 bounded VI Newton，以防止解越過
+可評估的 property range。
 
 ## MPI 行為
 

@@ -73,17 +73,30 @@ def load_case(path):
         fields = {
             "uniform": ("value_K",),
             "split_x": ("split_x_m", "left_T_K", "right_T_K"),
+            "by_region": ("default_K",),
         }.get(initial_type)
         if fields is None:
             raise ValueError(
                 f"Unsupported time.initial_condition.type {initial_type!r}; "
-                "expected 'uniform' or 'split_x'"
+                "expected 'uniform', 'split_x', or 'by_region'"
             )
         for name in fields:
             value = initial.get(name)
             if (not isinstance(value, (int, float))
                     or not math.isfinite(value)):
                 raise ValueError(f"time.initial_condition.{name} must be finite numeric")
+        if initial_type == "by_region":
+            overrides = initial.get("regions", {})
+            if not isinstance(overrides, dict):
+                raise ValueError("time.initial_condition.regions must be a mapping")
+            unknown = set(overrides) - set(regions)
+            if unknown:
+                raise ValueError(f"Unknown initial-condition regions: {sorted(unknown)}")
+            for name, value in overrides.items():
+                if not isinstance(value, (int, float)) or not math.isfinite(value):
+                    raise ValueError(
+                        f"time.initial_condition.regions.{name} must be finite numeric"
+                    )
         initial["type"] = initial_type
 
     conditions = data.get("boundary_conditions", {})
@@ -98,10 +111,12 @@ def load_case(path):
     temperatures = [condition["value_K"] for condition in conditions.values()]
     if model_type == "transient_conduction":
         initial = data["time"]["initial_condition"]
-        temperatures.extend(
-            (initial["value_K"],) if initial["type"] == "uniform"
-            else (initial["left_T_K"], initial["right_T_K"])
-        )
+        if initial["type"] == "uniform":
+            temperatures.append(initial["value_K"])
+        elif initial["type"] == "split_x":
+            temperatures.extend((initial["left_T_K"], initial["right_T_K"]))
+        else:
+            temperatures.extend([initial["default_K"], *initial["regions"].values()])
     for region_name, properties in data["_region_properties"].items():
         if properties is None:
             continue

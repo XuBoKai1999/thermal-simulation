@@ -188,8 +188,10 @@ time:
 | `time.initial_condition.split_x_m` | number | m | transient 必要 |
 | `time.initial_condition.left_T_K` | number | K | transient 必要 |
 | `time.initial_condition.right_T_K` | number | K | transient 必要 |
-| `time.initial_condition.type` | string | — | `uniform`或`split_x`；舊格式省略時為`split_x` |
+| `time.initial_condition.type` | string | — | `uniform`、`split_x`或`by_region`；舊格式省略時為`split_x` |
 | `time.initial_condition.value_K` | number | K | `uniform`時必要 |
+| `time.initial_condition.default_K` | number | K | `by_region`時必要 |
+| `time.initial_condition.regions` | mapping | K | `by_region`的 semantic cell-region overrides；未知 region 會失敗 |
 | `contacts.<name>.type` | string | — | thin-layer contact 必須為 `thin_layer_resistance` |
 | `contacts.<name>.region` | string | — | 必須指向一個已設定且有 geometry tag 的薄層 region |
 | `contacts.<name>.resistance_m2K_W` | positive number | m² K/W | 面積比接觸熱阻 |
@@ -207,7 +209,7 @@ time:
 2. 每個 material volume 建 dimension-3 physical group；需要 BC 或 heat-flow integral 的
    surface 建 dimension-2 physical group。
 3. 建 `case.yaml`，使用 `transient_conduction`，定義每個 region 的 `k/rho/cp`、一個以上
-   fixed-temperature BC、uniform 或 split-x IC、`dt_s` 與 `end_s`。
+   fixed-temperature BC、uniform、split-x 或 semantic by-region IC、`dt_s` 與 `end_s`。
 4. 建 `main.py`：`ensure_mesh` → 讀 tags/manifest → `load_mesh` → `load_case` → 選 linear 或
    nonlinear transient builder → timestep loop。
 5. 每步成功後正確更新 `previous`；由 caller 決定 dump cadence。不要重寫 weak form。
@@ -237,6 +239,8 @@ k: {type: python, file: materials/sample.py, function: k}
 
 相對路徑以 `case.yaml` 所在目錄解析。Table採piecewise-linear interpolation，numeric
 domain外evaluation失敗；Python function必須存在且numeric回傳為finite、positive。
+Table 可選用 positive `scale` 做單位轉換，並用 `domain_K: [min, max]`
+縮小允許的插值區間；兩端點由原表線性插值。
 Single-region steady table/Python `k(T)`走nonlinear builder。Transient若任一 relevant
 property為table/Python，case runner必須選nonlinear transient builder與SNES。Legacy
 `material: local`仍可由舊runner明確傳module。

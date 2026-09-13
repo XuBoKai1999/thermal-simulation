@@ -72,6 +72,21 @@ def _table(definition, base_dir, name):
         raise ValueError(f"{name} table temperature values must be unique")
     if (y <= 0).any():
         raise ValueError(f"{name} table values must be positive")
+    scale = definition.get("scale", 1.0)
+    if not isinstance(scale, (int, float)) or not np.isfinite(scale) or scale <= 0:
+        raise ValueError(f"{name} table scale must be finite and positive")
+    y = y * scale
+    domain = definition.get("domain_K")
+    if domain is not None:
+        if (not isinstance(domain, list) or len(domain) != 2
+                or not all(isinstance(value, (int, float)) for value in domain)
+                or not np.isfinite(domain).all() or domain[0] >= domain[1]
+                or domain[0] < x[0] or domain[1] > x[-1]):
+            raise ValueError(f"{name} table domain_K must lie within the table domain")
+        lo, hi = map(float, domain)
+        inside = (x > lo) & (x < hi)
+        y = np.concatenate(([np.interp(lo, x, y)], y[inside], [np.interp(hi, x, y)]))
+        x = np.concatenate(([lo], x[inside], [hi]))
 
     def evaluate(T=None, **state):
         if T is None:

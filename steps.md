@@ -18,20 +18,16 @@
 - [x] Human interactive approval of `run/01_ADR01/build/mesh.msh` recorded on 2026-09-12.
 - [x] Material/property research completed and Baseline v1 frozen in
   `run/01_ADR01/parameters-requirement/ADR01_material_parameters_baseline_v1.md`.
-- [ ] Initial temperatures and remaining boundary conditions frozen; only the
-  ideal fixed-4 K hot reservoir is currently approved.
+- [x] Placeholder geometry, region-wise IC, fixed-4 K reservoir contacts, and
+  adiabatic remaining outer boundaries approved for the smoke run.
+- [x] Baseline v1 properties, finite-leakage switch proxy, property validation,
+  timestep comparison, and 0.05 s early-transient smoke run completed.
 
 ## Next ADR01 gates
 
-1. Resolve the initial-condition field, non-hot-side boundary conditions,
-   simulation duration/timestep, and output cadence.
-2. Translate Baseline v1 properties into existing framework-readable constant,
-   function, and table forms; implement the approved geometry-calibrated finite-
-   leakage bulk OFF proxy for the heat-switch volume.
-3. Run property-level domain, unit, checkpoint, interpolation, positivity, and
-   out-of-range checks.
-4. Assemble the ADR01 transient smoke run, then perform mesh/timestep convergence,
-   thermal-path review, and energy sanity checks.
+1. Perform mesh convergence and energy-balance review before treating results as
+   more than an early-transient numerical smoke test.
+2. Add longer-duration or hardware-specific studies only after separate approval.
 
 Do not restart material research or add new physics before an approved requirement.
 Detailed case progress is maintained in `run/01_ADR01/steps.md`.
