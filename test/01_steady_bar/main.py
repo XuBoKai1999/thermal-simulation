@@ -86,6 +86,7 @@ dump_path = dump.write_dump(
     manifest["mesh_id"],
     derived["bounds"],
     regions,
+    characteristic_cell_size=derived["characteristic_cell_size"],
 )
 
 summary_path = case_dir / "output" / "summary.csv"

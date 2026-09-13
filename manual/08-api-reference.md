@@ -72,7 +72,7 @@ Dirichlet values。
 | `mesh_data` | FEniCSx mesh data | — | required | mesh + tags |
 | `case_data` | dict | SI schema | required | validated transient case |
 | `semantic_tags` | dict | — | required | name → dimension/tag |
-| `previous` | `fem.Function` or `None` | K | default `None` | previous state；None 時由 x-split IC 建 DG0 function |
+| `previous` | `fem.Function` or `None` | K | default `None` | previous state；None時依case IC schema建立initial DG0/P1 state，支援`uniform`、`split_x`與semantic constant `by_region` |
 
 回傳 `(a, linear, boundary_conditions, space, previous)`。只建單一 Backward Euler step；
 constant `k/rho/cp`均由semantic cell tags建立DG0 fields，可有多個regions。
@@ -120,6 +120,7 @@ mode is not yet part of this API.
     "cell_data": {"region_ID": ..., "x": ..., "y": ..., "z": ...,
                   "T": ..., "qx": ..., "qy": ..., "qz": ..., "qmag": ...},
     "bounds": ...,
+    "characteristic_cell_size": ...,
     "summary": {"T_min": ..., "T_max": ..., "T_avg": ..., "q_avg": ...,
                 "regions": {"region_name": {"T_min_K": ..., "T_max_K": ...,
                                                 "T_avg_K": ...}},
@@ -173,7 +174,7 @@ region 使用 `thickness_m / resistance_m2K_W`。每個 owned mesh cell 都必�
 
 ## `lib.dump`
 
-### `write_dump(data, directory, fields, mesh_id, bounds, regions, timestep=0, time=0.0)`
+### `write_dump(data, directory, fields, mesh_id, bounds, regions, timestep=0, time=0.0, solver_dt=None, characteristic_cell_size=None)`
 
 | name | type | unit | required/default | description |
 |---|---|---|---|---|
@@ -185,6 +186,8 @@ region 使用 `thickness_m / resistance_m2K_W`。每個 owned mesh cell 都必�
 | `regions` | mapping[int,str] | — | required | region legend；僅 region_ID selected 時寫出 |
 | `timestep` | int-like | — | default `0` | filename/header step |
 | `time` | number | s | default `0.0` | physical time |
+| `solver_dt` | positive number or `None` | s | default `None` | solver timestep；未知時header為`unknown` |
+| `characteristic_cell_size` | positive number or `None` | m | default `None` | approximate cell scale；未知時header為`unknown` |
 
 驗證 fields 存在、等長且 finite，按 cell_ID 排序，回傳 output `Path`。不計算物理量。
 

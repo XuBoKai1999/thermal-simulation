@@ -73,15 +73,44 @@ with tempfile.TemporaryDirectory() as directory:
         data, root / "output" / "dump",
         ["cell_ID", "region_ID", "x", "y", "z", "T", "qx", "qy", "qz", "qmag"],
         manifest["mesh_id"], derived["bounds"], region_names,
-        timestep=5, time=5.0,
+        timestep=5, time=5.0, solver_dt=case_data["time"]["dt_s"],
+        characteristic_cell_size=derived["characteristic_cell_size"],
     )
     metadata, dumped = dump_reader.read_dump(path)
     if metadata["MESH_ID"] != manifest["mesh_id"] or len(dumped["T"]) != len(data["T"]):
         raise AssertionError("Dump round trip failed")
+    if metadata["FORMAT_VERSION"] != "2":
+        raise AssertionError("Dump format version is not 2")
+    if float(metadata["SOLVER_DT"]) != case_data["time"]["dt_s"]:
+        raise AssertionError("Dump solver dt is incorrect")
+    if not np.allclose(metadata["BOX BOUNDS"], derived["bounds"]):
+        raise AssertionError("Dump box bounds are incorrect")
+    if not np.isclose(
+        float(metadata["CHARACTERISTIC_CELL_SIZE"]),
+        derived["characteristic_cell_size"],
+    ):
+        raise AssertionError("Dump characteristic cell size is incorrect")
+
+    legacy = root / "legacy.dump"
+    legacy.write_text(
+        "ITEM: FORMAT_VERSION\n1\nITEM: TIMESTEP\n0\nITEM: TIME\n0.0\n"
+        "ITEM: MESH_ID\nlegacy\nITEM: NUMBER OF CELLS\n1\nITEM: BOUNDS\n"
+        "0 1\n0 1\n0 1\nITEM: FIELDS cell_ID T\n0 1\n",
+        encoding="utf-8",
+    )
+    legacy_metadata, _ = dump_reader.read_dump(legacy)
+    if not np.array_equal(legacy_metadata["BOX BOUNDS"], np.array([[0, 1]] * 3)):
+        raise AssertionError("Legacy BOUNDS compatibility failed")
 
 print("General 3D multi-region transient: PASS")
 print("interface shared topology: PASS")
 print("region-wise IC, three semantic surfaces, region statistics, heat flow, dump: PASS")
+print(
+    "dump metadata:",
+    f"time={metadata['TIME']} s, dt={metadata['SOLVER_DT']} s,",
+    f"h_char={metadata['CHARACTERISTIC_CELL_SIZE']} m,",
+    f"bounds={metadata['BOX BOUNDS'].tolist()}, mesh={metadata['MESH_ID']}",
+)
 for name, values in summary["regions"].items():
     print(name, ", ".join(f"{key}={value:.6g}" for key, value in values.items()))
 for name in surfaces:

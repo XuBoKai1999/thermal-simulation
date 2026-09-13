@@ -99,6 +99,11 @@ def analyze(
         fem.Expression(heat_flux, cell_vector.element.interpolation_points)
     )
 
+    cell_measure = fem.Function(cell_scalar)
+    cell_measure.interpolate(
+        fem.Expression(ufl.CellVolume(domain), cell_scalar.element.interpolation_points)
+    )
+
     cell_count = domain.topology.index_map(domain.topology.dim).size_local
     geometry_dofmap = domain.geometry.dofmap
     centroids = np.array(
@@ -128,6 +133,13 @@ def analyze(
         owned_tag_mask
     ]
 
+    local_cell_sizes = cell_measure.x.array[:cell_count] ** (1 / domain.topology.dim)
+    characteristic_cell_size = float(np.median(np.concatenate(
+        domain.comm.allgather(local_cell_sizes)
+    )))
+    local_low = domain.geometry.x.min(axis=0)
+    local_high = domain.geometry.x.max(axis=0)
+
     local_values = temperature.x.array[:owned]
     summary = {
         "T_min": domain.comm.allreduce(local_values.min(), op=MPI.MIN),
@@ -149,8 +161,10 @@ def analyze(
             "qz": heat_flux_values[:, 2],
             "qmag": np.linalg.norm(heat_flux_values, axis=1),
         },
-        "bounds": np.column_stack(
-            (domain.geometry.x.min(axis=0), domain.geometry.x.max(axis=0))
-        ),
+        "bounds": np.column_stack((
+            domain.comm.allreduce(local_low, op=MPI.MIN),
+            domain.comm.allreduce(local_high, op=MPI.MAX),
+        )),
+        "characteristic_cell_size": characteristic_cell_size,
         "summary": summary,
     }

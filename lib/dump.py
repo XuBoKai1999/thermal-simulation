@@ -17,7 +17,10 @@ UNITS = {
 }
 
 
-def write_dump(data, directory, fields, mesh_id, bounds, regions, timestep=0, time=0.0):
+def write_dump(
+    data, directory, fields, mesh_id, bounds, regions, timestep=0, time=0.0,
+    solver_dt=None, characteristic_cell_size=None,
+):
     if "cell_ID" not in fields:
         raise ValueError("cell_ID is required")
     unknown = [field for field in fields if field not in data]
@@ -29,6 +32,12 @@ def write_dump(data, directory, fields, mesh_id, bounds, regions, timestep=0, ti
         raise ValueError("Dump fields have inconsistent lengths")
     if any(not np.isfinite(np.asarray(data[field])).all() for field in fields):
         raise ValueError("Dump fields contain NaN or Inf")
+    for name, value in (
+        ("solver_dt", solver_dt),
+        ("characteristic_cell_size", characteristic_cell_size),
+    ):
+        if value is not None and (not np.isfinite(value) or value <= 0):
+            raise ValueError(f"{name} must be finite and positive")
 
     order = np.argsort(data["cell_ID"])
     directory = Path(directory)
@@ -37,16 +46,21 @@ def write_dump(data, directory, fields, mesh_id, bounds, regions, timestep=0, ti
     units = " ".join(f"{field}={UNITS[field]}" for field in fields if field in UNITS)
     lines = [
         "ITEM: FORMAT_VERSION",
-        "1",
+        "2",
         "ITEM: TIMESTEP",
         str(timestep),
         "ITEM: TIME",
         repr(float(time)),
+        "ITEM: SOLVER_DT",
+        "unknown" if solver_dt is None else repr(float(solver_dt)),
+        "ITEM: CHARACTERISTIC_CELL_SIZE",
+        ("unknown" if characteristic_cell_size is None
+         else repr(float(characteristic_cell_size))),
         "ITEM: MESH_ID",
         mesh_id,
         "ITEM: NUMBER OF CELLS",
         str(row_count),
-        "ITEM: BOUNDS",
+        "ITEM: BOX BOUNDS",
         *(f"{low:.16g} {high:.16g}" for low, high in bounds),
     ]
     if "region_ID" in fields:

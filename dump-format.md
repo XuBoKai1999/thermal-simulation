@@ -1,4 +1,4 @@
-# ADR Thermal Dump Format v1
+# ADR Thermal Dump Format v2
 
 本文件是 ADR Thermal Simulation dump 的唯一格式規格。格式仿照 LAMMPS custom dump：一個文字檔代表一個 timestep，header 描述快照，`FIELDS` 決定每列資料的欄位與順序。
 
@@ -35,16 +35,20 @@ dump = {
 
 ```text
 ITEM: FORMAT_VERSION
-1
+2
 ITEM: TIMESTEP
 0
 ITEM: TIME
 0.0
+ITEM: SOLVER_DT
+0.001
+ITEM: CHARACTERISTIC_CELL_SIZE
+0.0025
 ITEM: MESH_ID
 287b3fe991f40c0a2526069ce8487657652e2237323ebc118b28d6f83db9b89f
 ITEM: NUMBER OF CELLS
 2
-ITEM: BOUNDS
+ITEM: BOX BOUNDS
 0.0 0.1
 0.0 0.01
 0.0 0.01
@@ -64,25 +68,30 @@ Header 項目順序固定。
 
 | 項目 | 必要 | 定義 |
 |---|---:|---|
-| `FORMAT_VERSION` | 是 | 本規格為整數 `1` |
+| `FORMAT_VERSION` | 是 | 本規格為整數 `2` |
 | `TIMESTEP` | 是 | 非負整數求解步數；穩態為 `0` |
 | `TIME` | 是 | 物理時間，單位秒；穩態為 `0.0` |
+| `SOLVER_DT` | 是 | state對應的solver timestep，單位秒；未知時為`unknown` |
+| `CHARACTERISTIC_CELL_SIZE` | 是 | approximate cell scale，單位m；未知時為`unknown` |
 | `MESH_ID` | 是 | `mesh.py` 建立 mesh cache 時產生並記錄於 `build.json` 的 mesh ID |
 | `NUMBER OF CELLS` | 是 | `FIELDS` 後面的 cell 資料列數 |
-| `BOUNDS` | 是 | 三行 `min max`，順序為 x、y、z，單位 m |
+| `BOX BOUNDS` | 是 | actual mesh三行`xlo xhi`、`ylo yhi`、`zlo zhi`，單位m |
 | `REGIONS` | 條件式 | 選擇 `region_ID` 時必須存在；先寫數量，再寫 `ID name` |
 | `UNITS` | 是 | 列出所有有量綱 fields 的單位 |
 | `FIELDS` | 是 | 資料欄位名稱及每列的精確欄位順序 |
 
-對 transient：
+`TIMESTEP`是integer solver/frame index，`TIME`是stored state的physical time，
+`SOLVER_DT`是已知時與state相關的數值timestep。Reader不可只用
+`TIMESTEP * SOLVER_DT`推導physical time。
 
-```text
-TIME = TIMESTEP * dt
-```
+Unstructured mesh沒有true global `dx`。`CHARACTERISTIC_CELL_SIZE`定義為all-cell
+median `cell_measure^(1/topological_dimension)`；對3D tetrahedral mesh即
+$h_{\rm char}=\operatorname{median}_K(V_K^{1/3})$。
 
-時間只寫在 header，不在每列重複。
+Format v2使用`BOX BOUNDS`。Reader仍接受format-v1 `BOUNDS`，並將兩個metadata key
+互設alias。時間與mesh metadata只寫在header，不在每列重複。
 
-## 4. Fields v1
+## 4. Fields (unchanged from v1)
 
 | Field | 型別 | 單位 | 定義 |
 |---|---|---|---|

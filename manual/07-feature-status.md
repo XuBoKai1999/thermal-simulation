@@ -49,8 +49,10 @@
 ## Known limitations checklist
 
 目前不能在 `case.yaml` 中使用：prescribed heat flux/total heat、convection、radiation、
-volumetric heat generation、time-dependent BC、heat switch、anisotropic conductivity、任意
-coordinate/region initial field、general 3D zero-thickness contact 或 transient contact resistance。
+volumetric heat generation、time-dependent BC、generic heat-switch model、anisotropic
+conductivity、arbitrary coordinate-dependent/expression-based initial field、general 3D
+zero-thickness contact 或 transient contact resistance。Semantic constant `by_region` IC已支援；
+ADR01另有case-specific finite-leakage bulk proxy表示heat-switch OFF state。
 此外，沒有 automatic generic runner、NIST database → `case.yaml` integration、automatic
 external CAD/helper dependency tracking、topology-aware 3D postprocessor，且 MPI dump/cell-ID
 mapping 未實作。

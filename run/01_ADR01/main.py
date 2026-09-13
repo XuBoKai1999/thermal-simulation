@@ -94,7 +94,8 @@ def run(dt, end_time=0.05):
             derived["cell_data"], output_dir / "dump",
             ["cell_ID", "region_ID", "x", "y", "z", "T", "qx", "qy", "qz", "qmag"],
             manifest["mesh_id"], derived["bounds"], region_names,
-            timestep=step, time=time,
+            timestep=step, time=time, solver_dt=dt,
+            characteristic_cell_size=derived["characteristic_cell_size"],
         )
 
     result = {

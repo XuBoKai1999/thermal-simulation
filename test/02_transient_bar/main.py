@@ -79,7 +79,8 @@ def run(dx, dt, end_time, dump_times):
             raise RuntimeError("cell_ID mapping centroid verification failed")
         dump.write_dump(
             data, directory, dump_fields, manifest["mesh_id"], derived["bounds"],
-            regions, timestep=timestep, time=time,
+            regions, timestep=timestep, time=time, solver_dt=dt,
+            characteristic_cell_size=derived["characteristic_cell_size"],
         )
         return derived
 

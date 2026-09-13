@@ -19,11 +19,12 @@ def read_dump(path):
         if key.startswith("FIELDS "):
             fields = key.split()[1:]
             break
-        if key == "BOUNDS":
+        if key in ("BOUNDS", "BOX BOUNDS"):
             metadata[key] = np.array(
                 [[float(value) for value in lines[index + axis].split()]
                  for axis in range(3)]
             )
+            metadata["BOX BOUNDS" if key == "BOUNDS" else "BOUNDS"] = metadata[key]
             index += 3
         elif key == "REGIONS":
             count = int(lines[index])

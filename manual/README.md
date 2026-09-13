@@ -1,9 +1,10 @@
 # thermal-simulation 使用者手冊
 
 本手冊是 thermal-simulation 的 **repository operation manual + agent handoff manual**。
-它以目前 source 與 Test 01–07 為準，不是未來設計藍圖，也不是熱傳教科書。完全沒有
-專案前文的 Agent 應先讀本頁，再依下列順序閱讀整個 `manual/`；開始工作不需要先讀
-根目錄的舊 architecture 或 construction notes。
+它以目前 source 與 Test 01–07 為準，不是未來設計藍圖，也不是熱傳教科書。一般
+framework 工作先用本頁索引，再按需閱讀相關章節。若 case 已有 `AGENTS.md`、handoff
+或 execution roadmap，優先遵守其 handoff-first / inspect-on-demand 流程，不必重讀整個
+`manual/`。
 
 ## 30 秒理解 framework
 

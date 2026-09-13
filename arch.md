@@ -189,6 +189,7 @@ output/dump/<timestep>.dump
   = cell_ID / region_ID
   = sampling x y z
   = T / qx / qy / qz / qmag
+  = physical time / solver dt / actual mesh bounds / characteristic cell size
 ```
 
 dump 不重複保存 topology。dump 中的 `x y z` 只是 sampling location，例如 cell centroid，不能描述 cell 形狀。
@@ -231,7 +232,8 @@ ITEM: FIELDS cell_ID region_ID x y z T qx qy qz qmag
 - `T` 是溫度，`qx qy qz` 是熱流向量分量，`qmag` 是熱流大小。
 - 欄位順序由 `main.py` 指定；`analyze.py` 準備物理資料，`dump.py` 只寫出指定欄位。
 - 穩態只寫一份 `0.dump`；暫態依輸出頻率寫 `{timestep}.dump`。
-- timestep 是整數步數；物理時間由 `time = timestep * dt` 得到並寫入 header。
+- timestep是整數步數；physical time與solver dt分別寫入header，不要求reader自行相乘推導。
+- actual mesh `BOX BOUNDS`與approximate `characteristic_cell_size`使dump可獨立判讀空間尺度；後者不是global `dx`。
 - dump 目錄、輸出頻率與欄位由各 run/test 的 `main.py` 設定，不放入 physics `case.yaml`。
 
 第一版只支援 cell dump。座標為 cell centroid，`T` 在 centroid 評估，熱流由 `analyze.py` 在 cell 上計算。nodes 等出現明確需求後再加入。

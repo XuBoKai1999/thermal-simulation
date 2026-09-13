@@ -96,6 +96,7 @@ for dx in mesh_sizes:
         data, case_dir / "output" / label(dx) / "dump", fields,
         manifest["mesh_id"], ((0, geometry.LENGTH), (0, 0), (0, 0)),
         {1: "hot_half", 2: "cold_half"},
+        characteristic_cell_size=dx,
     )
     rows.append((
         dx, len(ids), result["T_left"], result["T_right"], jump, mean_q,
@@ -164,6 +165,7 @@ for dx in mesh_sizes:
             ((0, geometry.LENGTH), (0, 0), (0, 0)),
             {1: "hot_half", 2: "cold_half"},
             timestep=round(slice_time / dt_i), time=slice_time,
+            solver_dt=dt_i, characteristic_cell_size=dx,
         )
         slice_rows.append((dx, dt_i, len(ids_i)))
 with (output / "slice_0p125" / "runs.csv").open(
@@ -205,7 +207,8 @@ def write_transient(values, timestep, time):
     dump.write_dump(
         data, directory, fields, manifest["mesh_id"],
         ((0, geometry.LENGTH), (0, 0), (0, 0)), {1: "hot_half", 2: "cold_half"},
-        timestep=timestep, time=time,
+        timestep=timestep, time=time, solver_dt=dt,
+        characteristic_cell_size=dx,
     )
     left_T, right_T = values[len(x_left) - 1], values[len(x_left)]
     transient_rows.append((time, left_T, right_T, left_T - right_T,

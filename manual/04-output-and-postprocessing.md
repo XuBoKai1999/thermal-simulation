@@ -14,6 +14,8 @@ derived = analyze.analyze(
 
 - `cell_data`：`region_ID`, centroid `x/y/z`, `T`, `qx/qy/qz`, `qmag`。
 - `bounds`：3×2 array，domain x/y/z min/max，單位 m。
+- `characteristic_cell_size`：all-cell median
+  `cell_measure^(1/topological_dimension)`；3D tetrahedra即median $V_K^{1/3}$。
 - `summary`：全域 `T_min`, `T_max`, volume-average `T_avg`, volume-average vector
   `q_avg`、每個volume region的`T_min_K/T_max_K/T_avg_K`，以及所選surface的
   `Q_dot_<semantic_name>`。
@@ -40,7 +42,7 @@ constant multi-region/contact case 的 $k$ 是依 cell tags 建立的 DG0 conduc
 
 `summary.csv` 不是 library writer；兩個案例由自己的 `main.py` 用 `csv.writer` 寫出。
 
-## Dump v1
+## Dump v2
 
 `dump.write_dump` 一個 timestep 寫一個 UTF-8、LF、whitespace-separated text file。header
 實際順序為：
@@ -49,9 +51,11 @@ constant multi-region/contact case 的 $k$ 是依 cell tags 建立的 DG0 conduc
 ITEM: FORMAT_VERSION
 ITEM: TIMESTEP
 ITEM: TIME
+ITEM: SOLVER_DT
+ITEM: CHARACTERISTIC_CELL_SIZE
 ITEM: MESH_ID
 ITEM: NUMBER OF CELLS
-ITEM: BOUNDS
+ITEM: BOX BOUNDS
 ITEM: REGIONS          # fields 包含 region_ID 時
 ITEM: UNITS
 ITEM: FIELDS ...
@@ -59,6 +63,10 @@ ITEM: FIELDS ...
 
 `REGIONS` 是 conditional；其餘均由現行 writer 寫出。filename 是
 `<timestep>.dump`。穩態預設 timestep 0/time 0.0；暫態 caller 明確傳入。
+`BOX BOUNDS`來自actual mesh coordinates。`CHARACTERISTIC_CELL_SIZE`是rough scale，
+不是global `dx`；定義為all-cell median `cell_measure^(1/topological_dimension)`，對3D
+tetrahedra即median $V_K^{1/3}$。`SOLVER_DT`在caller知道時記錄數值，否則為`unknown`。
+Reader仍接受v1的`BOUNDS`，並為新舊名稱提供metadata alias。
 
 | field | type | unit | meaning / sampling |
 |---|---|---|---|

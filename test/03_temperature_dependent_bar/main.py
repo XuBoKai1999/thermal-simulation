@@ -76,6 +76,7 @@ dump_path = dump.write_dump(
     manifest["mesh_id"],
     derived["bounds"],
     regions,
+    characteristic_cell_size=derived["characteristic_cell_size"],
 )
 with (case_dir / "output" / "summary.csv").open(
     "w", encoding="utf-8", newline=""

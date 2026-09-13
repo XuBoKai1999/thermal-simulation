@@ -18,7 +18,7 @@ At the beginning of a fresh Codex session, read only:
 1. the latest relevant handoff in `chat/`;
 2. `run/01_ADR01/AGENTS.md`;
 3. `run/01_ADR01/steps.md`;
-4. this file: `run/01_ADR01/steps2.md`;
+4. this file: `steps2.md`;
 5. the specific source/manual/test files needed for the current numbered step.
 
 Do not recursively read all of `lib/`, `manual/`, `run/`, tests, papers, or git history unless a specific blocker requires it.
@@ -96,10 +96,14 @@ Make sure active docs reflect that:
 - bounded nonlinear solving exists as an available numerical option, but is not to be treated as physical validation;
 - heat-switch finite-leakage proxy is implemented, not pending;
 - ordinary interfaces currently use perfect thermal contact;
-- finite contact resistance is **future work, not implemented**;
+- ADR01 Baseline v1 ordinary contacts remain perfect;
+- steady mesh-resolved thin-layer resistance is supported, while the 1D
+  zero-thickness path is reference-only;
+- generic 3D zero-thickness and transient interface contact resistance remain
+  future work;
 - superconducting magnet is omitted from current Baseline v1 simplification; a future extension may add a 4 K-anchored magnet and optional magnet heat load.
 
-For future contact resistance, document only:
+For future ADR01 interface contact resistance, document:
 
 > Prefer a future interface-law / contact-conductance implementation over inserting many ultra-thin volumetric layers, unless a later study specifically requires thin-layer proxies.
 
@@ -116,6 +120,8 @@ Update `chat/`, report modified files, then STOP.
 ---
 
 # Step 2 — Improve generic dump metadata
+
+STATUS: COMPLETE
 
 ## Goal
 
@@ -882,6 +888,8 @@ This roadmap is complete when:
 7. quadrature, timestep, and mesh sensitivity are quantified;
 8. a physically meaningful visualization time horizon is selected;
 9. linear-time and optional log-time visualization products are generated;
-10. contact resistance, magnet, and other second-stage physics are recorded as future work rather than prematurely implemented.
+10. generic 3D/transient interface contact resistance, magnet, and other
+    second-stage ADR01 physics are recorded as future work without hiding the
+    existing steady thin-layer and 1D reference contact paths.
 
 At no point should Codex automatically continue to the next numbered step without an explicit `next` from the user.
