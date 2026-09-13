@@ -1,0 +1,148 @@
+{
+  "dt_s": 0.0002,
+  "end_s": 0.0004,
+  "output_every_s": 0.0004,
+  "output_steps": [
+    0,
+    2
+  ],
+  "steps": 2,
+  "total_newton_iterations": 9,
+  "heat_flow_sign": "positive toward decreasing z (hot side toward cold side)",
+  "observations": [
+    {
+      "time_s": 0.0,
+      "T_min": 1.0,
+      "T_max": 4.0,
+      "T_avg": 3.5106221432565783,
+      "q_avg": [
+        -123.81318716004773,
+        -41.17276490654665,
+        2102.9053270222944
+      ],
+      "regions": {
+        "hot_plate": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "cylinder_1": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "heat_switch": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "cylinder_2": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "ggg": {
+          "T_min_K": 1.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 1.0935592692383362
+        },
+        "cylinder_3": {
+          "T_min_K": 1.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 3.9104331909219208
+        },
+        "cold_stage": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "sample": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "support_1": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "support_2": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        }
+      },
+      "switch_heat_flow_W": 0.0,
+      "ggg_to_cylinder_3_heat_flow_W": -2.5797135953640087,
+      "support_1_heat_leak_W": 0.0,
+      "support_2_heat_leak_W": 0.0
+    },
+    {
+      "time_s": 0.0004,
+      "T_min": 1.0,
+      "T_max": 4.0,
+      "T_avg": 3.3817718373383348,
+      "q_avg": [
+        -360.79719451098833,
+        2.510373338954712,
+        2189.761377204208
+      ],
+      "regions": {
+        "hot_plate": {
+          "T_min_K": 4.0,
+          "T_max_K": 4.0,
+          "T_avg_K": 4.0
+        },
+        "cylinder_1": {
+          "T_min_K": 3.9999171245977254,
+          "T_max_K": 4.0,
+          "T_avg_K": 3.9999693597612835
+        },
+        "heat_switch": {
+          "T_min_K": 3.079795869993806,
+          "T_max_K": 3.9999191812975288,
+          "T_avg_K": 3.5464749268448994
+        },
+        "cylinder_2": {
+          "T_min_K": 2.873778937972398,
+          "T_max_K": 3.0808613891929775,
+          "T_avg_K": 3.0442353890174676
+        },
+        "ggg": {
+          "T_min_K": 1.0,
+          "T_max_K": 3.0607744960927894,
+          "T_avg_K": 1.0886627922623946
+        },
+        "cylinder_3": {
+          "T_min_K": 1.083810863592795,
+          "T_max_K": 3.859874878742824,
+          "T_avg_K": 2.8406769166498718
+        },
+        "cold_stage": {
+          "T_min_K": 3.839518932467816,
+          "T_max_K": 3.9327238401339377,
+          "T_avg_K": 3.909784297274887
+        },
+        "sample": {
+          "T_min_K": 3.9176007374018416,
+          "T_max_K": 3.931389363879937,
+          "T_avg_K": 3.929063841446555
+        },
+        "support_1": {
+          "T_min_K": 3.913353512507046,
+          "T_max_K": 4.0,
+          "T_avg_K": 3.9994486650215193
+        },
+        "support_2": {
+          "T_min_K": 3.9135130163940994,
+          "T_max_K": 4.0,
+          "T_avg_K": 3.9994269879702182
+        }
+      },
+      "switch_heat_flow_W": 0.007774354372323746,
+      "ggg_to_cylinder_3_heat_flow_W": -0.34805377783231756,
+      "support_1_heat_leak_W": -2.0828518321607874e-05,
+      "support_2_heat_leak_W": 9.065103804120041e-05
+    }
+  ]
+}

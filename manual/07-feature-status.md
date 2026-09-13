@@ -23,7 +23,7 @@
 | Analysis | implemented | global T/q + caller-selected tagged-surface total heat |
 | Region statistics | implemented | per-volume-region T min/max/volume average |
 | Heat flux calculation | implemented | cell $-k\nabla T$; DG0 IC special-cased zero |
-| Dump writing/reading | implemented | v1 cell dump; serial ID mapping |
+| Dump writing/reading | implemented | v2 cell dump with v1 reader compatibility; serial ID mapping |
 | Plotting/postprocessing | partial | x scatter CLI; low-level pcolormesh helper |
 | Validation utilities | examples only | Test 01 inline；Test 02 與 Test 05 case-specific validators |
 | MPI | partial | assembly/solve aware; dump mapping serial only |

@@ -72,6 +72,8 @@ Transient cases may set `output.every_time_s` independently from `time.dt_s`.
 `case.output_timesteps` maps each uniform requested physical time to the nearest
 actual solver step, resolves half-step ties toward the later step, and removes
 duplicates. Dumps record the actual step time; the solver does not interpolate.
+Case runners may explicitly write the initial state as timestep 0 before the first
+solve; this does not change the positive-time scheduler.
 
 | field | type | unit | meaning / sampling |
 |---|---|---|---|

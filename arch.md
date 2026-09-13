@@ -236,6 +236,8 @@ ITEM: FIELDS cell_ID region_ID x y z T qx qy qz qmag
 - actual mesh `BOX BOUNDS`與approximate `characteristic_cell_size`使dump可獨立判讀空間尺度；後者不是global `dx`。
 - dump目錄與欄位仍由各run/test的`main.py`設定；transient uniform physical-time cadence
   可由`output.every_time_s`設定，與solver `time.dt_s`分離。
+- ADR01在第一次solve前以相同pipeline寫initial `0.dump`；開始同一`dt_*` run時只清除
+  該run既有的`dump/*.dump`與`summary.json`，不影響其他dt或mesh/input資料。
 
 第一版只支援 cell dump。座標為 cell centroid，`T` 在 centroid 評估，熱流由 `analyze.py` 在 cell 上計算。nodes 等出現明確需求後再加入。
 

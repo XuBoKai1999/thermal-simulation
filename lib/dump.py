@@ -1,4 +1,4 @@
-"""Serialize prepared cell fields in ADR dump format v1."""
+"""Serialize prepared cell fields in ADR dump format v2."""
 
 from pathlib import Path
 

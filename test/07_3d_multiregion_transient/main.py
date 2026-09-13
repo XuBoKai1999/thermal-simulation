@@ -81,12 +81,21 @@ with tempfile.TemporaryDirectory() as directory:
         characteristic_cell_size=derived["characteristic_cell_size"],
     )
     metadata, dumped = dump_reader.read_dump(path)
+    required_metadata = {
+        "FORMAT_VERSION", "TIMESTEP", "TIME", "SOLVER_DT",
+        "CHARACTERISTIC_CELL_SIZE", "MESH_ID", "NUMBER OF CELLS", "BOX BOUNDS",
+    }
+    if not required_metadata <= metadata.keys():
+        raise AssertionError("Dump v2 metadata is incomplete")
     if metadata["MESH_ID"] != manifest["mesh_id"] or len(dumped["T"]) != len(data["T"]):
         raise AssertionError("Dump round trip failed")
     if metadata["FORMAT_VERSION"] != "2":
         raise AssertionError("Dump format version is not 2")
     if float(metadata["SOLVER_DT"]) != case_data["time"]["dt_s"]:
         raise AssertionError("Dump solver dt is incorrect")
+    if (int(metadata["TIMESTEP"]) != 5 or float(metadata["TIME"]) != 5.0
+            or int(metadata["NUMBER OF CELLS"]) != len(data["T"])):
+        raise AssertionError("Dump step/time/cell-count metadata is incorrect")
     if not np.allclose(metadata["BOX BOUNDS"], derived["bounds"]):
         raise AssertionError("Dump box bounds are incorrect")
     if not np.isclose(

@@ -24,3 +24,6 @@ studies continue under the repository-level `steps2.md` roadmap.
 The visualization smoke configuration uses the validated solver
 `dt_s=0.00025 s` with independent uniform output every `0.0025 s`; requested
 times map to the nearest actual solver step without temporal interpolation.
+Each run writes the initial field as `0.dump` before solving. Before regeneration,
+the runner removes only old `dump/*.dump` and `summary.json` in that run's own
+`output/dt_<dt>/` directory so cadence changes cannot mix stale snapshots.

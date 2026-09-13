@@ -117,7 +117,7 @@ Format v2使用`BOX BOUNDS`。Reader仍接受format-v1 `BOUNDS`，並將兩個me
 - `T` 在 centroid 評估。
 - `q*` 是該 cell 的熱流密度。
 - `region_ID` 是 cell 所屬 semantic volume tag。
-- v1 只支援此模式；nodes 等明確需求出現後再另行規格化。
+- Current format只支援此模式；nodes等明確需求出現後再另行規格化。
 
 `cell` 是 finite-element mesh cell。其實際 element type、vertex coordinates 與 connectivity 由對應的 `build/mesh.msh` 定義；dump 本身不假設 cell 是立方體、四面體或其他特定形狀。dump 的 `x y z` 僅是 sampling location，不能用來重建 cell 形狀。
 
@@ -126,7 +126,7 @@ Format v2使用`BOX BOUNDS`。Reader仍接受format-v1 `BOUNDS`，並將兩個me
 - 同一 `MESH_ID` 下，`cell_ID`、座標和 `region_ID` 在所有 timestep 中不得改變。
 - 每個 dump 的資料列依 `cell_ID` 升冪排序。
 - mesh 改變後可以重新編號。
-- v1 不要求改變 MPI process 數後仍產生完全相同的 ID；此需求等真正需要平行 dump 重現性時再加入。
+- Current format不要求改變MPI process數後仍產生完全相同的ID；此需求等真正需要平行dump重現性時再加入。
 
 `MESH_ID` 的最低生命周期要求：
 
@@ -172,4 +172,4 @@ postprocess/plot_dump.py
 
 模擬流程不自動畫圖。修改配色、視角或選擇 timestep 時，不應重新執行 FEM 求解。
 
-XDMF/HDF5 可作為需要有限元素拓撲或 ParaView 互動檢查時的選配輸出，不屬於 dump v1 必要格式。
+XDMF/HDF5可作為需要有限元素拓撲或ParaView互動檢查時的選配輸出，不屬於dump v2必要格式。
