@@ -8,3 +8,6 @@ time interval, and timestep. Each validation result directory retains its own
 `report.md`, CSV/JSON summaries, and comparison plot. Large dump/VTK files and
 binary checkpoints are reproducible generated artifacts; repository retention
 should be deliberate rather than automatic.
+
+Run summaries and P1 checkpoints use the lightweight `--summary-every` cadence;
+`dump/` and `visualization/` use the independent heavy `--output-every` cadence.

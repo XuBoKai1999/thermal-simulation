@@ -63,7 +63,10 @@ def internal_axial_flow(temperature, mesh_data, case_data, tags, surface):
     return mesh_data.mesh.comm.allreduce(local, op=MPI.SUM)
 
 
-def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segment"):
+def run(
+    dt, end_time=0.05, output_every=None, restart_from=None, run_type="segment",
+    summary_every=None,
+):
     started = perf_counter()
     case_data = deepcopy(case.load_case(CASE_DIR / "case.yaml"))
     case_data["time"].update(dt_s=dt, end_s=end_time)
@@ -71,6 +74,10 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
         if not np.isfinite(output_every) or output_every <= 0:
             raise ValueError("output interval must be finite and positive")
         case_data["output"]["every_time_s"] = output_every
+    if summary_every is None:
+        summary_every = dt
+    if not np.isfinite(summary_every) or summary_every <= 0:
+        raise ValueError("summary interval must be finite and positive")
     mesh_path = mesh.ensure_mesh(
         CASE_DIR / "build", geometry.__file__, geometry.build_geometry
     )
@@ -97,6 +104,9 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
     schedule_case = deepcopy(case_data)
     schedule_case["time"]["end_s"] = duration
     wanted_steps = set(case.output_timesteps(schedule_case))
+    summary_case = deepcopy(schedule_case)
+    summary_case["output"]["every_time_s"] = summary_every
+    summary_steps = set(case.output_timesteps(summary_case)) | wanted_steps
     output_name = (
         f"dt_{dt:.8g}" if restart_from is None else
         f"{run_type}_t_{start_time:.8g}_to_{end_time:.8g}_dt_{dt:.8g}"
@@ -123,7 +133,7 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
 
     vtk = io.VTKFile(mesh_data.mesh.comm, visualization_dir / "fields.pvd", "w")
 
-    def write_snapshot(state, step, time):
+    def summarize(state, time, iterations):
         state.name = "temperature"
         derived = analyze.analyze(
             state, mesh_data, case_data, tags, heatflow_surfaces=()
@@ -141,12 +151,18 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
         summary["support_2_heat_leak_W"] = internal_axial_flow(
             state, mesh_data, case_data, tags, "edge_support_2_cold_stage"
         )
-        observations.append({"time_s": time, **summary})
+        summary.update(
+            time_s=time, newton_iterations=iterations,
+            cumulative_newton_iterations=total_iterations,
+        )
         if summary["T_min"] < 1.0 - 1.0e-10 or summary["T_max"] > 4.0 + 1.0e-10:
             raise RuntimeError(
                 f"Temperature range [{summary['T_min']}, {summary['T_max']}] K "
                 f"violates ADR01 Baseline v1 expectation at t={time} s"
             )
+        return derived, summary
+
+    def write_heavy(derived, step, time):
         derived["cell_data"]["cell_ID"] = cell_ids
         dump.write_dump(
             derived["cell_data"], dump_dir,
@@ -159,12 +175,14 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
         vtk.write_function(
             [fields["temperature"], fields["heat_flux"], fields["region_ID"]], time
         )
-        save_checkpoint(
-            output_dir / f"checkpoint_t_{time:.8g}.npz",
-            state, manifest["mesh_id"], time,
-        )
 
-    write_snapshot(previous, 0, start_time)
+    derived, summary = summarize(previous, start_time, 0)
+    observations.append(summary)
+    save_checkpoint(
+        output_dir / f"checkpoint_t_{start_time:.8g}.npz",
+        previous, manifest["mesh_id"], start_time,
+    )
+    write_heavy(derived, 0, start_time)
 
     for step in range(1, step_count + 1):
         temperature, iterations = solve.solve_nonlinear(
@@ -173,10 +191,17 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
         total_iterations += iterations
         previous.x.array[:] = temperature.x.array
         previous.x.scatter_forward()
-        if step not in wanted_steps:
+        if step not in summary_steps:
             continue
         time = start_time + step * dt
-        write_snapshot(temperature, step, time)
+        derived, summary = summarize(temperature, time, iterations)
+        observations.append(summary)
+        save_checkpoint(
+            output_dir / f"checkpoint_t_{time:.8g}.npz",
+            temperature, manifest["mesh_id"], time,
+        )
+        if step in wanted_steps:
+            write_heavy(derived, step, time)
     vtk.close()
 
     checkpoint_path = output_dir / f"checkpoint_t_{end_time:.8g}.npz"
@@ -190,9 +215,13 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segme
         "restart_from": None if restart_from is None else str(restart_from),
         "checkpoint": str(checkpoint_path),
         "output_every_s": case_data.get("output", {}).get("every_time_s"),
+        "summary_every_s": summary_every,
         "output_steps": [0, *sorted(wanted_steps)],
         "output_times_s": [
             start_time, *(start_time + step * dt for step in sorted(wanted_steps))
+        ],
+        "summary_times_s": [
+            start_time, *(start_time + step * dt for step in sorted(summary_steps))
         ],
         "steps": step_count,
         "total_newton_iterations": total_iterations,
@@ -213,9 +242,13 @@ if __name__ == "__main__":
     parser.add_argument("--dt", type=float, default=5e-4)
     parser.add_argument("--end", type=float, default=0.05)
     parser.add_argument("--output-every", type=float)
+    parser.add_argument("--summary-every", type=float)
     parser.add_argument("--restart", type=Path)
     parser.add_argument(
         "--run-type", choices=("segment", "validation", "audit"), default="segment"
     )
     args = parser.parse_args()
-    run(args.dt, args.end, args.output_every, args.restart, args.run_type)
+    run(
+        args.dt, args.end, args.output_every, args.restart, args.run_type,
+        args.summary_every,
+    )

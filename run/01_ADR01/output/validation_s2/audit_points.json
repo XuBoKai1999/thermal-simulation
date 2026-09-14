@@ -1,0 +1,63 @@
+{
+  "seed": 20260914,
+  "points": [
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 0.5,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_0.5.npz",
+      "reasons": [
+        "segment_start"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 4.9,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_4.9.npz",
+      "reasons": [
+        "near_segment_end"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 0.9,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_0.9.npz",
+      "reasons": [
+        "max_abs_sample_slope"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 0.6,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_0.6.npz",
+      "reasons": [
+        "max_abs_sample_curvature"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 5.0,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_5.npz",
+      "reasons": [
+        "nearest_threshold_1.5_K",
+        "nearest_threshold_2_K",
+        "nearest_threshold_3_K"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 3.2,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_3.2.npz",
+      "reasons": [
+        "random_seed_20260914"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/summary.json",
+      "time_s": 4.5,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_4.5.npz",
+      "reasons": [
+        "random_seed_20260914"
+      ]
+    }
+  ]
+}

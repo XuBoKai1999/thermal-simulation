@@ -1,0 +1,153 @@
+{
+  "coarse": "run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1",
+  "fine": "run/01_ADR01/output/validation_t_0.5_to_5_dt_0.05",
+  "interval_s": [
+    0.5,
+    5.0
+  ],
+  "dt_s": [
+    0.1,
+    0.05
+  ],
+  "common_times_s": [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0,
+    1.1,
+    1.2,
+    1.3,
+    1.4,
+    1.5,
+    1.6,
+    1.7,
+    1.8,
+    1.9,
+    2.0,
+    2.1,
+    2.2,
+    2.3,
+    2.4,
+    2.5,
+    2.6,
+    2.7,
+    2.8,
+    2.9,
+    3.0,
+    3.1,
+    3.2,
+    3.3,
+    3.4,
+    3.5,
+    3.6,
+    3.7,
+    3.8,
+    3.9,
+    4.0,
+    4.1,
+    4.2,
+    4.3,
+    4.4,
+    4.5,
+    4.6,
+    4.7,
+    4.8,
+    4.9,
+    5.0
+  ],
+  "endpoint_full_P1": {
+    "dofs": 2506,
+    "max_absolute_difference_K": 0.0014776034006622751,
+    "l2_difference_K": 0.016361039230717835
+  },
+  "metric_errors": [
+    {
+      "metric": "ggg_Tavg_K",
+      "max_absolute_difference": 6.64699153563042e-06,
+      "relative_to_fine_max": 6.023045113345276e-06,
+      "gate": "informational",
+      "pass": null
+    },
+    {
+      "metric": "cold_stage_Tavg_K",
+      "max_absolute_difference": 0.00037044187016510577,
+      "relative_to_fine_max": 0.000335820684447135,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "sample_Tavg_K",
+      "max_absolute_difference": 0.0003704309522567506,
+      "relative_to_fine_max": 0.0003358101230494746,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "support_1_W",
+      "max_absolute_difference": 1.2892340700254072e-07,
+      "relative_to_fine_max": 0.004627423165092363,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "support_2_W",
+      "max_absolute_difference": 1.377905737086559e-07,
+      "relative_to_fine_max": 0.0045976802947904245,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "switch_W",
+      "max_absolute_difference": 4.337380876576029e-08,
+      "relative_to_fine_max": 0.00023557285808286263,
+      "gate": "acceptance",
+      "pass": true
+    }
+  ],
+  "failure_times": {
+    "1.5": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    },
+    "2.0": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    },
+    "3.0": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    }
+  },
+  "sanity": {
+    "coarse": {
+      "finite": true,
+      "temperature_range_K": [
+        1.066629758911247,
+        4.0
+      ],
+      "range_pass": true
+    },
+    "fine": {
+      "finite": true,
+      "temperature_range_K": [
+        1.066629758911247,
+        4.0
+      ],
+      "range_pass": true
+    }
+  },
+  "newton_iterations": [
+    135,
+    235
+  ],
+  "wall_time_s": [
+    158.875185335,
+    309.06279620600003
+  ],
+  "accepted": true
+}

@@ -48,3 +48,8 @@ segment|validation|audit`. Loading rejects a mismatched mesh or
 incompatible/non-finite state. Checkpoints are currently serial-only solver data,
 not visualization files. See [`segmented-workflow.md`](segmented-workflow.md) for
 the piecewise production, convergence, spot-audit, and failure-time procedure.
+
+Use `--summary-every` for lightweight scalar diagnostics and restart checkpoints;
+it defaults to every solver step. `--output-every` independently controls heavy
+dump/VTK output, so long runs can retain time-resolved failure/audit data without
+writing full fields every step.

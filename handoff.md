@@ -94,6 +94,21 @@ The accepted endpoint is
 `run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.5.npz`.
 S2–S4 remain unvalidated candidates; no 420-second run started.
 
+Before S2, workflow cadence was corrected: `--summary-every` now independently
+controls lightweight scalar observations and P1 checkpoints (default every
+solver step), while `--output-every` controls only dump/VTK. Audit curvature uses
+signed slopes, random points exclude endpoints, and GGG is explicitly an
+informational metric. The cadence regression and expanded self-test pass.
+
+S2 (`0.5→5 s`) is accepted: dt 0.1 versus 0.05 s differed by 0.0003704 K for
+cold-stage/sample averages, 0.460–0.463% for support flows, and 0.0236% for
+switch flow. Endpoint full-P1 max/L2 differences were 0.001478/0.016361 K.
+Both runs passed finite/range sanity checks and locate the sample minimum at
+`t=0.6 s` near 1.0715–1.0717 K. The candidate stores 46 scalar/checkpoint states
+but only 10 heavy PVD frames, demonstrating cadence separation. Accepted endpoint:
+`run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_5.npz`.
+S3/S4 remain unvalidated and no 420-second run has started.
+
 Split-run trajectory equivalence is now verified. A continuous `0→0.10 s` run
 and a `0→0.05 s` plus checkpoint restart `0.05→0.10 s` run both used
 `dt=0.00025 s`. At `t=0.10 s`, all 2506 P1 values were bitwise identical
@@ -106,6 +121,6 @@ initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: when requested, validate S2 (`0.5→5 s`) using dt 0.1 versus
-0.05 s from the accepted S1 endpoint. The pre-existing `steps2.md` Step 6 remains
+Next exact action: when requested, validate S3 (`5→50 s`) using dt 0.5 versus
+0.25 s from the accepted S2 endpoint. The pre-existing `steps2.md` Step 6 remains
 the next unrelated roadmap implementation step.

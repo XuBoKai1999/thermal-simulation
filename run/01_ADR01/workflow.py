@@ -83,13 +83,10 @@ def compare(coarse_dir, fine_dir, output_dir, thresholds):
                 time, name, coarse_value, fine_value, difference,
             ])
         max_absolute = float(differences.max())
-        if name in TEMPERATURES:
-            scale = float(np.max(np.abs(fine_values)))
-        else:
-            scale = float(np.max(np.abs(fine_values)))
+        scale = float(np.max(np.abs(fine_values)))
         relative = max_absolute / scale if scale else None
         passed = (
-            True if name == "ggg_Tavg_K" else
+            None if name == "ggg_Tavg_K" else
             (max_absolute < 0.01 or relative < 0.01) if name in TEMPERATURES else
             relative < 0.05
         )
@@ -97,7 +94,8 @@ def compare(coarse_dir, fine_dir, output_dir, thresholds):
             "metric": name,
             "max_absolute_difference": max_absolute,
             "relative_to_fine_max": relative,
-            "pass": bool(passed),
+            "gate": "informational" if passed is None else "acceptance",
+            "pass": passed,
         })
 
     coarse_vector = coarse_checkpoint["temperature"]
@@ -151,7 +149,7 @@ def compare(coarse_dir, fine_dir, output_dir, thresholds):
         "wall_time_s": [coarse.get("wall_time_s"), fine.get("wall_time_s")],
     }
     result["accepted"] = bool(
-        all(row["pass"] for row in errors)
+        all(row["pass"] is not False for row in errors)
         and all(item["finite"] and item["range_pass"]
                 for item in result["sanity"].values())
     )
@@ -190,13 +188,36 @@ def compare(coarse_dir, fine_dir, output_dir, thresholds):
         "| Metric | Max absolute difference | Relative to finer max | Pass |",
         "|---|---:|---:|---:|",
         *(f"| {row['metric']} | {row['max_absolute_difference']:.8g} | "
-          f"{row['relative_to_fine_max']:.3%} | {row['pass']} |" for row in errors),
+          f"{row['relative_to_fine_max']:.3%} | "
+          f"{row['pass'] if row['pass'] is not None else 'informational'} |"
+          for row in errors),
         "",
         f"Endpoint full P1: max `{result['endpoint_full_P1']['max_absolute_difference_K']:.8g} K`, "
         f"L2 `{result['endpoint_full_P1']['l2_difference_K']:.8g} K`.",
     ]
     (output_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return result
+
+
+def audit_candidates(rows, thresholds, rng, random_count, seed):
+    times = np.array([row["time_s"] for row in rows])
+    sample = np.array([TEMPERATURES["sample_Tavg_K"](row) for row in rows])
+    candidates = [(0, "segment_start")]
+    if len(rows) > 2:
+        candidates.append((len(rows) - 2, "near_segment_end"))
+    slopes = np.diff(sample) / np.diff(times)
+    candidates.append((int(np.argmax(np.abs(slopes))), "max_abs_sample_slope"))
+    if len(rows) > 2:
+        curvature = np.abs(np.diff(slopes) / np.diff(times[:-1]))
+        candidates.append((int(np.argmax(curvature)) + 1,
+                           "max_abs_sample_curvature"))
+    for threshold in thresholds:
+        candidates.append((int(np.argmin(np.abs(sample - threshold))),
+                           f"nearest_threshold_{threshold:g}_K"))
+    interior = list(range(1, len(rows) - 1))
+    for index in rng.sample(interior, min(random_count, len(interior))):
+        candidates.append((index, f"random_seed_{seed}"))
+    return candidates
 
 
 def select_audits(summary_paths, output, seed, random_count, thresholds):
@@ -208,22 +229,7 @@ def select_audits(summary_paths, output, seed, random_count, thresholds):
         if len(rows) < 2:
             raise ValueError(f"{summary_path} needs at least two observations")
         times = np.array([row["time_s"] for row in rows])
-        sample = np.array([TEMPERATURES["sample_Tavg_K"](row) for row in rows])
-        candidates = [(0, "segment_start")]
-        if len(rows) > 2:
-            candidates.append((len(rows) - 2, "near_segment_end"))
-        slopes = np.abs(np.diff(sample) / np.diff(times))
-        candidates.append((int(np.argmax(slopes)), "max_abs_sample_slope"))
-        if len(rows) > 2:
-            curvature = np.abs(np.diff(slopes) / np.diff(times[:-1]))
-            candidates.append((int(np.argmax(curvature)) + 1,
-                               "max_abs_sample_curvature"))
-        for threshold in thresholds:
-            candidates.append((int(np.argmin(np.abs(sample - threshold))),
-                               f"nearest_threshold_{threshold:g}_K"))
-        interior = list(range(max(1, len(rows) - 1)))
-        for index in rng.sample(interior, min(random_count, len(interior))):
-            candidates.append((index, f"random_seed_{seed}"))
+        candidates = audit_candidates(rows, thresholds, rng, random_count, seed)
         for index, reason in candidates:
             time = float(times[index])
             key = (str(summary_path), time)
@@ -249,6 +255,18 @@ def self_test():
     ]
     assert failure_time(rows, 1.5) == 2.0
     assert failure_time(rows, 3.0) is None
+    samples = [0.0, 3.0, 4.0, 2.0]
+    audit_rows = [
+        {"time_s": float(index),
+         "regions": {"sample": {"T_avg_K": value}}}
+        for index, value in enumerate(samples)
+    ]
+    candidates = audit_candidates(
+        audit_rows, (), random.Random(7), 2, 7
+    )
+    assert (2, "max_abs_sample_curvature") in candidates
+    assert all(index not in (0, 3) for index, reason in candidates
+               if reason.startswith("random_seed_"))
     print("workflow self-test: PASS")
 
 
