@@ -72,6 +72,13 @@ restart to `t=0.25 s` passed, produced times `0.05/0.15/0.25 s`, and its initial
 GGG/cold-stage/sample averages and three heat flows exactly matched the source
 run. No 5-second branch comparison or 420-second run has started.
 
+Split-run trajectory equivalence is now verified. A continuous `0→0.10 s` run
+and a `0→0.05 s` plus checkpoint restart `0.05→0.10 s` run both used
+`dt=0.00025 s`. At `t=0.10 s`, all 2506 P1 values were bitwise identical
+(`max_abs=0`, `L2=0`), and GGG/cold-stage/sample averages plus both support flows
+and switch flow were also bitwise identical. Restart is therefore trusted for
+the current frozen serial case. No long branch study or 420-second run started.
+
 Before engineering interpretation: complete the planned visualization review,
 initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
