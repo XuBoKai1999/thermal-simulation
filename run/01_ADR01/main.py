@@ -165,7 +165,7 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None):
         write_snapshot(temperature, step, time)
     vtk.close()
 
-    checkpoint_path = output_dir / "checkpoint_final.npz"
+    checkpoint_path = output_dir / f"checkpoint_t_{end_time:.8g}.npz"
     save_checkpoint(checkpoint_path, previous, manifest["mesh_id"], end_time)
 
     result = {

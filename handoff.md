@@ -64,13 +64,20 @@ The next recommended check is `dt=0.0125 s` over 1 s, but it has not been starte
 Tables and plot are in `run/01_ADR01/output/timestep_convergence_1s/`.
 
 ADR01 now has minimal serial restart support in its existing runner. Each run
-writes `checkpoint_final.npz` with the exact P1 vector, mesh ID, and absolute
+writes `checkpoint_t_<absolute-time>.npz` with the exact P1 vector, mesh ID, and absolute
 time; `--restart` loads it and `--end` is absolute. Continuation output uses
 `dt_<dt>_from_<start-time>`. A validated `t=0.05 s` checkpoint now exists at
-`run/01_ADR01/output/dt_0.00025/checkpoint_final.npz`. A two-step `dt=0.1 s`
+`run/01_ADR01/output/dt_0.00025/checkpoint_t_0.05.npz`. Time-qualified names
+prevent later runs with the same dt and a different end time from replacing it. A two-step `dt=0.1 s`
 restart to `t=0.25 s` passed, produced times `0.05/0.15/0.25 s`, and its initial
 GGG/cold-stage/sample averages and three heat flows exactly matched the source
 run. No 5-second branch comparison or 420-second run has started.
+
+The checkpoint collision identified after the split-run test is resolved. The
+validated source run was regenerated to `t=0.05 s`; its checkpoint metadata is
+format v1, time 0.05 s, 2506 finite P1 values in `[1,4] K`. The ambiguous stale
+`output/dt_0.00025/checkpoint_final.npz` was removed. Future end times use distinct
+`checkpoint_t_<absolute-time>.npz` names.
 
 Split-run trajectory equivalence is now verified. A continuous `0→0.10 s` run
 and a `0→0.05 s` plus checkpoint restart `0.05→0.10 s` run both used
