@@ -21,6 +21,36 @@ import geometry
 
 
 CASE_DIR = Path(__file__).resolve().parent
+
+
+def load_checkpoint(path, function, mesh_id):
+    """Restore a serial P1 state and return its absolute simulation time."""
+    with np.load(path, allow_pickle=False) as checkpoint:
+        if int(checkpoint["format_version"]) != 1:
+            raise ValueError("Unsupported checkpoint format")
+        if str(checkpoint["mesh_id"]) != mesh_id:
+            raise ValueError("Checkpoint mesh_id does not match the loaded mesh")
+        values = checkpoint["temperature"]
+        time = float(checkpoint["time_s"])
+    if values.shape != function.x.array.shape or not np.isfinite(values).all():
+        raise ValueError("Checkpoint temperature vector is incompatible or non-finite")
+    if not np.isfinite(time) or time < 0:
+        raise ValueError("Checkpoint time must be finite and non-negative")
+    function.x.array[:] = values
+    function.x.scatter_forward()
+    return time
+
+
+def save_checkpoint(path, function, mesh_id, time):
+    """Save the exact serial P1 state needed by an ADR01 continuation."""
+    if function.function_space.mesh.comm.size != 1:
+        raise NotImplementedError("ADR01 checkpoint output currently supports serial runs only")
+    np.savez(
+        path, format_version=1, mesh_id=mesh_id, time_s=time,
+        temperature=function.x.array,
+    )
+
+
 def internal_axial_flow(temperature, mesh_data, case_data, tags, surface):
     """Return heat flow toward decreasing z across a horizontal internal facet."""
     conductivity = materials.property_expression(
@@ -32,17 +62,13 @@ def internal_axial_flow(temperature, mesh_data, case_data, tags, surface):
     return mesh_data.mesh.comm.allreduce(local, op=MPI.SUM)
 
 
-def run(dt, end_time=0.05, output_every=None):
+def run(dt, end_time=0.05, output_every=None, restart_from=None):
     case_data = deepcopy(case.load_case(CASE_DIR / "case.yaml"))
     case_data["time"].update(dt_s=dt, end_s=end_time)
     if output_every is not None:
         if not np.isfinite(output_every) or output_every <= 0:
             raise ValueError("output interval must be finite and positive")
         case_data["output"]["every_time_s"] = output_every
-    step_count = round(end_time / dt)
-    if not np.isclose(step_count * dt, end_time):
-        raise ValueError("end time must be an integer number of timesteps")
-
     mesh_path = mesh.ensure_mesh(
         CASE_DIR / "build", geometry.__file__, geometry.build_geometry
     )
@@ -52,10 +78,25 @@ def run(dt, end_time=0.05, output_every=None):
     residual, temperature, bcs, jacobian, previous = (
         model.build_nonlinear_transient_model(mesh_data, case_data, tags)
     )
+    start_time = 0.0
+    if restart_from is not None:
+        start_time = load_checkpoint(restart_from, previous, manifest["mesh_id"])
+        temperature.x.array[:] = previous.x.array
+        temperature.x.scatter_forward()
+    duration = end_time - start_time
+    if duration <= 0:
+        raise ValueError("end time must be later than checkpoint time")
+    step_count = round(duration / dt)
+    if not np.isclose(step_count * dt, duration):
+        raise ValueError("run duration must be an integer number of timesteps")
+
     observations = []
     total_iterations = 0
-    wanted_steps = set(case.output_timesteps(case_data))
-    output_dir = CASE_DIR / "output" / f"dt_{dt:.8g}"
+    schedule_case = deepcopy(case_data)
+    schedule_case["time"]["end_s"] = duration
+    wanted_steps = set(case.output_timesteps(schedule_case))
+    suffix = "" if restart_from is None else f"_from_{start_time:.8g}"
+    output_dir = CASE_DIR / "output" / f"dt_{dt:.8g}{suffix}"
     dump_dir = output_dir / "dump"
     if dump_dir.exists():
         for old_dump in dump_dir.glob("*.dump"):
@@ -109,7 +150,7 @@ def run(dt, end_time=0.05, output_every=None):
             [fields["temperature"], fields["heat_flux"], fields["region_ID"]], time
         )
 
-    write_snapshot(previous, 0, 0.0)
+    write_snapshot(previous, 0, start_time)
 
     for step in range(1, step_count + 1):
         temperature, iterations = solve.solve_nonlinear(
@@ -120,15 +161,24 @@ def run(dt, end_time=0.05, output_every=None):
         previous.x.scatter_forward()
         if step not in wanted_steps:
             continue
-        time = step * dt
+        time = start_time + step * dt
         write_snapshot(temperature, step, time)
     vtk.close()
 
+    checkpoint_path = output_dir / "checkpoint_final.npz"
+    save_checkpoint(checkpoint_path, previous, manifest["mesh_id"], end_time)
+
     result = {
         "dt_s": dt,
+        "start_s": start_time,
         "end_s": end_time,
+        "restart_from": None if restart_from is None else str(restart_from),
+        "checkpoint": str(checkpoint_path),
         "output_every_s": case_data.get("output", {}).get("every_time_s"),
         "output_steps": [0, *sorted(wanted_steps)],
+        "output_times_s": [
+            start_time, *(start_time + step * dt for step in sorted(wanted_steps))
+        ],
         "steps": step_count,
         "total_newton_iterations": total_iterations,
         "heat_flow_sign": "positive toward decreasing z (hot side toward cold side)",
@@ -147,5 +197,6 @@ if __name__ == "__main__":
     parser.add_argument("--dt", type=float, default=5e-4)
     parser.add_argument("--end", type=float, default=0.05)
     parser.add_argument("--output-every", type=float)
+    parser.add_argument("--restart", type=Path)
     args = parser.parse_args()
-    run(args.dt, args.end, args.output_every)
+    run(args.dt, args.end, args.output_every, args.restart)

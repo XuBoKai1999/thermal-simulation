@@ -32,3 +32,15 @@ For ParaView, open `output/dt_<dt>/visualization/fields.pvd`. The time series
 contains the actual P1 `temperature` field plus DG0 cell `heat_flux` and
 `region_ID`; ParaView can use them directly for color maps, Clip, Slice, animation,
 and vector glyphs.
+
+Each completed serial run also writes `checkpoint_final.npz`, containing the
+exact P1 temperature vector, mesh identity, and absolute simulation time. Resume
+from it with an absolute end time, for example:
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 run/01_ADR01/main.py --restart run/01_ADR01/output/dt_0.00025/checkpoint_final.npz --dt 0.1 --end 5.05 --output-every 0.1"
+```
+
+Continuation output uses `output/dt_<dt>_from_<checkpoint-time>/`. Loading rejects
+a mismatched mesh or incompatible/non-finite state. Checkpoints are currently
+serial-only solver data, not visualization files.
