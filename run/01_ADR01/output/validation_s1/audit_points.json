@@ -1,0 +1,49 @@
+{
+  "seed": 20260914,
+  "points": [
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/summary.json",
+      "time_s": 0.05,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.05.npz",
+      "reasons": [
+        "segment_start",
+        "max_abs_sample_slope",
+        "nearest_threshold_1.5_K",
+        "nearest_threshold_2_K",
+        "nearest_threshold_3_K"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/summary.json",
+      "time_s": 0.45,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.45.npz",
+      "reasons": [
+        "near_segment_end"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/summary.json",
+      "time_s": 0.1,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.1.npz",
+      "reasons": [
+        "max_abs_sample_curvature"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/summary.json",
+      "time_s": 0.35000000000000003,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.35.npz",
+      "reasons": [
+        "random_seed_20260914"
+      ]
+    },
+    {
+      "summary": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/summary.json",
+      "time_s": 0.4,
+      "checkpoint": "run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.4.npz",
+      "reasons": [
+        "random_seed_20260914"
+      ]
+    }
+  ]
+}

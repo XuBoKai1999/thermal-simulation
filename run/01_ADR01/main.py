@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import sys
+from time import perf_counter
 
 import numpy as np
 from dolfinx import fem, io
@@ -62,7 +63,8 @@ def internal_axial_flow(temperature, mesh_data, case_data, tags, surface):
     return mesh_data.mesh.comm.allreduce(local, op=MPI.SUM)
 
 
-def run(dt, end_time=0.05, output_every=None, restart_from=None):
+def run(dt, end_time=0.05, output_every=None, restart_from=None, run_type="segment"):
+    started = perf_counter()
     case_data = deepcopy(case.load_case(CASE_DIR / "case.yaml"))
     case_data["time"].update(dt_s=dt, end_s=end_time)
     if output_every is not None:
@@ -95,8 +97,11 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None):
     schedule_case = deepcopy(case_data)
     schedule_case["time"]["end_s"] = duration
     wanted_steps = set(case.output_timesteps(schedule_case))
-    suffix = "" if restart_from is None else f"_from_{start_time:.8g}"
-    output_dir = CASE_DIR / "output" / f"dt_{dt:.8g}{suffix}"
+    output_name = (
+        f"dt_{dt:.8g}" if restart_from is None else
+        f"{run_type}_t_{start_time:.8g}_to_{end_time:.8g}_dt_{dt:.8g}"
+    )
+    output_dir = CASE_DIR / "output" / output_name
     dump_dir = output_dir / "dump"
     if dump_dir.exists():
         for old_dump in dump_dir.glob("*.dump"):
@@ -137,6 +142,11 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None):
             state, mesh_data, case_data, tags, "edge_support_2_cold_stage"
         )
         observations.append({"time_s": time, **summary})
+        if summary["T_min"] < 1.0 - 1.0e-10 or summary["T_max"] > 4.0 + 1.0e-10:
+            raise RuntimeError(
+                f"Temperature range [{summary['T_min']}, {summary['T_max']}] K "
+                f"violates ADR01 Baseline v1 expectation at t={time} s"
+            )
         derived["cell_data"]["cell_ID"] = cell_ids
         dump.write_dump(
             derived["cell_data"], dump_dir,
@@ -148,6 +158,10 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None):
         fields = derived["field_functions"]
         vtk.write_function(
             [fields["temperature"], fields["heat_flux"], fields["region_ID"]], time
+        )
+        save_checkpoint(
+            output_dir / f"checkpoint_t_{time:.8g}.npz",
+            state, manifest["mesh_id"], time,
         )
 
     write_snapshot(previous, 0, start_time)
@@ -170,6 +184,7 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None):
 
     result = {
         "dt_s": dt,
+        "run_type": run_type,
         "start_s": start_time,
         "end_s": end_time,
         "restart_from": None if restart_from is None else str(restart_from),
@@ -181,6 +196,7 @@ def run(dt, end_time=0.05, output_every=None, restart_from=None):
         ],
         "steps": step_count,
         "total_newton_iterations": total_iterations,
+        "wall_time_s": perf_counter() - started,
         "heat_flow_sign": "positive toward decreasing z (hot side toward cold side)",
         "observations": observations,
     }
@@ -198,5 +214,8 @@ if __name__ == "__main__":
     parser.add_argument("--end", type=float, default=0.05)
     parser.add_argument("--output-every", type=float)
     parser.add_argument("--restart", type=Path)
+    parser.add_argument(
+        "--run-type", choices=("segment", "validation", "audit"), default="segment"
+    )
     args = parser.parse_args()
-    run(args.dt, args.end, args.output_every, args.restart)
+    run(args.dt, args.end, args.output_every, args.restart, args.run_type)

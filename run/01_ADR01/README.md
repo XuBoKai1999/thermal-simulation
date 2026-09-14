@@ -42,6 +42,9 @@ directory is later extended. Resume with an absolute end time, for example:
 .\scripts\wsl-run.ps1 "python3 run/01_ADR01/main.py --restart run/01_ADR01/output/dt_0.00025/checkpoint_t_0.05.npz --dt 0.1 --end 5.05 --output-every 0.1"
 ```
 
-Continuation output uses `output/dt_<dt>_from_<checkpoint-time>/`. Loading rejects
-a mismatched mesh or incompatible/non-finite state. Checkpoints are currently
-serial-only solver data, not visualization files.
+Continuation output encodes purpose, absolute interval, and timestep, for example
+`output/segment_t_0.05_to_0.5_dt_0.025/`; select the purpose with `--run-type
+segment|validation|audit`. Loading rejects a mismatched mesh or
+incompatible/non-finite state. Checkpoints are currently serial-only solver data,
+not visualization files. See [`segmented-workflow.md`](segmented-workflow.md) for
+the piecewise production, convergence, spot-audit, and failure-time procedure.

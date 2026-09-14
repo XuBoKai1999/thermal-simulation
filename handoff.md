@@ -79,6 +79,21 @@ format v1, time 0.05 s, 2506 finite P1 values in `[1,4] K`. The ambiguous stale
 `output/dt_0.00025/checkpoint_final.npz` was removed. Future end times use distinct
 `checkpoint_t_<absolute-time>.npz` names.
 
+ADR01 now has a case-local segmented production/validation workflow documented
+in `run/01_ADR01/segmented-workflow.md`; `output/README.md` keeps guidance beside
+generated data. Continuation names encode run type, absolute interval, and dt.
+`workflow.py` compares common-time region/flow metrics and endpoint full-P1
+vectors, extracts interpolated failure times, and reproducibly selects stratified
+spot-audit checkpoints. No adaptive controller or MPI layer was added.
+
+S1 (`0.05→0.5 s`) is accepted: candidate dt 0.025 s versus 0.0125 s differed by
+0.002282/0.002285 K for cold-stage/sample averages, 0.826/0.913% for support
+flows, and 0.081% for switch flow. Endpoint full-P1 max/L2 differences were
+0.004299 K / 0.037384 K. Both runs passed finite and `[1,4] K` sanity checks.
+The accepted endpoint is
+`run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.5.npz`.
+S2–S4 remain unvalidated candidates; no 420-second run started.
+
 Split-run trajectory equivalence is now verified. A continuous `0→0.10 s` run
 and a `0→0.05 s` plus checkpoint restart `0.05→0.10 s` run both used
 `dt=0.00025 s`. At `t=0.10 s`, all 2506 P1 values were bitwise identical
@@ -91,4 +106,6 @@ initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: execute `steps2.md` Step 6 only after the user says next.
+Next exact action: when requested, validate S2 (`0.5→5 s`) using dt 0.1 versus
+0.05 s from the accepted S1 endpoint. The pre-existing `steps2.md` Step 6 remains
+the next unrelated roadmap implementation step.
