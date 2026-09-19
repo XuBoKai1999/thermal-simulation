@@ -1,0 +1,15 @@
+scenario: baseline-v1
+
+segments:
+  - {start_s: 0, end_s: 0.05, dt_s: 0.00025, output_every_s: 0.0025}
+  - {start_s: 0.05, end_s: 0.5, dt_s: 0.025, output_every_s: 0.05}
+  - {start_s: 0.5, end_s: 5, dt_s: 0.1, output_every_s: 0.5}
+  - {start_s: 5, end_s: 50, dt_s: 0.5, output_every_s: 5}
+  - {start_s: 50, end_s: 420, dt_s: 2, output_every_s: 10}
+
+validation:
+  mode: warn
+  reference_dt_factor: 0.5
+  temperature_abs_K: 0.01
+  temperature_rel: 0.01
+  heat_flow_rel: 0.05

@@ -19,7 +19,7 @@ UNITS = {
 
 def write_dump(
     data, directory, fields, mesh_id, bounds, regions, timestep=0, time=0.0,
-    solver_dt=None, characteristic_cell_size=None,
+    solver_dt=None, characteristic_cell_size=None, filename=None,
 ):
     if "cell_ID" not in fields:
         raise ValueError("cell_ID is required")
@@ -42,7 +42,7 @@ def write_dump(
     order = np.argsort(data["cell_ID"])
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
-    path = directory / f"{timestep}.dump"
+    path = directory / (filename or f"{timestep}.dump")
     units = " ".join(f"{field}={UNITS[field]}" for field in fields if field in UNITS)
     lines = [
         "ITEM: FORMAT_VERSION",

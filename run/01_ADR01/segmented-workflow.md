@@ -1,8 +1,28 @@
-# ADR01 segmented transient workflow
+# ADR01 continuous-trajectory workflow
 
-ADR01 production transients use explicit fixed-timestep segments. Candidate
-values are hypotheses until each segment passes a same-checkpoint `dt` versus
-`dt/2` comparison.
+One ADR01 simulation is one scenario and one continuous physical trajectory.
+`baseline-v1.yaml` supplies contiguous fixed-timestep intervals; `workflow.py`
+validates the complete plan before FEM setup, runs production and same-start
+reference branches, and aggregates the production states under one directory:
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 run/01_ADR01/workflow.py run run/01_ADR01/baseline-v1.yaml"
+```
+
+The plan's `validation.mode` is `warn` or `strict`. Warn mode continues after a
+local failure and marks every downstream state globally unvalidated. Strict mode
+saves the evidence and stops before the next production interval. A later local
+pass cannot repair upstream uncertainty; `manifest.json` records
+`validated_through_s`. Sample threshold crossings are informational unless a
+future plan explicitly adds a crossing-time tolerance.
+
+The result is `output/<scenario>/` with one manifest, production-only summary,
+physical-time dump/checkpoint names, merged production PVD, and reference data
+only below `validation/`. Solver timestep and heavy output cadence remain
+independent.
+
+Candidate values remain hypotheses until each interval passes its
+same-checkpoint `dt` versus `dt/2` comparison.
 
 | Segment | Absolute interval | Candidate dt | Status |
 |---|---:|---:|---|
@@ -17,9 +37,10 @@ branches of the next segment. Do not substitute a dump or VTK field for the P1
 checkpoint. Do not use a fine `0.00025 s` reference for every later interval;
 compare the candidate dt with dt/2, adding dt/4 only when necessary.
 
-## Run naming and cadence
+## Legacy direct-segment commands and cadence
 
-Continuation directories encode purpose, absolute interval, and timestep:
+The direct `main.py` interface remains available for historical runs and focused
+diagnostics. Its continuation directories encode purpose, interval, and timestep:
 
 ```text
 segment_t_0.05_to_0.5_dt_0.025/
@@ -54,8 +75,9 @@ failure times at 1.5/2/3 K. It writes CSV, JSON, a plot, and `report.md`.
 
 Provisional acceptance gates are `cold_stage/sample <0.01 K` or `<1%`, and each
 heat flow `<5%` relative to the finer run's maximum magnitude. GGG temperature
-is explicitly informational rather than shown as an unconditional pass. Near-zero flows
-therefore do not use unstable pointwise relative errors. These are engineering
+is explicitly informational. A reference flow scale at or below `1e-12 W` is
+reported as a near-zero absolute diagnostic, not divided into a relative error
+or used as an acceptance gate. These are engineering
 screening criteria, not universal accuracy standards. Final production approval
 is based primarily on interpolated failure-time convergence.
 

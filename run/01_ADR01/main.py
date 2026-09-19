@@ -65,7 +65,8 @@ def internal_axial_flow(temperature, mesh_data, case_data, tags, surface):
 
 def run(
     dt, end_time=0.05, output_every=None, restart_from=None, run_type="segment",
-    summary_every=None,
+    summary_every=None, output_dir=None, dump_dir=None, checkpoint_dir=None,
+    visualization_name="fields.pvd", physical_time_names=False, clean_output=True,
 ):
     started = perf_counter()
     case_data = deepcopy(case.load_case(CASE_DIR / "case.yaml"))
@@ -111,16 +112,19 @@ def run(
         f"dt_{dt:.8g}" if restart_from is None else
         f"{run_type}_t_{start_time:.8g}_to_{end_time:.8g}_dt_{dt:.8g}"
     )
-    output_dir = CASE_DIR / "output" / output_name
-    dump_dir = output_dir / "dump"
-    if dump_dir.exists():
+    output_dir = Path(output_dir) if output_dir else CASE_DIR / "output" / output_name
+    dump_dir = Path(dump_dir) if dump_dir else output_dir / "dump"
+    checkpoint_dir = Path(checkpoint_dir) if checkpoint_dir else output_dir
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    if clean_output and dump_dir.exists():
         for old_dump in dump_dir.glob("*.dump"):
             old_dump.unlink()
     summary_path = output_dir / "summary.json"
-    summary_path.unlink(missing_ok=True)
+    if clean_output:
+        summary_path.unlink(missing_ok=True)
     visualization_dir = output_dir / "visualization"
-    if visualization_dir.exists():
-        for old_output in visualization_dir.glob("fields*"):
+    if clean_output and visualization_dir.exists():
+        for old_output in visualization_dir.glob(f"{Path(visualization_name).stem}*"):
             if old_output.suffix in {".pvd", ".pvtu", ".vtu"}:
                 old_output.unlink()
     visualization_dir.mkdir(parents=True, exist_ok=True)
@@ -131,7 +135,7 @@ def run(
         if details["dimension"] == mesh_data.mesh.topology.dim
     }
 
-    vtk = io.VTKFile(mesh_data.mesh.comm, visualization_dir / "fields.pvd", "w")
+    vtk = io.VTKFile(mesh_data.mesh.comm, visualization_dir / visualization_name, "w")
 
     def summarize(state, time, iterations):
         state.name = "temperature"
@@ -170,6 +174,7 @@ def run(
             manifest["mesh_id"], derived["bounds"], region_names,
             timestep=step, time=time, solver_dt=dt,
             characteristic_cell_size=derived["characteristic_cell_size"],
+            filename=f"t_{time:.8g}s.dump" if physical_time_names else None,
         )
         fields = derived["field_functions"]
         vtk.write_function(
@@ -179,6 +184,7 @@ def run(
     derived, summary = summarize(previous, start_time, 0)
     observations.append(summary)
     save_checkpoint(
+        checkpoint_dir / f"t_{start_time:.8g}s.npz" if physical_time_names else
         output_dir / f"checkpoint_t_{start_time:.8g}.npz",
         previous, manifest["mesh_id"], start_time,
     )
@@ -197,6 +203,7 @@ def run(
         derived, summary = summarize(temperature, time, iterations)
         observations.append(summary)
         save_checkpoint(
+            checkpoint_dir / f"t_{time:.8g}s.npz" if physical_time_names else
             output_dir / f"checkpoint_t_{time:.8g}.npz",
             temperature, manifest["mesh_id"], time,
         )
@@ -204,10 +211,18 @@ def run(
             write_heavy(derived, step, time)
     vtk.close()
 
-    checkpoint_path = output_dir / f"checkpoint_t_{end_time:.8g}.npz"
+    checkpoint_path = (
+        checkpoint_dir / f"t_{end_time:.8g}s.npz" if physical_time_names else
+        output_dir / f"checkpoint_t_{end_time:.8g}.npz"
+    )
     save_checkpoint(checkpoint_path, previous, manifest["mesh_id"], end_time)
 
     result = {
+        "mesh_id": manifest["mesh_id"],
+        "cell_count": mesh_data.mesh.topology.index_map(
+            mesh_data.mesh.topology.dim
+        ).size_global,
+        "temperature_dofs": temperature.function_space.dofmap.index_map.size_global,
         "dt_s": dt,
         "run_type": run_type,
         "start_s": start_time,

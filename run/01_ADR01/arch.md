@@ -34,8 +34,19 @@ requirement evidence (read-only history)
   derivative of that baseline.
 - `geometry.py` translates the soft geometry requirement into the existing Gmsh
   workflow. `case.yaml` and `main.py` use the existing parent interfaces.
+- `baseline-v1.yaml` owns only the execution schedule. `workflow.py run` validates
+  it, executes fixed-step segments through `main.py`, runs same-checkpoint `dt/2`
+  validation branches, and aggregates one physical trajectory under
+  `output/<scenario>/`. Checkpoint/restart and validation branch directories are
+  implementation evidence, not separate user-facing simulations.
 - `requirement/` and paper directories preserve research evidence and do not
   define active solver behavior.
+
+Simulation-level output contains one `manifest.json`, production-only
+`summary.csv`, physical-time-named `dump/` and `checkpoint/` states, a merged
+production `visualization/fields.pvd`, and validation evidence under
+`validation/<start>_to_<end>/`. Local validation does not repair an earlier
+failed interval; `validated_through_s` records the continuous trusted prefix.
 
 ## Model roles
 

@@ -1,5 +1,10 @@
 # ADR Thermal Simulation Architecture
 
+ADR01 treats `run/01_ADR01/` as the physical case/model and
+`run/01_ADR01/output/<scenario>/` as one continuous simulation trajectory. Its
+existing `workflow.py` orchestrates fixed-dt segments and validation branches;
+the existing `main.py` remains the owner of one physical segment.
+
 > 原則：**如無必要勿增實體**。  
 > 目標不是做通用 FEM 平台，而是做一套夠用、可驗證、可延伸的 ADR 熱傳模擬工具。
 

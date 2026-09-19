@@ -25,6 +25,11 @@ dump = {
 20.dump
 ```
 
+Generic callers retain timestep-based filenames. ADR01 plan-driven simulations
+use the writer's optional explicit filename to store physical-time names such as
+`t_0s.dump`, `t_0.0025s.dump`, and `t_5s.dump`. `TIMESTEP`, `TIME`, and
+`SOLVER_DT` remain present and authoritative inside each dump.
+
 穩態問題只有 timestep 0，因此只寫 `0.dump`。暫態輸出策略完全由 `main.py`
 決定：可以固定 `every`，也可以指定一組 timestep，例如為觀察快速暫態而輸出
 `0–20.dump`，再另存接近穩態的 `500.dump`。dump 格式不限制時間取樣策略。

@@ -2,7 +2,22 @@
 
 ## Current goal and state
 
-ADR01 Baseline v1 early-transient smoke milestone is complete. The placeholder
+ADR01 now has a plan-driven continuous-trajectory workflow. The sole new input
+is `run/01_ADR01/baseline-v1.yaml`; run it with
+`python3 run/01_ADR01/workflow.py run run/01_ADR01/baseline-v1.yaml` through the
+WSL wrapper. It validates the plan before FEM setup, executes each fixed-step
+production interval plus a same-start `dt/2` reference, and creates one
+`output/<scenario>/` trajectory with a manifest, production CSV, logs,
+physical-time dumps/checkpoints, merged PVD, and nested validation evidence.
+
+Warn/strict handling, near-zero-flow diagnostics, and accumulated validity are
+implemented. A 1.5 ms two-timestep warn-mode integration run completed through
+both deliberately failing local gates; a strict-mode run saved evidence and
+stopped after the first failure. The full 0-420 s Baseline v1 run has not started.
+S3 (5-50 s) and S4 (50-420 s) remain unvalidated candidates. Review the plan and
+workflow before launching production.
+
+The earlier ADR01 Baseline v1 smoke milestone remains complete. The placeholder
 geometry is approved only for this numerical smoke run, not verified hardware.
 Canonical parameters and evidence remain untouched.
 

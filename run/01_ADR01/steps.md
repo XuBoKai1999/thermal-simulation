@@ -88,3 +88,14 @@ requires thin-layer proxies.
 The superconducting magnet is omitted from the active Baseline v1 simplified
 geometry/model. A future extension may add a 4 K-anchored magnet and an optional
 magnet heat load.
+
+## Unified trajectory workflow
+
+STATUS: IMPLEMENTED; FULL 0-420 S RUN NOT STARTED
+
+`baseline-v1.yaml` defines the five contiguous fixed-step intervals.
+`workflow.py run` produces one scenario directory, automatically evaluates each
+interval against `dt/2`, supports warn/strict failure handling, and records local
+and accumulated trajectory validity. A 1.5 ms two-timestep integration test and
+a strict-stop test passed. S3 and S4 remain candidates until the production plan
+is reviewed and run.
