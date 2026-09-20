@@ -18,6 +18,11 @@ stopped after the first failure. The full 0-420 s Baseline v1 run has not starte
 S3 (5-50 s) and S4 (50-420 s) remain unvalidated candidates. Review the plan and
 workflow before launching production.
 
+Shared runtime logging now lives in `lib/log.py`. ADR01 prints first/every-N/final
+solver-step progress to the terminal (default N=10) and plan-driven runs append
+and immediately flush the same stream to `output/<scenario>/run.log`. The
+manifest includes total workflow wall time and start/finish timestamps.
+
 The earlier ADR01 Baseline v1 smoke milestone remains complete. The placeholder
 geometry is approved only for this numerical smoke run, not verified hardware.
 Canonical parameters and evidence remain untouched.

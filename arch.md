@@ -50,6 +50,7 @@ adr-thermal/
 │  ├─ model.py
 │  ├─ solve.py
 │  ├─ analyze.py
+│  ├─ log.py
 │  ├─ dump.py
 │  ├─ dump_reader.py
 │  ├─ materials.py
@@ -311,6 +312,12 @@ $$
 \dot Q_S=
 \int_S \mathbf q\cdot\mathbf n\,dA
 $$
+
+### `log.py`
+
+Provides the shared synchronous `RunLog`: terminal output by default, optional
+append-and-flush file output, unconditional events, and solver-step-based
+progress cadence. Case runners supply labels and case-specific events.
 
 ### `dump.py`
 
