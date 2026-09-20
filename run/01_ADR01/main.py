@@ -255,7 +255,6 @@ def run(
     summary_path.write_text(
         json.dumps(result, indent=2) + "\n", encoding="utf-8"
     )
-    print(json.dumps(result))
     return result
 
 
@@ -273,8 +272,9 @@ if __name__ == "__main__":
         "--run-type", choices=("segment", "validation", "audit"), default="segment"
     )
     args = parser.parse_args()
-    run(
+    result = run(
         args.dt, args.end, args.output_every, args.restart, args.run_type,
         args.summary_every, progress_every=args.progress_every, log_path=args.log,
         terminal=not args.no_terminal,
     )
+    print(json.dumps(result))

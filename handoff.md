@@ -26,7 +26,11 @@ Long-time restart orchestration is implemented in `run/01_ADR01/restart.py`.
 It verifies the `baseline-v1` manifest, 420 s checkpoint format/time/mesh/vector,
 parent validation boundary, and exact restart-time scalar continuity before
 delegating to `main.run()`. A 420-424 s regression passed without modifying the
-parent. The planned production child `baseline-v1-cont-420s-1800s` has not run.
+parent. Python callers now receive the `main.run()` result without an unsolicited
+JSON print; the direct CLI still prints it. Child manifests store portable
+case-relative parent paths plus both the parent commit and dirty state. The
+planned production child `baseline-v1-cont-420s-1800s` has not run and is ready
+to launch after human review.
 
 The earlier ADR01 Baseline v1 smoke milestone remains complete. The placeholder
 geometry is approved only for this numerical smoke run, not verified hardware.
