@@ -87,7 +87,8 @@ time; `--restart` loads it and `--end` is absolute. Continuation output uses
 prevent later runs with the same dt and a different end time from replacing it. A two-step `dt=0.1 s`
 restart to `t=0.25 s` passed, produced times `0.05/0.15/0.25 s`, and its initial
 GGG/cold-stage/sample averages and three heat flows exactly matched the source
-run. No 5-second branch comparison or 420-second run has started.
+run. The later 0.5–5 s S2 branch comparison is accepted; no 420-second run has
+started.
 
 The checkpoint collision identified after the split-run test is resolved. The
 validated source run was regenerated to `t=0.05 s`; its checkpoint metadata is
@@ -138,6 +139,7 @@ initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: when requested, validate S3 (`5→50 s`) using dt 0.5 versus
-0.25 s from the accepted S2 endpoint. The pre-existing `steps2.md` Step 6 remains
-the next unrelated roadmap implementation step.
+Next exact action: after human review, use `baseline-v1.yaml` to run one clean
+simulation trajectory from `t=0` through the complete planned schedule. The
+pre-existing `steps2.md` Step 6 remains the next unrelated roadmap implementation
+step.

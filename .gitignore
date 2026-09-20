@@ -2,3 +2,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 run/01_ADR01/parameters-requirement.zip
+run/01_ADR01/output/**/*.npz
+run/01_ADR01/output/**/*.dump
+run/01_ADR01/output/**/*.vtu
+run/01_ADR01/output/**/*.pvtu
