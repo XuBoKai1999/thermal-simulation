@@ -47,6 +47,9 @@ Simulation-level output contains one `manifest.json`, production-only
 production `visualization/fields.pvd`, and validation evidence under
 `validation/<start>_to_<end>/`. Local validation does not repair an earlier
 failed interval; `validated_through_s` records the continuous trusted prefix.
+The workflow owns ADR-specific START/DONE/validation events and passes the shared
+`lib.log.RunLog` into segment runs for timestep progress. `run.log` is appended
+and flushed as events occur; `validation.log` remains separate.
 
 ## Model roles
 

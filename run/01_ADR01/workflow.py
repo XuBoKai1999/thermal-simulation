@@ -2,12 +2,15 @@
 
 from argparse import ArgumentParser
 import csv
+from datetime import datetime
 import json
 from pathlib import Path
 import random
 import shutil
 import subprocess
+import sys
 import tempfile
+from time import perf_counter
 import xml.etree.ElementTree as ET
 
 import matplotlib.pyplot as plt
@@ -16,6 +19,10 @@ import yaml
 
 
 CASE_DIR = Path(__file__).resolve().parent
+ROOT = CASE_DIR.parents[1]
+sys.path.insert(0, str(ROOT))
+
+from lib.log import RunLog
 
 
 TEMPERATURES = {
@@ -361,7 +368,7 @@ def _merge_visualization(sources, destination):
                               xml_declaration=True)
 
 
-def run_plan(plan_path, runner=None):
+def run_plan(plan_path, runner=None, progress_every=10):
     """Execute production and dt-refinement branches as one simulation."""
     plan_path = Path(plan_path)
     plan = load_plan(plan_path)  # fail before importing the FEM runner
@@ -375,6 +382,10 @@ def run_plan(plan_path, runner=None):
     if scenario_dir.exists():
         raise FileExistsError(f"Refusing to overwrite existing simulation: {scenario_dir}")
     scenario_dir.mkdir(parents=True)
+    simulation_started = perf_counter()
+    started_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    runtime_log = RunLog(progress_every, path=scenario_dir / "run.log")
+    runtime_log.event("START", f"simulation | scenario={plan['scenario']}")
     shutil.copy2(plan_path, scenario_dir / "plan.yaml")
     dump_dir, checkpoint_dir = scenario_dir / "dump", scenario_dir / "checkpoint"
     validation_root = scenario_dir / "validation"
@@ -382,7 +393,7 @@ def run_plan(plan_path, runner=None):
     mode = validation.get("mode", "warn")
     factor = float(validation.get("reference_dt_factor", 0.5))
     thresholds = validation.get("sample_temperature_thresholds_K", [1.5, 2.0, 3.0])
-    rows, segment_records, pvd_sources, log_lines, validation_lines = [], [], [], [], []
+    rows, segment_records, pvd_sources, validation_lines = [], [], [], []
     upstream_valid = True
     validated_through = 0.0
     restart = None
@@ -393,21 +404,45 @@ def run_plan(plan_path, runner=None):
         interval = f"{start:.8g}_to_{end:.8g}"
         evidence = validation_root / interval
         candidate_dir, reference_dir = evidence / "candidate", evidence / "reference"
-        candidate = runner(
-            dt, end, float(segment["output_every_s"]), restart, "segment", dt,
-            candidate_dir, dump_dir, checkpoint_dir, "fields.pvd", True, index == 0,
-        )
+        production_label = f"S{index} production"
+        runtime_log.event("START", production_label)
+        try:
+            candidate = runner(
+                dt, end, float(segment["output_every_s"]), restart, "segment", dt,
+                candidate_dir, dump_dir, checkpoint_dir, "fields.pvd", True,
+                index == 0, runtime_log, production_label, progress_every,
+            )
+        except Exception as error:
+            runtime_log.event("ERROR", f"{production_label} | {error}")
+            raise
+        runtime_log.event("DONE", f"{production_label} | wall={candidate['wall_time_s']:.1f} s")
         if index == 0:
             local_pass = None
             state = "VALIDATED_BASELINE"
             validated_through = end
         else:
-            reference = runner(
-                dt * factor, end, float(segment["output_every_s"]), restart,
-                "validation", dt * factor, reference_dir, None, None, "fields.pvd", True,
-            )
-            comparison = compare(candidate_dir, reference_dir, evidence, thresholds, validation)
+            reference_label = f"S{index} reference"
+            runtime_log.event("START", reference_label)
+            try:
+                reference = runner(
+                    dt * factor, end, float(segment["output_every_s"]), restart,
+                    "validation", dt * factor, reference_dir, None, None,
+                    "fields.pvd", True, True, runtime_log, reference_label,
+                    progress_every,
+                )
+                runtime_log.event(
+                    "DONE", f"{reference_label} | wall={reference['wall_time_s']:.1f} s"
+                )
+                comparison = compare(
+                    candidate_dir, reference_dir, evidence, thresholds, validation
+                )
+            except Exception as error:
+                runtime_log.event("ERROR", f"S{index} validation | {error}")
+                raise
             local_pass = comparison["accepted"]
+            runtime_log.event(
+                "PASS" if local_pass else "WARNING", f"S{index} validation"
+            )
         if index > 0 and local_pass and upstream_valid:
             state = "VALIDATED"
             validated_through = end
@@ -425,9 +460,8 @@ def run_plan(plan_path, runner=None):
         if index > 0 and not local_pass:
             failed = [item["metric"] for item in comparison["metric_errors"]
                       if item["pass"] is False]
-            warning = f"WARNING: validation failed for {start:g} to {end:g} s: {failed}"
-            print(warning)
-            log_lines.append(warning)
+            warning = f"validation failed for {start:g} to {end:g} s: {failed}"
+            runtime_log.event("WARNING", warning)
         for observation in candidate["observations"]:
             time = round(float(observation["time_s"]), 12)
             if time in seen_times:
@@ -447,16 +481,19 @@ def run_plan(plan_path, runner=None):
         restart = Path(candidate["checkpoint"])
         if index > 0 and not local_pass and mode == "strict":
             stopped = True
-            log_lines.append("Strict mode stopped before downstream production; try a smaller timestep.")
+            runtime_log.event(
+                "WARNING", "Strict mode stopped before downstream production; try a smaller timestep."
+            )
             break
     _write_production_summary(scenario_dir / "summary.csv", rows)
     _merge_visualization(pvd_sources, scenario_dir / "visualization")
-    (scenario_dir / "run.log").write_text("\n".join(log_lines) + "\n", encoding="utf-8")
     (scenario_dir / "validation.log").write_text(
         "\n".join(validation_lines) + "\n", encoding="utf-8"
     )
     case_data = yaml.safe_load((CASE_DIR / "case.yaml").read_text(encoding="utf-8"))
     last = candidate
+    total_wall_time = perf_counter() - simulation_started
+    finished_at = datetime.now().astimezone().isoformat(timespec="seconds")
     manifest = {
         "case": "ADR01 Baseline v1", "scenario": plan["scenario"],
         "start_s": 0.0, "end_s": float(last["end_s"]),
@@ -475,9 +512,15 @@ def run_plan(plan_path, runner=None):
         "git_commit": git_sha, "git_dirty": dirty,
         "final_trajectory_validation_state": segment_records[-1]["trajectory_validation_state"],
         "validated_through_s": validated_through, "stopped_early": stopped,
+        "total_wall_time_s": total_wall_time,
+        "started_at": started_at, "finished_at": finished_at,
     }
     (scenario_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
+    runtime_log.event(
+        "DONE", f"simulation | wall={total_wall_time:.1f} s | "
+        f"validated_through_s={validated_through:g}"
     )
     return manifest
 
@@ -560,6 +603,7 @@ if __name__ == "__main__":
     subparsers.add_parser("self-test")
     run_command = subparsers.add_parser("run")
     run_command.add_argument("plan")
+    run_command.add_argument("--progress-every", type=int, default=10)
     args = parser.parse_args()
     if args.command == "compare":
         print(json.dumps(compare(args.coarse, args.fine, args.output,
@@ -570,4 +614,4 @@ if __name__ == "__main__":
     elif args.command == "self-test":
         self_test()
     else:
-        print(json.dumps(run_plan(args.plan), indent=2))
+        print(json.dumps(run_plan(args.plan, progress_every=args.progress_every), indent=2))

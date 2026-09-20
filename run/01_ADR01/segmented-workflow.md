@@ -22,6 +22,11 @@ physical-time dump/checkpoint names, merged production PVD, and reference data
 only below `validation/`. Solver timestep and heavy output cadence remain
 independent.
 
+Runtime progress defaults to terminal output every 10 solver timesteps, plus the
+first and final step. Plan-driven runs append and immediately flush the same
+messages to `run.log`; `--progress-every N` changes only this logging cadence.
+The manifest records total workflow wall time and start/finish timestamps.
+
 S0 is the manually accepted fine baseline and is not compared with `dt/2`.
 Candidate values from S1 onward remain hypotheses until each interval passes its
 same-checkpoint `dt` versus `dt/2` comparison.

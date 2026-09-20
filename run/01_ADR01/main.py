@@ -16,7 +16,7 @@ import ufl
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from lib import analyze, case, dump, materials, mesh, model, solve
+from lib import analyze, case, dump, log, materials, mesh, model, solve
 
 import geometry
 
@@ -67,8 +67,11 @@ def run(
     dt, end_time=0.05, output_every=None, restart_from=None, run_type="segment",
     summary_every=None, output_dir=None, dump_dir=None, checkpoint_dir=None,
     visualization_name="fields.pvd", physical_time_names=False, clean_output=True,
+    logger=None, label=None, progress_every=10, log_path=None, terminal=True,
 ):
     started = perf_counter()
+    logger = logger or log.RunLog(progress_every, terminal, log_path)
+    label = label or run_type
     case_data = deepcopy(case.load_case(CASE_DIR / "case.yaml"))
     case_data["time"].update(dt_s=dt, end_s=end_time)
     if output_every is not None:
@@ -197,9 +200,10 @@ def run(
         total_iterations += iterations
         previous.x.array[:] = temperature.x.array
         previous.x.scatter_forward()
+        time = start_time + step * dt
+        logger.progress(step, step_count, time, dt, iterations, label)
         if step not in summary_steps:
             continue
-        time = start_time + step * dt
         derived, summary = summarize(temperature, time, iterations)
         observations.append(summary)
         save_checkpoint(
@@ -258,6 +262,9 @@ if __name__ == "__main__":
     parser.add_argument("--end", type=float, default=0.05)
     parser.add_argument("--output-every", type=float)
     parser.add_argument("--summary-every", type=float)
+    parser.add_argument("--progress-every", type=int, default=10)
+    parser.add_argument("--log", type=Path)
+    parser.add_argument("--no-terminal", action="store_true")
     parser.add_argument("--restart", type=Path)
     parser.add_argument(
         "--run-type", choices=("segment", "validation", "audit"), default="segment"
@@ -265,5 +272,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     run(
         args.dt, args.end, args.output_every, args.restart, args.run_type,
-        args.summary_every,
+        args.summary_every, progress_every=args.progress_every, log_path=args.log,
+        terminal=not args.no_terminal,
     )
