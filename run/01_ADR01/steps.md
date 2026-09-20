@@ -73,8 +73,8 @@ After solver-facing implementation and property verification, compare the approv
 smoke-run timesteps, run the transient case, and review thermal paths and energy.
 
 The 0.05 s runs at 1.0, 0.5, and 0.25 ms completed. The 0.25 ms result is the
-selected smoke timestep; production-duration, mesh-convergence, and engineering
-validation remain future work.
+selected smoke timestep; the segmented production trajectory now reaches 420 s.
+Mesh-convergence and engineering validation remain future work.
 
 Further materials, finite-field or magnetocaloric behavior, heat-switch ON state
 or switching logic, hardware-specific switch data, radiation, heat loads, and
@@ -91,11 +91,20 @@ magnet heat load.
 
 ## Unified trajectory workflow
 
-STATUS: IMPLEMENTED; FULL 0-420 S RUN NOT STARTED
+STATUS: IMPLEMENTED; FULL 0-420 S RUN COMPLETE
 
 `baseline-v1.yaml` defines the five contiguous fixed-step intervals.
 `workflow.py run` produces one scenario directory, automatically evaluates each
-interval against `dt/2`, supports warn/strict failure handling, and records local
-and accumulated trajectory validity. A 1.5 ms two-timestep integration test and
-a strict-stop test passed. S3 and S4 remain candidates until the production plan
-is reviewed and run.
+interval after S0 against `dt/2`, supports warn/strict failure handling, and
+records local and accumulated trajectory validity. S0 is the accepted baseline;
+S1-S4 pass the current provisional gates through 420 s.
+
+## Long-time continuation
+
+STATUS: ENTRY POINT IMPLEMENTED; 420-1800 S PRODUCTION NOT STARTED
+
+`restart.py` validates the completed `baseline-v1` lineage and 420 s checkpoint,
+checks restart-time scalar continuity without advancing a timestep, and delegates
+the exploratory continuation to `main.run()`. A two-timestep 420-424 s regression
+passed. The planned child is `baseline-v1-cont-420s-1800s` with dt 2 s; its
+`validated_through_s` remains 420 because no new timestep refinement is performed.

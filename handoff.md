@@ -22,6 +22,12 @@ solver-step progress to the terminal (default N=10) and plan-driven runs append
 and immediately flush the same stream to `output/<scenario>/run.log`. The
 manifest includes total workflow wall time and start/finish timestamps.
 
+Long-time restart orchestration is implemented in `run/01_ADR01/restart.py`.
+It verifies the `baseline-v1` manifest, 420 s checkpoint format/time/mesh/vector,
+parent validation boundary, and exact restart-time scalar continuity before
+delegating to `main.run()`. A 420-424 s regression passed without modifying the
+parent. The planned production child `baseline-v1-cont-420s-1800s` has not run.
+
 The earlier ADR01 Baseline v1 smoke milestone remains complete. The placeholder
 geometry is approved only for this numerical smoke run, not verified hardware.
 Canonical parameters and evidence remain untouched.
@@ -141,7 +147,7 @@ initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: plan the long-time continuation from
-`run/01_ADR01/output/baseline-v1/checkpoint/t_420s.npz`; do not rerun the completed
-0–420 s trajectory. The pre-existing `steps2.md` Step 6 remains the next unrelated
-roadmap implementation step.
+Next exact action: after human review, run `python3 run/01_ADR01/restart.py`
+through the WSL wrapper to create `baseline-v1-cont-420s-1800s` from the trusted
+420 s checkpoint. Do not rerun the completed 0–420 s trajectory. The pre-existing
+`steps2.md` Step 6 remains the next unrelated roadmap implementation step.

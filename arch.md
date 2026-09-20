@@ -253,7 +253,7 @@ cell 的 element type、vertex coordinates 與 connectivity 由對應的 `mesh.m
 
 完整 header、欄位定義、單位與檔名規則以 [`dump-format.md`](dump-format.md) 為唯一規格。
 
-`summary.csv` 只保存區域統計與總熱流等彙總量，不取代逐 cell dump。第一版由 `main.py` 使用 Python 標準庫 `csv` 將 `analyze.py` 回傳的 summary data 寫出，不為此新增另一層 abstraction。ADR01另以FEniCSx native VTK/PVD輸出actual P1 temperature與DG0 heat-flux/region fields；它是interactive FEM visualization path，不取代dump。ADR01 runner將lightweight scalar/checkpoint cadence與heavy dump/VTK cadence分離，前者預設每solver step記錄。Serial runner以case-local NumPy checkpoint保存exact P1 vector、mesh identity與absolute time，供不同 timestep continuation；continuation directory包含run type、absolute interval與dt。Case-local `workflow.py`負責dt/dt/2 comparison、reproducible audit-point selection與interpolated failure-time extraction，不是generic run-management layer。
+`summary.csv` 只保存區域統計與總熱流等彙總量，不取代逐 cell dump。第一版由 `main.py` 使用 Python 標準庫 `csv` 將 `analyze.py` 回傳的 summary data 寫出，不為此新增另一層 abstraction。ADR01另以FEniCSx native VTK/PVD輸出actual P1 temperature與DG0 heat-flux/region fields；它是interactive FEM visualization path，不取代dump。ADR01 runner將lightweight scalar/checkpoint cadence與heavy dump/VTK cadence分離，前者預設每solver step記錄。Serial runner以case-local NumPy checkpoint保存exact P1 vector、mesh identity與absolute time，供不同 timestep continuation；continuation directory包含run type、absolute interval與dt。Case-local `workflow.py`負責從 t=0 的 segmented validation；case-local `restart.py` 驗證 parent lineage 與 restart continuity，再由既有 `main.run()` 建立獨立 continuation scenario，兩者都不是generic run-management layer。
 
 ---
 

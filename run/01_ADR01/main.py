@@ -68,6 +68,7 @@ def run(
     summary_every=None, output_dir=None, dump_dir=None, checkpoint_dir=None,
     visualization_name="fields.pvd", physical_time_names=False, clean_output=True,
     logger=None, label=None, progress_every=10, log_path=None, terminal=True,
+    initial_observation_check=None,
 ):
     started = perf_counter()
     logger = logger or log.RunLog(progress_every, terminal, log_path)
@@ -185,6 +186,8 @@ def run(
         )
 
     derived, summary = summarize(previous, start_time, 0)
+    if initial_observation_check is not None:
+        initial_observation_check(summary)
     observations.append(summary)
     save_checkpoint(
         checkpoint_dir / f"t_{start_time:.8g}s.npz" if physical_time_names else

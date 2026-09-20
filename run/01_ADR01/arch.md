@@ -51,6 +51,12 @@ The workflow owns ADR-specific START/DONE/validation events and passes the share
 `lib.log.RunLog` into segment runs for timestep progress. `run.log` is appended
 and flushed as events occur; `validation.log` remains separate.
 
+`restart.py` owns the separate long-time continuation entry point. It verifies
+the trusted parent manifest/checkpoint and exact restart-time scalar continuity,
+then calls `main.run()` for the transient. Child manifests retain parent lineage
+and keep `validated_through_s` at the parent evidence boundary; exploratory
+continuation does not imply timestep validation.
+
 ## Model roles
 
 The geometry contains `hot_plate`, the five-part coaxial ADR chain
