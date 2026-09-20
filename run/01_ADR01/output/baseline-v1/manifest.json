@@ -1,0 +1,83 @@
+{
+  "case": "ADR01 Baseline v1",
+  "scenario": "baseline-v1",
+  "start_s": 0.0,
+  "end_s": 420.0,
+  "planned_end_s": 420.0,
+  "mesh_id": "d5565440872044428698bf7318514570",
+  "cell_count": 7321,
+  "temperature_dofs": 2506,
+  "geometry_reference": "geometry-requirement/",
+  "initial_boundary_reference": "case.yaml",
+  "material_reference": "parameters-requirement/ADR01_material_parameters_baseline_v1.md",
+  "materials": [
+    "OFHC_Cu_RRR100",
+    "GGG_H0",
+    "G10_FR4_axial_effective",
+    "Heat_switch_OFF_proxy"
+  ],
+  "copper_model": "OFHC_Cu_RRR100",
+  "ggg_model": "GGG_H0",
+  "support_model": "G10_FR4_axial_effective",
+  "heat_switch_off_model": "Heat_switch_OFF_proxy",
+  "heat_switch_off_conductance_W_K": 6e-05,
+  "segments": [
+    {
+      "start_s": 0,
+      "end_s": 0.05,
+      "dt_s": 0.00025,
+      "output_every_s": 0.0025,
+      "validation_basis": "accepted_baseline",
+      "local_validation_pass": null,
+      "trajectory_validation_state": "VALIDATED_BASELINE"
+    },
+    {
+      "start_s": 0.05,
+      "end_s": 0.5,
+      "dt_s": 0.025,
+      "output_every_s": 0.05,
+      "validation_basis": "same_checkpoint_dt_vs_dt_over_2",
+      "local_validation_pass": true,
+      "trajectory_validation_state": "VALIDATED"
+    },
+    {
+      "start_s": 0.5,
+      "end_s": 5,
+      "dt_s": 0.1,
+      "output_every_s": 0.5,
+      "validation_basis": "same_checkpoint_dt_vs_dt_over_2",
+      "local_validation_pass": true,
+      "trajectory_validation_state": "VALIDATED"
+    },
+    {
+      "start_s": 5,
+      "end_s": 50,
+      "dt_s": 0.5,
+      "output_every_s": 5,
+      "validation_basis": "same_checkpoint_dt_vs_dt_over_2",
+      "local_validation_pass": true,
+      "trajectory_validation_state": "VALIDATED"
+    },
+    {
+      "start_s": 50,
+      "end_s": 420,
+      "dt_s": 2,
+      "output_every_s": 10,
+      "validation_basis": "same_checkpoint_dt_vs_dt_over_2",
+      "local_validation_pass": true,
+      "trajectory_validation_state": "VALIDATED"
+    }
+  ],
+  "validation": {
+    "mode": "warn",
+    "reference_dt_factor": 0.5,
+    "temperature_abs_K": 0.01,
+    "temperature_rel": 0.01,
+    "heat_flow_rel": 0.05
+  },
+  "git_commit": "5d5321053ba39e2d885af8439e65769e4596ab43",
+  "git_dirty": true,
+  "final_trajectory_validation_state": "VALIDATED",
+  "validated_through_s": 420.0,
+  "stopped_early": false
+}

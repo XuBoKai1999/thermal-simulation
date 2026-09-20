@@ -1,0 +1,7 @@
+metric,max_absolute_difference,relative_to_fine_max,gate,pass
+ggg_Tavg_K,7.357245275896318e-06,6.307858186358566e-06,informational,
+cold_stage_Tavg_K,6.666607039518269e-06,5.720382452190395e-06,acceptance,True
+sample_Tavg_K,6.665452161547236e-06,5.719388554122522e-06,acceptance,True
+support_1_W,2.7094253936786605e-08,0.002533229164430754,acceptance,True
+support_2_W,2.728961391108648e-08,0.0023765308057184255,acceptance,True
+switch_W,4.843420062803153e-10,2.632230942459739e-06,acceptance,True

@@ -1,0 +1,126 @@
+{
+  "coarse": "/mnt/c/Users/User2/Documents/Works/03 thermal simulation/run/01_ADR01/output/baseline-v1/validation/0.05_to_0.5/candidate",
+  "fine": "/mnt/c/Users/User2/Documents/Works/03 thermal simulation/run/01_ADR01/output/baseline-v1/validation/0.05_to_0.5/reference",
+  "interval_s": [
+    0.05,
+    0.5
+  ],
+  "dt_s": [
+    0.025,
+    0.0125
+  ],
+  "common_times_s": [
+    0.05,
+    0.075,
+    0.1,
+    0.125,
+    0.15,
+    0.175,
+    0.2,
+    0.225,
+    0.25,
+    0.275,
+    0.3,
+    0.325,
+    0.35,
+    0.375,
+    0.4,
+    0.425,
+    0.45,
+    0.475,
+    0.5
+  ],
+  "endpoint_full_P1": {
+    "dofs": 2506,
+    "max_absolute_difference_K": 0.004299058093284902,
+    "l2_difference_K": 0.03738389555808786
+  },
+  "metric_errors": [
+    {
+      "metric": "ggg_Tavg_K",
+      "max_absolute_difference": 0.00010310277542013857,
+      "relative_to_fine_max": 9.387784271495017e-05,
+      "gate": "informational",
+      "pass": null
+    },
+    {
+      "metric": "cold_stage_Tavg_K",
+      "max_absolute_difference": 0.0022817742632372795,
+      "relative_to_fine_max": 0.0019371283173524846,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "sample_Tavg_K",
+      "max_absolute_difference": 0.0022848538325419554,
+      "relative_to_fine_max": 0.0019395715376704118,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "support_1_W",
+      "max_absolute_difference": 5.71553122912488e-07,
+      "relative_to_fine_max": 0.008256740733761913,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "support_2_W",
+      "max_absolute_difference": 7.092549311315732e-07,
+      "relative_to_fine_max": 0.009127985503167589,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "switch_W",
+      "max_absolute_difference": 1.473068840065258e-07,
+      "relative_to_fine_max": 0.0008112565588822129,
+      "gate": "acceptance",
+      "pass": true
+    }
+  ],
+  "failure_times": {
+    "1.5": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    },
+    "2.0": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    },
+    "3.0": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    }
+  },
+  "sanity": {
+    "coarse": {
+      "finite": true,
+      "temperature_range_K": [
+        1.0,
+        4.0
+      ],
+      "range_pass": true
+    },
+    "fine": {
+      "finite": true,
+      "temperature_range_K": [
+        1.0,
+        4.0
+      ],
+      "range_pass": true
+    }
+  },
+  "newton_iterations": [
+    57,
+    110
+  ],
+  "wall_time_s": [
+    68.56967850699994,
+    125.90307744699999
+  ],
+  "accepted": true
+}

@@ -1,0 +1,198 @@
+{
+  "coarse": "/mnt/c/Users/User2/Documents/Works/03 thermal simulation/run/01_ADR01/output/baseline-v1/validation/5_to_50/candidate",
+  "fine": "/mnt/c/Users/User2/Documents/Works/03 thermal simulation/run/01_ADR01/output/baseline-v1/validation/5_to_50/reference",
+  "interval_s": [
+    5.0,
+    50.0
+  ],
+  "dt_s": [
+    0.5,
+    0.25
+  ],
+  "common_times_s": [
+    5.0,
+    5.5,
+    6.0,
+    6.5,
+    7.0,
+    7.5,
+    8.0,
+    8.5,
+    9.0,
+    9.5,
+    10.0,
+    10.5,
+    11.0,
+    11.5,
+    12.0,
+    12.5,
+    13.0,
+    13.5,
+    14.0,
+    14.5,
+    15.0,
+    15.5,
+    16.0,
+    16.5,
+    17.0,
+    17.5,
+    18.0,
+    18.5,
+    19.0,
+    19.5,
+    20.0,
+    20.5,
+    21.0,
+    21.5,
+    22.0,
+    22.5,
+    23.0,
+    23.5,
+    24.0,
+    24.5,
+    25.0,
+    25.5,
+    26.0,
+    26.5,
+    27.0,
+    27.5,
+    28.0,
+    28.5,
+    29.0,
+    29.5,
+    30.0,
+    30.5,
+    31.0,
+    31.5,
+    32.0,
+    32.5,
+    33.0,
+    33.5,
+    34.0,
+    34.5,
+    35.0,
+    35.5,
+    36.0,
+    36.5,
+    37.0,
+    37.5,
+    38.0,
+    38.5,
+    39.0,
+    39.5,
+    40.0,
+    40.5,
+    41.0,
+    41.5,
+    42.0,
+    42.5,
+    43.0,
+    43.5,
+    44.0,
+    44.5,
+    45.0,
+    45.5,
+    46.0,
+    46.5,
+    47.0,
+    47.5,
+    48.0,
+    48.5,
+    49.0,
+    49.5,
+    50.0
+  ],
+  "endpoint_full_P1": {
+    "dofs": 2506,
+    "max_absolute_difference_K": 0.0009269366683879454,
+    "l2_difference_K": 0.01638170042972582
+  },
+  "metric_errors": [
+    {
+      "metric": "ggg_Tavg_K",
+      "max_absolute_difference": 7.357245275896318e-06,
+      "relative_to_fine_max": 6.307858186358566e-06,
+      "gate": "informational",
+      "pass": null
+    },
+    {
+      "metric": "cold_stage_Tavg_K",
+      "max_absolute_difference": 6.666607039518269e-06,
+      "relative_to_fine_max": 5.720382452190395e-06,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "sample_Tavg_K",
+      "max_absolute_difference": 6.665452161547236e-06,
+      "relative_to_fine_max": 5.719388554122522e-06,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "support_1_W",
+      "max_absolute_difference": 2.7094253936786605e-08,
+      "relative_to_fine_max": 0.002533229164430754,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "support_2_W",
+      "max_absolute_difference": 2.728961391108648e-08,
+      "relative_to_fine_max": 0.0023765308057184255,
+      "gate": "acceptance",
+      "pass": true
+    },
+    {
+      "metric": "switch_W",
+      "max_absolute_difference": 4.843420062803153e-10,
+      "relative_to_fine_max": 2.632230942459739e-06,
+      "gate": "acceptance",
+      "pass": true
+    }
+  ],
+  "failure_times": {
+    "1.5": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    },
+    "2.0": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    },
+    "3.0": {
+      "coarse_s": null,
+      "fine_s": null,
+      "relative_difference": null
+    }
+  },
+  "sanity": {
+    "coarse": {
+      "finite": true,
+      "temperature_range_K": [
+        1.1024220744976385,
+        4.0
+      ],
+      "range_pass": true
+    },
+    "fine": {
+      "finite": true,
+      "temperature_range_K": [
+        1.1024220744976385,
+        4.0
+      ],
+      "range_pass": true
+    }
+  },
+  "newton_iterations": [
+    210,
+    386
+  ],
+  "wall_time_s": [
+    310.1589592319999,
+    617.7796961509998
+  ],
+  "accepted": true
+}
