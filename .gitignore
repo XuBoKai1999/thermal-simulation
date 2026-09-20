@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+*.swp
 .pytest_cache/
 run/01_ADR01/parameters-requirement.zip
 run/01_ADR01/output/**/*.npz

@@ -12,11 +12,10 @@ reference, and creates one
 physical-time dumps/checkpoints, merged PVD, and nested validation evidence.
 
 Warn/strict handling, near-zero-flow diagnostics, and accumulated validity are
-implemented. A 1.5 ms two-timestep warn-mode integration run completed through
-both deliberately failing local gates; a strict-mode run saved evidence and
-stopped after the first failure. The full 0-420 s Baseline v1 run has not started.
-S3 (5-50 s) and S4 (50-420 s) remain unvalidated candidates. Review the plan and
-workflow before launching production.
+implemented. The complete `baseline-v1` trajectory has run from 0 to 420 s:
+S0 is the accepted baseline, S1–S4 all pass the current provisional timestep
+validation, and `validated_through_s = 420`. Scenario-level output is under
+`run/01_ADR01/output/baseline-v1/`.
 
 Shared runtime logging now lives in `lib/log.py`. ADR01 prints first/every-N/final
 solver-step progress to the terminal (default N=10) and plan-driven runs append
@@ -72,8 +71,8 @@ the planned IC audit and mesh convergence.
 A separate diagnostic smoke run used `dt=0.1 s`, `end=1.0 s`, and 10 steps. It
 converged in about 41 seconds with 36 total Newton iterations and stayed within
 `1–4 K`. This demonstrates bounded solver convergence only: the timestep is 400x
-the validated baseline and has not been accuracy-validated. No 420-second run was
-started. Output is under `run/01_ADR01/output/dt_0.1/`.
+the validated baseline and has not been accuracy-validated. Output is under
+`run/01_ADR01/output/dt_0.1/`.
 
 A follow-up 0–1 s timestep comparison also ran `dt=0.05` and `0.025 s`, with all
 runs sampled at common 0.1 s times. `0.1 vs 0.05` differs by about 0.087–0.088 K
@@ -92,8 +91,7 @@ time; `--restart` loads it and `--end` is absolute. Continuation output uses
 prevent later runs with the same dt and a different end time from replacing it. A two-step `dt=0.1 s`
 restart to `t=0.25 s` passed, produced times `0.05/0.15/0.25 s`, and its initial
 GGG/cold-stage/sample averages and three heat flows exactly matched the source
-run. The later 0.5–5 s S2 branch comparison is accepted; no 420-second run has
-started.
+run. The later 0.5–5 s S2 branch comparison is accepted.
 
 The checkpoint collision identified after the split-run test is resolved. The
 validated source run was regenerated to `t=0.05 s`; its checkpoint metadata is
@@ -114,8 +112,7 @@ flows, and 0.081% for switch flow. Endpoint full-P1 max/L2 differences were
 0.004299 K / 0.037384 K. Both runs passed finite and `[1,4] K` sanity checks.
 The accepted endpoint is
 `run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.5.npz`.
-S2 is accepted. S3 and S4 remain unvalidated candidates; no 420-second run
-started.
+S2, S3, and S4 are also accepted under the current provisional gates.
 
 Before S2, workflow cadence was corrected: `--summary-every` now independently
 controls lightweight scalar observations and P1 checkpoints (default every
@@ -130,21 +127,21 @@ Both runs passed finite/range sanity checks and locate the sample minimum at
 `t=0.6 s` near 1.0715–1.0717 K. The candidate stores 46 scalar/checkpoint states
 but only 10 heavy PVD frames, demonstrating cadence separation. Accepted endpoint:
 `run/01_ADR01/output/segment_t_0.5_to_5_dt_0.1/checkpoint_t_5.npz`.
-S3/S4 remain unvalidated and no 420-second run has started.
+The scenario-level run subsequently validated S3 and S4 through 420 s.
 
 Split-run trajectory equivalence is now verified. A continuous `0→0.10 s` run
 and a `0→0.05 s` plus checkpoint restart `0.05→0.10 s` run both used
 `dt=0.00025 s`. At `t=0.10 s`, all 2506 P1 values were bitwise identical
 (`max_abs=0`, `L2=0`), and GGG/cold-stage/sample averages plus both support flows
 and switch flow were also bitwise identical. Restart is therefore trusted for
-the current frozen serial case. No long branch study or 420-second run started.
+the current frozen serial case and underpins the completed segmented trajectory.
 
 Before engineering interpretation: complete the planned visualization review,
 initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: after human review, use `baseline-v1.yaml` to run one clean
-simulation trajectory from `t=0` through the complete planned schedule. The
-pre-existing `steps2.md` Step 6 remains the next unrelated roadmap implementation
-step.
+Next exact action: plan the long-time continuation from
+`run/01_ADR01/output/baseline-v1/checkpoint/t_420s.npz`; do not rerun the completed
+0–420 s trajectory. The pre-existing `steps2.md` Step 6 remains the next unrelated
+roadmap implementation step.
