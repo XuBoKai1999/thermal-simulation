@@ -365,6 +365,10 @@ def run_plan(plan_path, runner=None):
     """Execute production and dt-refinement branches as one simulation."""
     plan_path = Path(plan_path)
     plan = load_plan(plan_path)  # fail before importing the FEM runner
+    git_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=CASE_DIR,
+                             capture_output=True, text=True, check=True).stdout.strip()
+    dirty = bool(subprocess.run(["git", "status", "--porcelain"], cwd=CASE_DIR,
+                                capture_output=True, text=True, check=True).stdout)
     if runner is None:
         from main import run as runner
     scenario_dir = CASE_DIR / "output" / plan["scenario"]
@@ -393,24 +397,32 @@ def run_plan(plan_path, runner=None):
             dt, end, float(segment["output_every_s"]), restart, "segment", dt,
             candidate_dir, dump_dir, checkpoint_dir, "fields.pvd", True, index == 0,
         )
-        reference = runner(
-            dt * factor, end, float(segment["output_every_s"]), restart,
-            "validation", dt * factor, reference_dir, None, None, "fields.pvd", True,
-        )
-        comparison = compare(candidate_dir, reference_dir, evidence, thresholds, validation)
-        local_pass = comparison["accepted"]
-        if local_pass and upstream_valid:
+        if index == 0:
+            local_pass = None
+            state = "VALIDATED_BASELINE"
+            validated_through = end
+        else:
+            reference = runner(
+                dt * factor, end, float(segment["output_every_s"]), restart,
+                "validation", dt * factor, reference_dir, None, None, "fields.pvd", True,
+            )
+            comparison = compare(candidate_dir, reference_dir, evidence, thresholds, validation)
+            local_pass = comparison["accepted"]
+        if index > 0 and local_pass and upstream_valid:
             state = "VALIDATED"
             validated_through = end
-        elif local_pass:
+        elif index > 0 and local_pass:
             state = "LOCAL_PASS_BUT_UPSTREAM_UNVALIDATED"
-        else:
+        elif index > 0:
             state = "LOCAL_VALIDATION_FAILED"
             upstream_valid = False
-        segment_records.append({**segment, "local_validation_pass": local_pass,
+        segment_records.append({**segment,
+                                "validation_basis": "accepted_baseline" if index == 0
+                                                    else "same_checkpoint_dt_vs_dt_over_2",
+                                "local_validation_pass": local_pass,
                                 "trajectory_validation_state": state})
         validation_lines.append(f"{start:g} to {end:g} s: {state}")
-        if not local_pass:
+        if index > 0 and not local_pass:
             failed = [item["metric"] for item in comparison["metric_errors"]
                       if item["pass"] is False]
             warning = f"WARNING: validation failed for {start:g} to {end:g} s: {failed}"
@@ -433,7 +445,7 @@ def run_plan(plan_path, runner=None):
             })
         pvd_sources.append(candidate_dir / "visualization" / "fields.pvd")
         restart = Path(candidate["checkpoint"])
-        if not local_pass and mode == "strict":
+        if index > 0 and not local_pass and mode == "strict":
             stopped = True
             log_lines.append("Strict mode stopped before downstream production; try a smaller timestep.")
             break
@@ -445,10 +457,6 @@ def run_plan(plan_path, runner=None):
     )
     case_data = yaml.safe_load((CASE_DIR / "case.yaml").read_text(encoding="utf-8"))
     last = candidate
-    git_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=CASE_DIR,
-                             capture_output=True, text=True, check=True).stdout.strip()
-    dirty = bool(subprocess.run(["git", "status", "--porcelain"], cwd=CASE_DIR,
-                                capture_output=True, text=True, check=True).stdout)
     manifest = {
         "case": "ADR01 Baseline v1", "scenario": plan["scenario"],
         "start_s": 0.0, "end_s": float(last["end_s"]),
@@ -496,9 +504,9 @@ def self_test():
     assert metric_gate("switch_W", 0.0, 0.0, {}) == (
         None, None, "near_zero_absolute_diagnostic"
     )
-    assert _trajectory_states([True, False, True]) == (
-        ["VALIDATED", "LOCAL_VALIDATION_FAILED",
-         "LOCAL_PASS_BUT_UPSTREAM_UNVALIDATED"], 1
+    assert _trajectory_states([None, True, False, True]) == (
+        ["VALIDATED_BASELINE", "VALIDATED", "LOCAL_VALIDATION_FAILED",
+         "LOCAL_PASS_BUT_UPSTREAM_UNVALIDATED"], 2
     )
     assert len(load_plan(CASE_DIR / "baseline-v1.yaml")["segments"]) == 5
     with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False) as handle:
@@ -518,8 +526,11 @@ def self_test():
 def _trajectory_states(local_results):
     """Small pure helper used to regression-test accumulated validity."""
     states, upstream_valid, validated_count = [], True, 0
-    for passed in local_results:
-        if passed and upstream_valid:
+    for index, passed in enumerate(local_results):
+        if index == 0 and passed is None:
+            states.append("VALIDATED_BASELINE")
+            validated_count += 1
+        elif passed and upstream_valid:
             states.append("VALIDATED")
             validated_count += 1
         elif passed:

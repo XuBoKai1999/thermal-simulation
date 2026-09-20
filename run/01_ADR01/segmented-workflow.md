@@ -2,8 +2,9 @@
 
 One ADR01 simulation is one scenario and one continuous physical trajectory.
 `baseline-v1.yaml` supplies contiguous fixed-timestep intervals; `workflow.py`
-validates the complete plan before FEM setup, runs production and same-start
-reference branches, and aggregates the production states under one directory:
+validates the complete plan before FEM setup, runs the accepted S0 bootstrap,
+then production and same-start reference branches for S1 onward, and aggregates
+the production states under one directory:
 
 ```powershell
 .\scripts\wsl-run.ps1 "python3 run/01_ADR01/workflow.py run run/01_ADR01/baseline-v1.yaml"
@@ -21,7 +22,8 @@ physical-time dump/checkpoint names, merged production PVD, and reference data
 only below `validation/`. Solver timestep and heavy output cadence remain
 independent.
 
-Candidate values remain hypotheses until each interval passes its
+S0 is the manually accepted fine baseline and is not compared with `dt/2`.
+Candidate values from S1 onward remain hypotheses until each interval passes its
 same-checkpoint `dt` versus `dt/2` comparison.
 
 | Segment | Absolute interval | Candidate dt | Status |
@@ -78,8 +80,9 @@ heat flow `<5%` relative to the finer run's maximum magnitude. GGG temperature
 is explicitly informational. A reference flow scale at or below `1e-12 W` is
 reported as a near-zero absolute diagnostic, not divided into a relative error
 or used as an acceptance gate. These are engineering
-screening criteria, not universal accuracy standards. Final production approval
-is based primarily on interpolated failure-time convergence.
+screening criteria, not universal accuracy standards. Threshold-crossing
+differences are informational unless the plan defines an explicit crossing-time
+tolerance.
 
 ## Spot audits
 

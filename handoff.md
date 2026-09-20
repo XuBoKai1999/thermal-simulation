@@ -5,8 +5,9 @@
 ADR01 now has a plan-driven continuous-trajectory workflow. The sole new input
 is `run/01_ADR01/baseline-v1.yaml`; run it with
 `python3 run/01_ADR01/workflow.py run run/01_ADR01/baseline-v1.yaml` through the
-WSL wrapper. It validates the plan before FEM setup, executes each fixed-step
-production interval plus a same-start `dt/2` reference, and creates one
+WSL wrapper. It validates the plan before FEM setup, executes the accepted S0
+bootstrap, then each later production interval plus a same-start `dt/2`
+reference, and creates one
 `output/<scenario>/` trajectory with a manifest, production CSV, logs,
 physical-time dumps/checkpoints, merged PVD, and nested validation evidence.
 
@@ -107,7 +108,8 @@ flows, and 0.081% for switch flow. Endpoint full-P1 max/L2 differences were
 0.004299 K / 0.037384 K. Both runs passed finite and `[1,4] K` sanity checks.
 The accepted endpoint is
 `run/01_ADR01/output/segment_t_0.05_to_0.5_dt_0.025/checkpoint_t_0.5.npz`.
-S2–S4 remain unvalidated candidates; no 420-second run started.
+S2 is accepted. S3 and S4 remain unvalidated candidates; no 420-second run
+started.
 
 Before S2, workflow cadence was corrected: `--summary-every` now independently
 controls lightweight scalar observations and P1 checkpoints (default every
