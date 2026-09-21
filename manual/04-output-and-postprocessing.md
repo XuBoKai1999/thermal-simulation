@@ -134,6 +134,42 @@ Slice, coloring, and flux glyph workflows without reconstructing dump centroids.
 The lightweight text dump remains the scripting/reproducibility path; VTK/PVD is
 the interactive FEM visualization path.
 
+### Reproducible ParaView snapshots
+
+Open one representative `fields.pvd` in ParaView, configure the view, coloring,
+range and legend, then use **File > Save State** to save `render.pvsm`. The state
+should contain one file reader; if it contains more, set its ParaView source name
+as `reader` in the job. Create a JSON job next to the state (YAML is also accepted
+when that `pvpython` environment provides PyYAML):
+
+```json
+{
+  "state": "render.pvsm",
+  "sources": [
+    "run/01_ADR01/output/baseline-v1/visualization/fields.pvd",
+    "run/01_ADR01/output/baseline-v1-cont-420s-1800s/visualization/fields.pvd"
+  ],
+  "times": [0, 0.0025, 420, 430, 1800],
+  "output_dir": "snapshots",
+  "resolution": [1920, 1080],
+  "coloring": "temperature",
+  "color_range": [1, 4]
+}
+```
+
+Paths are relative to the job file. Preview the resolved, sorted frame plan
+without loading ParaView, then render it:
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 postprocess/paraview_snapshots.py snapshot-job.json --check"
+.\scripts\wsl-run.ps1 "'/mnt/c/Program Files/ParaView 6.1.1/bin/pvpython.exe' postprocess/paraview_snapshots.py snapshot-job.json"
+```
+
+Duplicate physical times are emitted once. Filenames include a zero-padded frame
+index and physical time. Existing target PNGs are never overwritten. Camera,
+projection, display, colormap and scalar bar come from the saved state; resolution
+comes from the job, and `color_range` locks both color and opacity transfer ranges.
+
 ## Plotting
 
 現有 CLI：

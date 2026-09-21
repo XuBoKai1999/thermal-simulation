@@ -10,6 +10,8 @@
 - [x] User manual and framework-readiness review completed.
 - [x] Source-preserving NIST material mirror, derived tables, listing CLI, and
   database regressions completed.
+- [x] ParaView-state snapshot CLI renders sorted, de-duplicated physical times
+  across multiple PVD series with fixed render settings.
 
 ## ADR01 current status
 

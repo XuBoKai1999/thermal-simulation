@@ -61,7 +61,8 @@ adr-thermal/
 │  └─ plotting.py
 │
 ├─ postprocess/
-│  └─ plot_dump.py
+│  ├─ plot_dump.py
+│  └─ paraview_snapshots.py
 │
 ├─ materials/
 │  └─ nist/             # source-preserving data; not yet solver-integrated
@@ -368,6 +369,12 @@ Python source 明確 import 使用者指定的 local file/function，不使用 `
 ### `postprocess/plot_dump.py`
 
 獨立讀取既有 dump，再用 Python 產生圖片或衍生 CSV。需要 mesh topology 的圖形時，同時讀取對應的 `build/mesh.msh`，驗證 `MESH_ID` 後依 `cell_ID` 合併資料。模擬本身不自動畫圖；重畫圖片不應重新求解 FEM。
+
+### `postprocess/paraview_snapshots.py`
+
+以 ParaView 原生 `.pvsm` 保存單一 render view、reader display、camera、色圖與
+scalar bar，再由 `pvpython` 將一個或多個 PVD 的指定 physical times 排序、去重並
+輸出 PNG。工具只負責既有 VTK/PVD 的 rendering，不讀取或改寫 simulation state。
 
 ---
 

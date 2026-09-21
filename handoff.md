@@ -22,6 +22,12 @@ solver-step progress to the terminal (default N=10) and plan-driven runs append
 and immediately flush the same stream to `output/<scenario>/run.log`. The
 manifest includes total workflow wall time and start/finish timestamps.
 
+Generic ParaView snapshot generation lives in
+`postprocess/paraview_snapshots.py`, outside the simulation engine. A saved
+ParaView `.pvsm` supplies camera/display/LUT/scalar-bar state; a JSON/YAML job
+selects physical times across multiple PVD files, resolution, and an optional
+fixed color range. Frames are globally time-sorted and duplicate times are removed.
+
 Long-time restart orchestration is implemented in `run/01_ADR01/restart.py`.
 It verifies the `baseline-v1` manifest, 420 s checkpoint format/time/mesh/vector,
 parent validation boundary, and exact restart-time scalar continuity before
