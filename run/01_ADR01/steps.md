@@ -101,10 +101,11 @@ S1-S4 pass the current provisional gates through 420 s.
 
 ## Long-time continuation
 
-STATUS: ENTRY POINT IMPLEMENTED; 420-1800 S PRODUCTION NOT STARTED
+STATUS: 420-1800 S PRODUCTION COMPLETE; DT/2 VALIDATION READY, NOT RUN
 
 `restart.py` validates the completed `baseline-v1` lineage and 420 s checkpoint,
 checks restart-time scalar continuity without advancing a timestep, and delegates
-the exploratory continuation to `main.run()`. A two-timestep 420-424 s regression
-passed. The planned child is `baseline-v1-cont-420s-1800s` with dt 2 s; its
-`validated_through_s` remains 420 because no new timestep refinement is performed.
+the exploratory continuation to `main.run()`. The dt 2 s child
+`baseline-v1-cont-420s-1800s` completed, but `validated_through_s` remains 420.
+`validate_continuation.py` is ready to reuse it, run only the dt 1 s reference,
+and pass both branches to the existing comparison implementation.

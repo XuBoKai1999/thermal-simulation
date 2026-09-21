@@ -36,13 +36,23 @@ same-checkpoint `dt` versus `dt/2` comparison.
 | S0 | 0–0.05 s | 0.00025 s | validated |
 | S1 | 0.05–0.5 s | 0.025 s | accepted against 0.0125 s |
 | S2 | 0.5–5 s | 0.1 s | accepted against 0.05 s |
-| S3 | 5–50 s | 0.5 s | candidate, not validated |
-| S4 | 50–420 s | 2 s; 5 s may be tested | candidate, not validated |
+| S3 | 5–50 s | 0.5 s | accepted against 0.25 s |
+| S4 | 50–420 s | 2 s | accepted against 1 s |
 
 The accepted endpoint checkpoint of one segment is the sole start state for all
 branches of the next segment. Do not substitute a dump or VTK field for the P1
 checkpoint. Do not use a fine `0.00025 s` reference for every later interval;
 compare the candidate dt with dt/2, adding dt/4 only when necessary.
+
+The completed exploratory 420–1800 s continuation used dt 2 s and was outside
+the original segmented validation. Post-validate it without rerunning production:
+
+```powershell
+.\scripts\wsl-run.ps1 "python3 run/01_ADR01/validate_continuation.py"
+```
+
+This creates separate dt 1 s reference/evidence output and updates the
+continuation manifest only after comparison.
 
 ## Legacy direct-segment commands and cadence
 

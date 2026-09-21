@@ -29,8 +29,11 @@ delegating to `main.run()`. A 420-424 s regression passed without modifying the
 parent. Python callers now receive the `main.run()` result without an unsolicited
 JSON print; the direct CLI still prints it. Child manifests store portable
 case-relative parent paths plus both the parent commit and dirty state. The
-planned production child `baseline-v1-cont-420s-1800s` has not run and is ready
-to launch after human review.
+`baseline-v1-cont-420s-1800s` production continuation completed, but remains
+exploratory: `validation_status = NOT_PERFORMED` and `validated_through_s = 420`.
+`run/01_ADR01/validate_continuation.py` is ready to reuse that production result,
+run a same-checkpoint dt 1 s reference, and call `workflow.compare()`; it has not
+been executed.
 
 The earlier ADR01 Baseline v1 smoke milestone remains complete. The placeholder
 geometry is approved only for this numerical smoke run, not verified hardware.
@@ -151,7 +154,7 @@ initial-condition representation audit, mesh convergence, and energy-balance
 review. Do not extend to long hold, MCE, finite field, switch ON, radiation,
 convection, loads, contact resistance, or hardware geometry without approval.
 
-Next exact action: after human review, run `python3 run/01_ADR01/restart.py`
-through the WSL wrapper to create `baseline-v1-cont-420s-1800s` from the trusted
-420 s checkpoint. Do not rerun the completed 0–420 s trajectory. The pre-existing
+Next exact action: run `python3 run/01_ADR01/validate_continuation.py` through the
+WSL wrapper to compare the completed 420-1800 s dt 2 s trajectory against a dt 1 s
+reference. Do not rerun either completed production trajectory. The pre-existing
 `steps2.md` Step 6 remains the next unrelated roadmap implementation step.
